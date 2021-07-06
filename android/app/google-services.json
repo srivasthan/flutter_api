@@ -1,0 +1,39 @@
+{
+  "project_info": {
+    "project_number": "475959915370",
+    "project_id": "login-f8324",
+    "storage_bucket": "login-f8324.appspot.com"
+  },
+  "client": [
+    {
+      "client_info": {
+        "mobilesdk_app_id": "1:475959915370:android:a20ab96e8fb0cfdee82b13",
+        "android_client_info": {
+          "package_name": "com.example.flutter_api_json_parse"
+        }
+      },
+      "oauth_client": [
+        {
+          "client_id": "475959915370-nnf5gaj59ftqburecfsf12svevag4n3d.apps.googleusercontent.com",
+          "client_type": 3
+        }
+      ],
+      "api_key": [
+        {
+          "current_key": "AIzaSyBKDl2x5Qg5GBOhuOYWx0PLFiBqtxi5vzY"
+        }
+      ],
+      "services": {
+        "appinvite_service": {
+          "other_platform_oauth_client": [
+            {
+              "client_id": "475959915370-nnf5gaj59ftqburecfsf12svevag4n3d.apps.googleusercontent.com",
+              "client_type": 3
+            }
+          ]
+        }
+      }
+    }
+  ],
+  "configuration_version": "1"
+}
