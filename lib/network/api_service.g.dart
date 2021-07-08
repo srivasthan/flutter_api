@@ -57,6 +57,46 @@ class _RestClient implements RestClient {
   }
 
   @override
+  addAMC(token, body) async {
+    ArgumentError.checkNotNull(body, 'body');
+    const _extra = <String, dynamic>{};
+    final queryParameters = <String, dynamic>{};
+    final _data = <String, dynamic>{};
+    _data.addAll(body ?? <String, dynamic>{});
+    final Response<Map<String, dynamic>> _result = await _dio.request(
+        'customer_amc/',
+        queryParameters: queryParameters,
+        options: RequestOptions(
+            method: 'POST',
+            headers: <String, dynamic>{'Token': token.toString()},
+            extra: _extra,
+            baseUrl: baseUrl),
+        data: _data);
+    final value = RegisterResponse.fromJson(_result.data);
+    return Future.value(value);
+  }
+
+  @override
+  addProduct(token, body) async {
+    ArgumentError.checkNotNull(body, 'body');
+    const _extra = <String, dynamic>{};
+    final queryParameters = <String, dynamic>{};
+    final _data = <String, dynamic>{};
+    _data.addAll(body ?? <String, dynamic>{});
+    final Response<Map<String, dynamic>> _result = await _dio.request(
+        'add_customer_product/',
+        queryParameters: queryParameters,
+        options: RequestOptions(
+            method: 'POST',
+            headers: <String, dynamic>{'Token': token.toString()},
+            extra: _extra,
+            baseUrl: baseUrl),
+        data: _data);
+    final value = RegisterResponse.fromJson(_result.data);
+    return Future.value(value);
+  }
+
+  @override
   emailVerify(body) async {
     ArgumentError.checkNotNull(body, 'body');
     const _extra = <String, dynamic>{};
@@ -77,6 +117,26 @@ class _RestClient implements RestClient {
   }
 
   @override
+  validateSerialNo(body) async {
+    ArgumentError.checkNotNull(body, 'body');
+    const _extra = <String, dynamic>{};
+    final queryParameters = <String, dynamic>{};
+    final _data = <String, dynamic>{};
+    _data.addAll(body ?? <String, dynamic>{});
+    final Response<Map<String, dynamic>> _result = await _dio.request(
+        'validate_serial_no/',
+        queryParameters: queryParameters,
+        options: RequestOptions(
+            method: 'POST',
+            headers: <String, dynamic>{},
+            extra: _extra,
+            baseUrl: baseUrl),
+        data: _data);
+    final value = EmailResponse.fromJson(_result.data);
+    return Future.value(value);
+  }
+
+  @override
   resetPassword(body) async {
     ArgumentError.checkNotNull(body, 'body');
     const _extra = <String, dynamic>{};
@@ -85,6 +145,26 @@ class _RestClient implements RestClient {
     _data.addAll(body ?? <String, dynamic>{});
     final Response<Map<String, dynamic>> _result = await _dio.request(
         'customer_forget_password/',
+        queryParameters: queryParameters,
+        options: RequestOptions(
+            method: 'POST',
+            headers: <String, dynamic>{},
+            extra: _extra,
+            baseUrl: baseUrl),
+        data: _data);
+    final value = ResetPasswordResponse.fromJson(_result.data);
+    return Future.value(value);
+  }
+
+  @override
+  changePassword(body) async {
+    ArgumentError.checkNotNull(body, 'body');
+    const _extra = <String, dynamic>{};
+    final queryParameters = <String, dynamic>{};
+    final _data = <String, dynamic>{};
+    _data.addAll(body ?? <String, dynamic>{});
+    final Response<Map<String, dynamic>> _result = await _dio.request(
+        'change_password/',
         queryParameters: queryParameters,
         options: RequestOptions(
             method: 'POST',
@@ -153,6 +233,26 @@ class _RestClient implements RestClient {
             baseUrl: baseUrl),
         data: _data);
     final value = RegisterResponse.fromJson(_result.data);
+    return Future.value(value);
+  }
+
+  @override
+  amcList(token, body) async {
+    ArgumentError.checkNotNull(body, 'body');
+    const _extra = <String, dynamic>{};
+    final queryParameters = <String, dynamic>{};
+    final _data = <String, dynamic>{};
+    _data.addAll(body ?? <String, dynamic>{});
+    final Response<Map<String, dynamic>> _result = await _dio.request(
+        'load_contract_details/',
+        queryParameters: queryParameters,
+        options: RequestOptions(
+            method: 'POST',
+            headers: <String, dynamic>{'Token': token.toString()},
+            extra: _extra,
+            baseUrl: baseUrl),
+        data: _data);
+    final value = AmcListResponse.fromJson(_result.data);
     return Future.value(value);
   }
 
@@ -300,6 +400,24 @@ class _RestClient implements RestClient {
             baseUrl: baseUrl),
         data: _data);
     final value = AmcResponse.fromJson(_result.data);
+    return Future.value(value);
+  }
+
+  @override
+  getCallCategory() async {
+    const _extra = <String, dynamic>{};
+    final queryParameters = <String, dynamic>{};
+    final _data = <String, dynamic>{};
+    final Response<Map<String, dynamic>> _result = await _dio.request(
+        'get_call_category/',
+        queryParameters: queryParameters,
+        options: RequestOptions(
+            method: 'GET',
+            headers: <String, dynamic>{},
+            extra: _extra,
+            baseUrl: baseUrl),
+        data: _data);
+    final value = CallCategoryResponse.fromJson(_result.data);
     return Future.value(value);
   }
 

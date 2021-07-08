@@ -27,15 +27,19 @@ class Amc {
   @JsonKey(name: 'amc_type')
   final String amcType;
 
+  @JsonKey(name: 'cost')
+  final double cost;
+
   @JsonKey(name: 'duration')
   final int duration;
 
-  Amc({this.amcId, this.amcType, this.duration});
+  Amc({this.amcId, this.amcType, this.cost, this.duration});
 
   factory Amc.fromJson(Map<String, dynamic> parsedJson) {
     return Amc(
         amcId: parsedJson['amc_id'],
         amcType: parsedJson['amc_type'],
+        cost: parsedJson['cost'],
         duration: parsedJson['duration']);
   }
 }

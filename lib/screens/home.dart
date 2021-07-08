@@ -1,7 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:flutter/widgets.dart';
 import 'package:flutter_api_json_parse/network/api_service.dart';
-import 'package:fluttertoast/fluttertoast.dart';
 import 'package:shared_preferences/shared_preferences.dart';
 import 'package:dio/dio.dart' as dio;
 
@@ -115,16 +114,6 @@ class _Home extends State<Home> {
           Center(child: Text('Screen 1')),
         ],
       ),
-    );
-  }
-}
-
-class Screen3 extends StatelessWidget {
-  @override
-  Widget build(BuildContext context) {
-    return Container(
-      color: Colors.cyan,
-      child: Center(child: Text("Screen 3")),
     );
   }
 }

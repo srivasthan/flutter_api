@@ -89,8 +89,11 @@ class _LoginState extends State<Login> {
         final Future<Map<String, dynamic>> respose =
             auth.login(_userName, _password, fcmtoken);
 
-        respose.then((response) {
+        respose.then((response) async {
           if (response['status']) {
+            SharedPreferences prefs = await SharedPreferences.getInstance();
+            prefs.setString('password', passwordController.text.toString());
+
             Flushbar(
               title: "Failed Login",
               message: "Login Successful",
@@ -178,7 +181,7 @@ class _LoginState extends State<Login> {
                       prefixIcon: Icon(Icons.email),
                     ),
                     onSaved: (value) => _userName = value,
-                    validator: validateEmail,
+                    //  validator: validateEmail,
                   ),
                   SizedBox(
                     height: 20.0,
@@ -206,6 +209,7 @@ class _LoginState extends State<Login> {
                       ),
                     ),
                     obscureText: _isHidden,
+                    controller: passwordController,
                     validator: (value) =>
                         value.isEmpty ? 'Please enter password' : null,
                     onSaved: (value) => _password = value,

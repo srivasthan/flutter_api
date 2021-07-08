@@ -1,5 +1,7 @@
 import 'package:dio/dio.dart';
+import 'package:flutter_api_json_parse/network/response/amcListResponse.dart';
 import 'package:flutter_api_json_parse/network/response/amcResponse.dart';
+import 'package:flutter_api_json_parse/network/response/callCategoryResponse.dart';
 import 'package:flutter_api_json_parse/network/response/cityResponse.dart';
 import 'package:flutter_api_json_parse/network/response/emailResponse.dart';
 import 'package:flutter_api_json_parse/network/response/locationResponse.dart';
@@ -40,11 +42,25 @@ abstract class RestClient {
   @POST('customer_registration/')
   Future<RegisterResponse> register(@Body() Map<String, dynamic> body);
 
+  @POST("customer_amc/")
+  Future<RegisterResponse> addAMC(String token, @Body() Map<String, dynamic> body);
+
+  @POST('add_customer_product/')
+  Future<RegisterResponse> addProduct(
+      String token, @Body() Map<String, dynamic> body);
+
   @POST("cus_validation/")
   Future<EmailResponse> emailVerify(@Body() Map<String, dynamic> body);
 
+  @POST("change_password/")
+  Future<ResetPasswordResponse> changePassword(
+      @Body() Map<String, dynamic> body);
+
   @POST("cus_validation/")
   Future<MobileResponse> mobileVerify(@Body() Map<String, dynamic> body);
+
+  @POST("validate_serial_no/")
+  Future<EmailResponse> validateSerialNo(@Body() Map<String, dynamic> body);
 
   @POST("customer_token/")
   Future<TokenResponse> postTokenActivity(@Body() Map<String, dynamic> body);
@@ -55,6 +71,10 @@ abstract class RestClient {
 
   @POST("edit_customer_details/")
   Future<RegisterResponse> editProfile(
+      String token, @Body() Map<String, dynamic> body);
+
+  @POST("load_contract_details/")
+  Future<AmcListResponse> amcList(
       String token, @Body() Map<String, dynamic> body);
 
   @GET('get_country/')
@@ -80,6 +100,9 @@ abstract class RestClient {
 
   @GET('get_amc_details/')
   Future<AmcResponse> getAmcDetails();
+
+  @GET('get_call_category/')
+  Future<CallCategoryResponse> getCallCategory();
 
   @GET('my_products/')
   Future<MyProductListResponse> getMyProductList(String token, String email);

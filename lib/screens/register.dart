@@ -16,7 +16,7 @@ import 'package:provider/provider.dart';
 import 'package:dio/dio.dart' as dio;
 import 'package:intl/intl.dart';
 import 'package:searchable_dropdown/searchable_dropdown.dart';
-import 'package:shared_preferences/shared_preferences.dart';
+import 'package:connection_status_bar/connection_status_bar.dart';
 
 class Register extends StatefulWidget {
   @override
@@ -28,23 +28,20 @@ class _RegisterState extends State<Register> {
 
   final formKey = GlobalKey<FormState>();
   bool isValidate = true;
-  bool _selected = false;
-  String _username,
-      _email,
-      _mobile,
-      _alternateMobile,
-      _modelNumber,
-      _serialNumber,
-      _invoiceNumber,
-      _plotNumber,
-      _storeMobileNumber,
-      _street,
-      _dummy,
-      _landMark,
-      _postCode,
-      dropdownValue;
+  String _storeMobileNumber, _dummy, dropdownValue;
   TextEditingController _date = new TextEditingController();
   TextEditingController _duration = new TextEditingController();
+  TextEditingController _username = new TextEditingController();
+  TextEditingController _email = new TextEditingController();
+  TextEditingController _mobile = new TextEditingController();
+  TextEditingController _alternateMobile = new TextEditingController();
+  TextEditingController _modelNumber = new TextEditingController();
+  TextEditingController _serialNumber = new TextEditingController();
+  TextEditingController _invoiceNumber = new TextEditingController();
+  TextEditingController _plotNumber = new TextEditingController();
+  TextEditingController _street = new TextEditingController();
+  TextEditingController _landMark = new TextEditingController();
+  TextEditingController _postCode = new TextEditingController();
   DateTime selectedDate = DateTime.now();
   List<ProductModel> product = List();
   List<AmcModel> amc = List();
@@ -159,6 +156,7 @@ class _RegisterState extends State<Register> {
   }
 
   getProduct() async {
+    ConnectionStatusBar();
     RestClient apiService = RestClient(dio.Dio());
 
     final response = await apiService.getProduct();
@@ -176,9 +174,6 @@ class _RegisterState extends State<Register> {
   }
 
   getSubProduct(int productId) async {
-    //  subProduct.clear();
-    // test.clear();
-
     RestClient apiService = RestClient(dio.Dio());
 
     final response = await apiService.getSubProduct(productId);
@@ -339,26 +334,26 @@ class _RegisterState extends State<Register> {
           form.save();
 
           final Future<Map<String, dynamic>> respose = auth.register(
-              _username,
-              _email,
-              _mobile,
-              _alternateMobile,
+              _username.text,
+              _email.text,
+              _mobile.text,
+              _alternateMobile.text,
               _productId,
               _subProductId,
-              _modelNumber,
-              _serialNumber,
+              _modelNumber.text,
+              _serialNumber.text,
               inputDate.toString(),
               _amcId,
               _contractDuration,
-              _plotNumber,
-              _street,
-              _landMark,
+              _plotNumber.text,
+              _street.text,
+              _landMark.text,
               _countryId,
               _stateId,
               _cityId,
               _locationId,
-              int.parse(_postCode),
-              _invoiceNumber);
+              int.parse(_postCode.text),
+              _invoiceNumber.text);
 
           auth.loggedInStatus = Status.Authenticating;
           auth.notifyListeners();
@@ -394,30 +389,22 @@ class _RegisterState extends State<Register> {
                 SizedBox(
                   height: 15.0,
                 ),
-                Text('Name'),
                 SizedBox(
                   height: 7.0,
                 ),
                 TextFormField(
                   autofocus: false,
-                  // validator: checkEmail,
-                  onSaved: (value) => _username = value,
+                  controller: _username,
                   validator: (value) =>
                       value.isEmpty ? 'Please enter name' : null,
                   decoration: InputDecoration(
-                      hintText: "Enter Name",
-                      filled: true,
-                      fillColor: Colors.white,
-                      contentPadding: new EdgeInsets.symmetric(
-                          vertical: 20.0, horizontal: 10.0),
-                      border: OutlineInputBorder(
-                          borderRadius:
-                              BorderRadius.all(Radius.circular(10.0)))),
+                    labelText: 'Name',
+                    border: OutlineInputBorder(),
+                  ),
                 ),
                 SizedBox(
                   height: 20.0,
                 ),
-                Text('Email'),
                 SizedBox(
                   height: 5.0,
                 ),
@@ -427,27 +414,31 @@ class _RegisterState extends State<Register> {
                   onChanged: (text) {
                     checkEmailPresence(text);
                   },
-                  onSaved: (value) => _email = value,
-                  decoration: buildInputDecoration("Enter Email", null),
+                  controller: _email,
+                  decoration: InputDecoration(
+                    labelText: 'Email',
+                    border: OutlineInputBorder(),
+                  ),
                 ),
                 SizedBox(
                   height: 20.0,
                 ),
-                Text('Mobile Number'),
                 TextFormField(
                   autofocus: false,
                   validator: validateMobile,
-                  onSaved: (value) => _mobile = value,
+                  controller: _mobile,
                   onChanged: (value) {
                     _storeMobileNumber = value;
                     checkMobilePresence(value);
                   },
-                  decoration: buildInputDecoration("Enter Mobile Number", null),
+                  decoration: InputDecoration(
+                    labelText: 'Mobile Number',
+                    border: OutlineInputBorder(),
+                  ),
                 ),
                 SizedBox(
                   height: 20.0,
                 ),
-                Text('Alternate Number'),
                 TextFormField(
                   autofocus: false,
                   validator: validateAlternateMobile,
@@ -462,9 +453,11 @@ class _RegisterState extends State<Register> {
                       ).show(context);
                     }
                   },
-                  onSaved: (value) => _alternateMobile = value,
-                  decoration:
-                      buildInputDecoration("Enter Alternate Number", null),
+                  controller: _alternateMobile,
+                  decoration: InputDecoration(
+                    labelText: 'Alternate Mobile Number',
+                    border: OutlineInputBorder(),
+                  ),
                 ),
                 SizedBox(
                   height: 20.0,
@@ -531,41 +524,45 @@ class _RegisterState extends State<Register> {
                 SizedBox(
                   height: 20.0,
                 ),
-                Text('Model Number'),
                 TextFormField(
                   autofocus: false,
                   validator: (value) =>
                       value.isEmpty ? 'Please model number' : null,
-                  onSaved: (value) => _modelNumber = value,
-                  decoration: buildInputDecoration("Enter Model Number", null),
+                  controller: _modelNumber,
+                  decoration: InputDecoration(
+                    labelText: 'Model Number',
+                    border: OutlineInputBorder(),
+                  ),
                 ),
                 SizedBox(
                   height: 20.0,
                 ),
-                Text('Serial Number'),
                 TextFormField(
                   autofocus: false,
                   validator: (value) =>
                       value.isEmpty ? 'Please enter serial number' : null,
-                  onSaved: (value) => _serialNumber = value,
-                  decoration: buildInputDecoration("Enter Serial Number", null),
+                  controller: _serialNumber,
+                  decoration: InputDecoration(
+                    labelText: 'Serial Number',
+                    border: OutlineInputBorder(),
+                  ),
                 ),
                 SizedBox(
                   height: 20.0,
                 ),
-                Text('Invoice Number'),
                 TextFormField(
                   autofocus: false,
                   validator: (value) =>
                       value.isEmpty ? 'Please enter invoice number' : null,
-                  onSaved: (value) => _invoiceNumber = value,
-                  decoration:
-                      buildInputDecoration("Enter Invoice Number", null),
+                  controller: _invoiceNumber,
+                  decoration: InputDecoration(
+                    labelText: 'Enter Invoice Number',
+                    border: OutlineInputBorder(),
+                  ),
                 ),
                 SizedBox(
                   height: 20.0,
                 ),
-                Text('Select Purchase Date'),
                 TextField(
                   controller: _date,
                   autofocus: false,
@@ -573,8 +570,11 @@ class _RegisterState extends State<Register> {
                     _selectDate(context);
                     FocusScope.of(context).requestFocus(new FocusNode());
                   },
-                  decoration: buildInputDecoration(
-                      "Select Purchase Date", Icons.calendar_today),
+                  decoration: InputDecoration(
+                    labelText: 'Select Purchase Date',
+                    border: OutlineInputBorder(),
+                    suffixIcon: Icon(Icons.calendar_today),
+                  ),
                 ),
                 SizedBox(
                   height: 20.0,
@@ -610,48 +610,55 @@ class _RegisterState extends State<Register> {
                 SizedBox(
                   height: 20.0,
                 ),
-                Text('Contract Duration'),
                 TextFormField(
                   controller: _duration,
                   autofocus: false,
                   onTap: () {
                     FocusScope.of(context).requestFocus(new FocusNode());
                   },
-                  decoration:
-                      buildInputDecoration("Enter Contract Duration", null),
+                  decoration: InputDecoration(
+                    labelText: 'Contract Duration',
+                    border: OutlineInputBorder(),
+                  ),
                 ),
                 SizedBox(
                   height: 20.0,
                 ),
-                Text('Plot Number'),
                 TextFormField(
                   autofocus: false,
                   validator: (value) =>
                       value.isEmpty ? 'Please enter plot number' : null,
-                  onSaved: (value) => _plotNumber = value,
-                  decoration: buildInputDecoration("Enter Plot Number", null),
+                  controller: _plotNumber,
+                  decoration: InputDecoration(
+                    labelText: 'Plot Number',
+                    border: OutlineInputBorder(),
+                  ),
                 ),
                 SizedBox(
                   height: 20.0,
                 ),
-                Text('Street'),
                 TextFormField(
                   autofocus: false,
                   validator: (value) =>
                       value.isEmpty ? 'Please enter street' : null,
-                  onSaved: (value) => _street = value,
-                  decoration: buildInputDecoration("Enter Street", null),
+                  controller: _street,
+                  decoration: InputDecoration(
+                    labelText: 'Street',
+                    border: OutlineInputBorder(),
+                  ),
                 ),
                 SizedBox(
                   height: 20.0,
                 ),
-                Text('LandMark'),
                 TextFormField(
                   autofocus: false,
                   validator: (value) =>
                       value.isEmpty ? 'Please enter landmark' : null,
-                  onSaved: (value) => _landMark = value,
-                  decoration: buildInputDecoration("Enter LandMark", null),
+                  controller: _landMark,
+                  decoration: InputDecoration(
+                    labelText: 'Landmark',
+                    border: OutlineInputBorder(),
+                  ),
                 ),
                 SizedBox(
                   height: 20.0,
@@ -779,12 +786,14 @@ class _RegisterState extends State<Register> {
                 SizedBox(
                   height: 20.0,
                 ),
-                Text('PostCode'),
                 TextFormField(
                   autofocus: false,
                   validator: validatePostcode,
-                  onSaved: (value) => _postCode = value,
-                  decoration: buildInputDecoration("Enter PostCode", null),
+                  controller: _postCode,
+                  decoration: InputDecoration(
+                    labelText: 'Postcode',
+                    border: OutlineInputBorder(),
+                  ),
                 ),
                 SizedBox(
                   height: 20.0,

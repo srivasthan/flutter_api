@@ -1,15 +1,16 @@
+import 'dart:ui';
+
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
-import 'package:flutter_api_json_parse/domain/myProductList.dart';
+import 'package:flutter_api_json_parse/domain/amclList.dart';
 import 'package:flutter_api_json_parse/network/api_service.dart';
-import 'package:fluttertoast/fluttertoast.dart';
 import 'package:shared_preferences/shared_preferences.dart';
 import 'package:dio/dio.dart' as dio;
 
-class MyProductStateless extends StatelessWidget {
+class AmcStateless extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
-    return MyProduct(
+    return Amc(
       onInit: () {
         _getThingsOnStartup().then((value) {
           print('Async done');
@@ -24,21 +25,21 @@ class MyProductStateless extends StatelessWidget {
   }
 }
 
-class MyProduct extends StatefulWidget {
+class Amc extends StatefulWidget {
   final Function onInit;
   final Widget child;
 
-  const MyProduct({@required this.onInit, @required this.child});
+  const Amc({@required this.onInit, @required this.child});
 
   @override
-  _MyProduct createState() => _MyProduct();
+  _Amc createState() => _Amc();
 }
 
-class _MyProduct extends State<MyProduct> {
-  final formKey = GlobalKey<_MyProduct>();
+class _Amc extends State<Amc> {
+  final formKey = GlobalKey<_Amc>();
 
   String token,
-      email,
+      cusCode,
       newToken,
       product,
       subProduct,
@@ -46,8 +47,8 @@ class _MyProduct extends State<MyProduct> {
       modelNumber,
       contractType,
       status;
-  List<MyProductListModel> myProductList = new List<MyProductListModel>();
-  MyProductListModel myProductListModel;
+  List<AmcListModel> amcList = new List<AmcListModel>();
+  AmcListModel amcListModel;
 
   showAlert(BuildContext context) {
     AlertDialog alertDialog = AlertDialog(
@@ -71,33 +72,31 @@ class _MyProduct extends State<MyProduct> {
 
   var refreshKey = GlobalKey<RefreshIndicatorState>();
 
-  getMyProductList() async {
+  getAmcList() async {
     SharedPreferences prefs = await SharedPreferences.getInstance();
     setState(() {
       token = (prefs.getString('token') ?? '');
-      email = (prefs.getString("email") ?? '');
+      cusCode = (prefs.getString("cuscode") ?? '');
     });
+
+    final Map<String, dynamic> loginData = {'customer_code': cusCode};
 
     RestClient apiService = RestClient(dio.Dio());
 
-    final response = await apiService.getMyProductList(token, email);
+    final response = await apiService.amcList(token, loginData);
 
-    if (response.myProductListEntity.responseCode == "200") {
+    if (response.amcListEntity.responseCode == "200") {
       setState(() {
-        newToken = response.myProductListEntity.token;
-        for (int i = 0;
-            i < response.myProductListEntity.myProductList.length;
-            i++) {
-          myProductList.add(new MyProductListModel(
-              product: response.myProductListEntity.myProductList[i].product,
-              subProduct:
-                  response.myProductListEntity.myProductList[i].subProduct,
-              serialNo: response.myProductListEntity.myProductList[i].serialNo,
-              modelNo: response.myProductListEntity.myProductList[i].modelNo,
-              contractType:
-                  response.myProductListEntity.myProductList[i].contractType,
-              contractStatusName: response
-                  .myProductListEntity.myProductList[i].contractStatusName));
+        newToken = response.amcListEntity.token;
+        for (int i = 0; i < response.amcListEntity.amcList.length; i++) {
+          amcList.add(new AmcListModel(
+              product: response.amcListEntity.amcList[i].product,
+              subProduct: response.amcListEntity.amcList[i].subProduct,
+              serialNo: response.amcListEntity.amcList[i].serialNo,
+              modelNo: response.amcListEntity.amcList[i].modelNo,
+              contractType: response.amcListEntity.amcList[i].contractType,
+              contractStatusName:
+                  response.amcListEntity.amcList[i].contractStatusName));
         }
 
         prefs.setString('token', newToken.toString());
@@ -112,8 +111,8 @@ class _MyProduct extends State<MyProduct> {
     await Future.delayed(Duration(seconds: 2));
     setState(() {
       showAlert(context);
-      myProductList.clear();
-      getMyProductList();
+      amcList.clear();
+      getAmcList();
     });
 
     return null;
@@ -125,7 +124,7 @@ class _MyProduct extends State<MyProduct> {
     Future.delayed(Duration.zero, () {
       showAlert(context);
     });
-    getMyProductList();
+    getAmcList();
   }
 
   @override
@@ -135,11 +134,11 @@ class _MyProduct extends State<MyProduct> {
             child: Scaffold(
                 appBar: AppBar(
                   automaticallyImplyLeading: false,
-                  title: Text("My Product"),
+                  title: Text("AMC"),
                   actions: <Widget>[
                     FlatButton(
                       onPressed: () {
-                        Navigator.pushReplacementNamed(context, '/addproduct');
+                        Navigator.pushReplacementNamed(context, '/addamc');
                       },
                       child: Icon(
                         Icons.add,
@@ -160,9 +159,9 @@ class _MyProduct extends State<MyProduct> {
   }
 
   Widget getTasListView() {
-    return myProductList.isNotEmpty
+    return amcList.isNotEmpty
         ? ListView.builder(
-            itemCount: myProductList.length,
+            itemCount: amcList.length,
             padding: const EdgeInsets.all(16.0),
             itemBuilder: (context, index) {
               return new Container(
@@ -188,7 +187,7 @@ class _MyProduct extends State<MyProduct> {
                           child: new Column(
                             crossAxisAlignment: CrossAxisAlignment.start,
                             children: <Widget>[
-                              Text(myProductList[index].product,
+                              Text(amcList[index].product,
                                   style: TextStyle(fontSize: 15)),
                             ],
                           ),
@@ -205,7 +204,7 @@ class _MyProduct extends State<MyProduct> {
                           child: new Column(
                             crossAxisAlignment: CrossAxisAlignment.start,
                             children: <Widget>[
-                              Text("Sub Product",
+                              Text("Sub Category",
                                   style: TextStyle(fontSize: 14)),
                             ],
                           ),
@@ -214,7 +213,32 @@ class _MyProduct extends State<MyProduct> {
                           child: new Column(
                             crossAxisAlignment: CrossAxisAlignment.start,
                             children: <Widget>[
-                              Text(myProductList[index].subProduct,
+                              Text(amcList[index].subProduct,
+                                  style: TextStyle(fontSize: 15)),
+                            ],
+                          ),
+                        )
+                      ],
+                    ),
+                    SizedBox(
+                      height: 10.0,
+                    ),
+                    Row(
+                      children: [
+                        new Padding(padding: new EdgeInsets.all(5.0)),
+                        new Expanded(
+                          child: new Column(
+                            crossAxisAlignment: CrossAxisAlignment.start,
+                            children: <Widget>[
+                              Text("AMC Type", style: TextStyle(fontSize: 15)),
+                            ],
+                          ),
+                        ),
+                        new Expanded(
+                          child: new Column(
+                            crossAxisAlignment: CrossAxisAlignment.start,
+                            children: <Widget>[
+                              Text(amcList[index].contractType,
                                   style: TextStyle(fontSize: 15)),
                             ],
                           ),
@@ -240,58 +264,7 @@ class _MyProduct extends State<MyProduct> {
                           child: new Column(
                             crossAxisAlignment: CrossAxisAlignment.start,
                             children: <Widget>[
-                              Text(myProductList[index].serialNo,
-                                  style: TextStyle(fontSize: 15)),
-                            ],
-                          ),
-                        )
-                      ],
-                    ),
-                    SizedBox(
-                      height: 10.0,
-                    ),
-                    Row(
-                      children: [
-                        new Padding(padding: new EdgeInsets.all(5.0)),
-                        new Expanded(
-                          child: new Column(
-                            crossAxisAlignment: CrossAxisAlignment.start,
-                            children: <Widget>[
-                              Text("Model No", style: TextStyle(fontSize: 15)),
-                            ],
-                          ),
-                        ),
-                        new Expanded(
-                          child: new Column(
-                            crossAxisAlignment: CrossAxisAlignment.start,
-                            children: <Widget>[
-                              Text(myProductList[index].modelNo,
-                                  style: TextStyle(fontSize: 15)),
-                            ],
-                          ),
-                        )
-                      ],
-                    ),
-                    SizedBox(
-                      height: 10.0,
-                    ),
-                    Row(
-                      children: [
-                        new Padding(padding: new EdgeInsets.all(5.0)),
-                        new Expanded(
-                          child: new Column(
-                            crossAxisAlignment: CrossAxisAlignment.start,
-                            children: <Widget>[
-                              Text("Contract Type",
-                                  style: TextStyle(fontSize: 15)),
-                            ],
-                          ),
-                        ),
-                        new Expanded(
-                          child: new Column(
-                            crossAxisAlignment: CrossAxisAlignment.start,
-                            children: <Widget>[
-                              Text(myProductList[index].contractType,
+                              Text(amcList[index].serialNo,
                                   style: TextStyle(fontSize: 15)),
                             ],
                           ),
@@ -316,7 +289,12 @@ class _MyProduct extends State<MyProduct> {
                           child: new Column(
                             crossAxisAlignment: CrossAxisAlignment.start,
                             children: <Widget>[
-                              Text(myProductList[index].contractStatusName,
+                              Text(
+                                  'remaining ' +
+                                      amcList[index]
+                                          .contractStatusName
+                                          .toString() +
+                                      ' days',
                                   style: TextStyle(fontSize: 15)),
                             ],
                           ),

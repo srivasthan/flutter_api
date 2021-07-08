@@ -2,7 +2,7 @@ import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_api_json_parse/network/api_service.dart';
 import 'package:dio/dio.dart' as dio;
-import 'package:flushbar/flushbar.dart';
+import 'package:flutter_api_json_parse/screens/passwordChange.dart';
 import 'package:flutter_api_json_parse/utility/validator.dart';
 import 'package:flutter/widgets.dart';
 import 'package:flutter_api_json_parse/utility/widgets.dart';
@@ -172,14 +172,6 @@ class _ProfileState extends State<Profile> {
 
   @override
   Widget build(BuildContext context) {
-    Future<void> checkEmailPresence() async {
-      Flushbar(
-        title: "Success",
-        message: "Under Development",
-        duration: Duration(seconds: 3),
-      ).show(context);
-    }
-
     return new WillPopScope(
         onWillPop: _onBackPressed,
         child: new Scaffold(
@@ -226,7 +218,7 @@ class _ProfileState extends State<Profile> {
                     TextFormField(
                       autofocus: false,
                       controller: emailController,
-                      validator: validateEmail,
+                      //  validator: validateEmail,
                       decoration:
                           buildInputDecoration('Enter Email', Icons.email),
                     ),
@@ -255,10 +247,12 @@ class _ProfileState extends State<Profile> {
                         child: MaterialButton(
                           minWidth: 200.0,
                           height: 35,
+                          onPressed: () {
+                            _navigateToNextScreen(context);
+                          },
                           child: new Text('Change Password',
                               style: new TextStyle(
                                   fontSize: 16.0, color: Colors.white)),
-                          onPressed: checkEmailPresence,
                         ),
                       ),
                     ),
@@ -292,18 +286,8 @@ class _ProfileState extends State<Profile> {
         ));
   }
 
-// Future<void> getFinalProfile(String getToken, String cusCode) async {
-//   Dio dio = new Dio();
-//   dio.options.headers['Token'] = getToken.toString();
-//   final Response<Map<String, dynamic>> response = await dio.post(
-//       "https://dev.kaspontech.com/djadmin/customer_profile/?customer_code=" +
-//           cusCode.toString());
-//
-//   final value = ProfileResponse.fromJson(response.data);
-//
-//   Future<ProfileResponse> fina = Future.value(value);
-//
-//   // final response = await apiService.getProfile(getToken, stringValue);
-//
-// }
+  void _navigateToNextScreen(BuildContext context) {
+    Navigator.of(context)
+        .push(MaterialPageRoute(builder: (context) => PasswordChange()));
+  }
 }

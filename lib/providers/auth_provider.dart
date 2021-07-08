@@ -11,6 +11,7 @@ import 'package:flutter_api_json_parse/network/entity/countryEntity.dart';
 import 'package:flutter_api_json_parse/network/entity/registerEntity.dart';
 import 'package:flutter_api_json_parse/utility/userPreferences.dart';
 import 'package:flutter_api_json_parse/utility/shared_preference.dart';
+import 'package:fluttertoast/fluttertoast.dart';
 import 'package:http/http.dart' as http;
 import 'package:http/http.dart';
 import 'package:shared_preferences/shared_preferences.dart';
@@ -149,6 +150,25 @@ class AuthProvider extends ChangeNotifier {
           'cuscode', response.responseEntity.userEntity.cusCode.toString());
       prefs.setString(
           "email", response.responseEntity.userEntity.email.toString());
+      prefs.setInt("country_id", response.responseEntity.userEntity.countryId);
+      prefs.setInt("state_id", response.responseEntity.userEntity.stateId);
+      prefs.setInt("city_id", response.responseEntity.userEntity.cityId);
+      prefs.setInt(
+          "location_id", response.responseEntity.userEntity.locationId);
+      prefs.setString("plotnumber",
+          response.responseEntity.userEntity.plotNumber.toString());
+      prefs.setString(
+          "street", response.responseEntity.userEntity.street.toString());
+      prefs.setString(
+          "landmark", response.responseEntity.userEntity.landmark.toString());
+      prefs.setString(
+          "post_code", response.responseEntity.userEntity.postCode.toString());
+      prefs.setString(
+          "contact", response.responseEntity.userEntity.phone.toString());
+      prefs.setString("alternativecontact",
+          response.responseEntity.userEntity.alternateNumber.toString());
+      prefs.setString("name",
+          response.responseEntity.userEntity.cusName.toString());
 
       UserPreferences().saveUser(authUser);
 

@@ -65,6 +65,8 @@ class _ForgotPasswordState extends State<ForgotPassword> {
 
   @override
   Widget build(BuildContext context) {
+    String _errormsg;
+
     showAlertDialog(BuildContext context) {
       AlertDialog alert = AlertDialog(
         content: new Row(
@@ -91,73 +93,68 @@ class _ForgotPasswordState extends State<ForgotPassword> {
     }
 
     Future<void> checkEmailPresence() async {
-      final Map<String, dynamic> data = {'email': lastNameController.text};
-
-      // done , now run app
-      RestClient apiService = RestClient(dio.Dio());
-
-      final response = await apiService.resetPassword(data);
-
-      switch (response.resetPasswordEntity.responseCode) {
-        case "200":
-          {
-            Navigator.of(context, rootNavigator: true).pop();
-            Navigator.pushNamedAndRemoveUntil(
-                context, '/login', (route) => false);
-            break;
-          }
-        case "400":
-
-        case "500":
-          {
-            Navigator.of(context, rootNavigator: true).pop();
-            Flushbar(
-              title: "Error",
-              message: response.resetPasswordEntity.message,
-              duration: Duration(seconds: 3),
-            ).show(context);
-            break;
-          }
-      }
-    }
-
-    Future<void> checkEmail() async {
       final form = formKey.currentState;
 
       if (form.validate()) {
         form.save();
+
         showAlertDialog(context);
-        final Map<String, dynamic> data = {'email_id': lastNameController.text};
+
+        final Map<String, dynamic> data = {'email': lastNameController.text};
 
         // done , now run app
         RestClient apiService = RestClient(dio.Dio());
 
-        final response = await apiService.emailVerify(data);
+        final response = await apiService.resetPassword(data);
 
-        switch (response.emailEntity.responseCode) {
+        switch (response.resetPasswordEntity.responseCode) {
           case "200":
-            Navigator.of(context, rootNavigator: true).pop();
-            Flushbar(
-              title: "Error",
-              message: "Please provide registered email",
-              duration: Duration(seconds: 3),
-            ).show(context);
-            break;
-
+            {
+              Navigator.of(context, rootNavigator: true).pop();
+              Navigator.pushNamedAndRemoveUntil(
+                  context, '/login', (route) => false);
+              break;
+            }
           case "400":
 
           case "500":
-            checkEmailPresence();
-            break;
+            {
+              Navigator.of(context, rootNavigator: true).pop();
+              Flushbar(
+                title: "Error",
+                message: response.resetPasswordEntity.message,
+                duration: Duration(seconds: 3),
+              ).show(context);
+              break;
+            }
         }
-      } else {
-        Fluttertoast.showToast(
-            msg: "Please fill the details",
-            gravity: ToastGravity.CENTER,
-            toastLength: Toast.LENGTH_SHORT,
-            textColor: Colors.red,
-            timeInSecForIosWeb: 1);
       }
+    }
+
+    Future<String> checkEmail() async {
+      final Map<String, dynamic> data = {'email_id': lastNameController.text};
+
+      // done , now run app
+      RestClient apiService = RestClient(dio.Dio());
+
+      final response = await apiService.emailVerify(data);
+
+      switch (response.emailEntity.responseCode) {
+        case "200":
+          Fluttertoast.showToast(
+              msg: "Enter registered email",
+              gravity: ToastGravity.CENTER,
+              timeInSecForIosWeb: 1,
+              toastLength: Toast.LENGTH_SHORT);
+          break;
+
+        case "400":
+
+        case "500":
+          break;
+      }
+
+      return _errormsg;
     }
 
     return new WillPopScope(
@@ -201,6 +198,10 @@ class _ForgotPasswordState extends State<ForgotPassword> {
                       autofocus: false,
                       validator: validateEmail,
                       controller: lastNameController,
+                      onChanged: (value) async {
+                        checkEmail();
+                      },
+                      autovalidateMode: AutovalidateMode.onUserInteraction,
                       decoration: InputDecoration(
                         labelText: 'Email',
                         border: OutlineInputBorder(),
@@ -225,7 +226,7 @@ class _ForgotPasswordState extends State<ForgotPassword> {
                           child: new Text('Forgot Password',
                               style: new TextStyle(
                                   fontSize: 16.0, color: Colors.white)),
-                          onPressed: checkEmail,
+                          onPressed: checkEmailPresence,
                         ),
                       ),
                     ),
