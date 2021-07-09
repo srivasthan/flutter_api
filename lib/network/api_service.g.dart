@@ -257,6 +257,26 @@ class _RestClient implements RestClient {
   }
 
   @override
+  raiseTicket(token, body) async {
+    ArgumentError.checkNotNull(body, 'body');
+    const _extra = <String, dynamic>{};
+    final queryParameters = <String, dynamic>{};
+    final _data = <String, dynamic>{};
+    _data.addAll(body ?? <String, dynamic>{});
+    final Response<Map<String, dynamic>> _result = await _dio.request(
+        'cus_raise_ticket/',
+        queryParameters: queryParameters,
+        options: RequestOptions(
+            method: 'POST',
+            headers: <String, dynamic>{'Token': token.toString()},
+            extra: _extra,
+            baseUrl: baseUrl),
+        data: _data);
+    final value = RaiseTicketResponse.fromJson(_result.data);
+    return Future.value(value);
+  }
+
+  @override
   getProfile(token, customerCode) async {
     const _extra = <String, dynamic>{};
     final queryParameters = <String, dynamic>{};
@@ -350,6 +370,24 @@ class _RestClient implements RestClient {
   }
 
   @override
+  logoutCustomer(cityId) async {
+    const _extra = <String, dynamic>{};
+    final queryParameters = <String, dynamic>{};
+    Map<String, String> queryParams = {'email': cityId.toString()};
+    String queryString = Uri(queryParameters: queryParams).query;
+    final Response<Map<String, dynamic>> _result = await _dio.get(
+        'customer_logout/' + '?' + queryString,
+        queryParameters: queryParameters,
+        options: RequestOptions(
+            method: 'GET',
+            headers: <String, dynamic>{},
+            extra: _extra,
+            baseUrl: baseUrl));
+    final value = EmailResponse.fromJson(_result.data);
+    return Future.value(value);
+  }
+
+  @override
   getSubProduct(productId) async {
     const _extra = <String, dynamic>{};
     final queryParameters = <String, dynamic>{};
@@ -364,6 +402,87 @@ class _RestClient implements RestClient {
             extra: _extra,
             baseUrl: baseUrl));
     final value = SubProductResponse.fromJson(_result.data);
+    return Future.value(value);
+  }
+
+  @override
+  getUProduct(token, customer_code_id) async {
+    const _extra = <String, dynamic>{};
+    final queryParameters = <String, dynamic>{};
+    Map<String, String> queryParams = {
+      'customer_code': customer_code_id.toString()
+    };
+    String queryString = Uri(queryParameters: queryParams).query;
+    final Response<Map<String, dynamic>> _result = await _dio.get(
+        'load_customer_product/' + '?' + queryString,
+        queryParameters: queryParameters,
+        options: RequestOptions(
+            method: 'GET',
+            headers: <String, dynamic>{'Token': token.toString()},
+            extra: _extra,
+            baseUrl: baseUrl));
+    final value = UProductResponse.fromJson(_result.data);
+    return Future.value(value);
+  }
+
+  @override
+  getUSubProduct(token, customer_code_id, productId) async {
+    const _extra = <String, dynamic>{};
+    final queryParameters = <String, dynamic>{};
+    Map<String, String> queryParams = {
+      'customer_code': customer_code_id.toString(),
+      'product_id': productId.toString()
+    };
+    String queryString = Uri(queryParameters: queryParams).query;
+    final Response<Map<String, dynamic>> _result = await _dio.get(
+        'load_customer_subproduct/' + '?' + queryString,
+        queryParameters: queryParameters,
+        options: RequestOptions(
+            method: 'GET',
+            headers: <String, dynamic>{'Token': token.toString()},
+            extra: _extra,
+            baseUrl: baseUrl));
+    final value = USubProductResponse.fromJson(_result.data);
+    return Future.value(value);
+  }
+
+  @override
+  getSerialNumber(token, customer_code_id, productId, subProductId) async {
+    const _extra = <String, dynamic>{};
+    final queryParameters = <String, dynamic>{};
+    Map<String, String> queryParams = {
+      'customer_code': customer_code_id.toString(),
+      'product_id': productId.toString(),
+      'product_sub_id': subProductId.toString()
+    };
+    String queryString = Uri(queryParameters: queryParams).query;
+    final Response<Map<String, dynamic>> _result = await _dio.get(
+        'customer_details/' + '?' + queryString,
+        queryParameters: queryParameters,
+        options: RequestOptions(
+            method: 'GET',
+            headers: <String, dynamic>{'Token': token.toString()},
+            extra: _extra,
+            baseUrl: baseUrl));
+    final value = SerialNumberResponse.fromJson(_result.data);
+    return Future.value(value);
+  }
+
+  @override
+  getWorkType() async {
+    const _extra = <String, dynamic>{};
+    final queryParameters = <String, dynamic>{};
+    final _data = <String, dynamic>{};
+    final Response<Map<String, dynamic>> _result = await _dio.request(
+        'get_servicegroup/',
+        queryParameters: queryParameters,
+        options: RequestOptions(
+            method: 'GET',
+            headers: <String, dynamic>{},
+            extra: _extra,
+            baseUrl: baseUrl),
+        data: _data);
+    final value = WorkResponse.fromJson(_result.data);
     return Future.value(value);
   }
 

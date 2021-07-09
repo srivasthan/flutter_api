@@ -6,6 +6,7 @@ import 'package:flutter_api_json_parse/screens/passwordChange.dart';
 import 'package:flutter_api_json_parse/utility/validator.dart';
 import 'package:flutter/widgets.dart';
 import 'package:flutter_api_json_parse/utility/widgets.dart';
+import 'package:fluttertoast/fluttertoast.dart';
 import 'package:shared_preferences/shared_preferences.dart';
 
 class Profile extends StatefulWidget {
@@ -23,6 +24,7 @@ class _ProfileState extends State<Profile> {
       cusCode,
       getName,
       getEmail,
+      email,
       getMobile,
       getToken,
       getProfileResponseToken;
@@ -50,6 +52,14 @@ class _ProfileState extends State<Profile> {
                       mainAxisAlignment: MainAxisAlignment.spaceBetween,
                       children: <Widget>[
                         FlatButton(
+                            onPressed: () => {Navigator.pop(context)},
+                            padding: EdgeInsets.only(left: 0.0),
+                            child: const Text(
+                              "No",
+                              style: TextStyle(
+                                  fontSize: 15, color: Colors.lightBlue),
+                            )),
+                        FlatButton(
                             onPressed: () {
                               Navigator.pushNamedAndRemoveUntil(
                                   context, '/dashboard', (route) => false);
@@ -59,12 +69,52 @@ class _ProfileState extends State<Profile> {
                               'Yes',
                               style: TextStyle(
                                   fontSize: 15, color: Colors.lightBlue),
-                            )),
+                            ))
+                      ],
+                    ),
+                  ],
+                )) ??
+        false;
+  }
+
+  Future<bool> logout() {
+    return showDialog(
+            context: context,
+            builder: (context) => new AlertDialog(
+                  title: const Text(
+                    "FieldPro",
+                    style: TextStyle(fontSize: 20),
+                  ),
+                  content: SingleChildScrollView(
+                    child: ListBody(
+                      children: const [
+                        Text(
+                          "Do you want to exit?",
+                          style: TextStyle(fontSize: 15),
+                        )
+                      ],
+                    ),
+                  ),
+                  actions: <Widget>[
+                    Row(
+                      mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                      children: <Widget>[
                         FlatButton(
                             onPressed: () => {Navigator.pop(context)},
                             padding: EdgeInsets.only(left: 0.0),
                             child: const Text(
                               "No",
+                              style: TextStyle(
+                                  fontSize: 15, color: Colors.lightBlue),
+                            )),
+                        FlatButton(
+                            onPressed: () {
+                              showAlertDialog(context);
+                              customerLogout();
+                            },
+                            padding: EdgeInsets.all(0.0),
+                            child: const Text(
+                              'Yes',
                               style: TextStyle(
                                   fontSize: 15, color: Colors.lightBlue),
                             ))
@@ -91,6 +141,27 @@ class _ProfileState extends State<Profile> {
         return alert;
       },
     );
+  }
+
+  customerLogout() async {
+    SharedPreferences prefs = await SharedPreferences.getInstance();
+    email = (prefs.getString('email') ?? '');
+
+    RestClient apiService = RestClient(dio.Dio());
+
+    final response = await apiService.logoutCustomer(email);
+
+    if (response.emailEntity.responseCode == "200") {
+      Navigator.of(context, rootNavigator: true).pop();
+      SharedPreferences preferences = await SharedPreferences.getInstance();
+      await preferences.clear();
+      Fluttertoast.showToast(
+          msg: response.emailEntity.message,
+          toastLength: Toast.LENGTH_SHORT,
+          gravity: ToastGravity.CENTER,
+          timeInSecForIosWeb: 1);
+      Navigator.pushNamedAndRemoveUntil(context, '/login', (route) => false);
+    }
   }
 
   getCustomerToken(String cusCode) async {
@@ -176,8 +247,21 @@ class _ProfileState extends State<Profile> {
         onWillPop: _onBackPressed,
         child: new Scaffold(
           appBar: AppBar(
+            automaticallyImplyLeading: false,
             title: Text("Profile"),
-            elevation: 0.1,
+            actions: <Widget>[
+              FlatButton(
+                onPressed: () {
+                  logout();
+                },
+                child: Icon(
+                  Icons.logout,
+                  size: 35,
+                ),
+                shape:
+                    CircleBorder(side: BorderSide(color: Colors.transparent)),
+              )
+            ],
           ),
           body: SingleChildScrollView(
             child: Container(

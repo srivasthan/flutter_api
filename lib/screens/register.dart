@@ -245,8 +245,8 @@ class _RegisterState extends State<Register> {
     final form = formKey.currentState;
     AuthProvider auth = Provider.of<AuthProvider>(context);
 
-    Future<void> checkEmailPresence(String text) async {
-      final Map<String, dynamic> data = {'email_id': text};
+    Future<void> checkEmailPresence() async {
+      final Map<String, dynamic> data = {'email_id': _email.text};
 
       // done , now run app
       RestClient apiService = RestClient(dio.Dio());
@@ -262,6 +262,7 @@ class _RegisterState extends State<Register> {
 
         case "500":
           isEmail = false;
+          Navigator.of(context, rootNavigator: true).pop();
           Flushbar(
             title: "Error",
             message: "Email already exists",
@@ -273,8 +274,8 @@ class _RegisterState extends State<Register> {
       return _msg;
     }
 
-    Future<void> checkMobilePresence(String text) async {
-      final Map<String, dynamic> data = {'email_id': text};
+    Future<void> checkMobilePresence() async {
+      final Map<String, dynamic> data = {'email_id': _modelNumber.text};
 
       // done , now run app
       RestClient apiService = RestClient(dio.Dio());
@@ -290,6 +291,7 @@ class _RegisterState extends State<Register> {
 
         case "500":
           isMobile = false;
+          Navigator.of(context, rootNavigator: true).pop();
           Flushbar(
             title: "Error",
             message: "Mobile Number Already Exists",
@@ -310,7 +312,11 @@ class _RegisterState extends State<Register> {
     );
 
     var doRegister = () {
-      print('on doRegister');
+      showAlertDialog(context);
+
+      checkEmailPresence();
+      checkMobilePresence();
+
       if (isEmail == false) {
         Flushbar(
           title: "Error",
@@ -321,12 +327,6 @@ class _RegisterState extends State<Register> {
         Flushbar(
           title: "Error",
           message: "Mobile Number Already Exists",
-          duration: Duration(seconds: 3),
-        ).show(context);
-      } else if (isAlternative == false) {
-        Flushbar(
-          title: "Error",
-          message: "Alternative number should be different to Mobile Number",
           duration: Duration(seconds: 3),
         ).show(context);
       } else {
@@ -360,6 +360,7 @@ class _RegisterState extends State<Register> {
 
           respose.then((response) {
             if (response['status']) {
+              Navigator.of(context, rootNavigator: true).pop();
               Navigator.pushNamedAndRemoveUntil(
                   context, '/login', (route) => false);
             }
@@ -410,9 +411,17 @@ class _RegisterState extends State<Register> {
                 ),
                 TextFormField(
                   autofocus: false,
-                  validator: validateEmail,
-                  onChanged: (text) {
-                    checkEmailPresence(text);
+                  autovalidateMode: AutovalidateMode.onUserInteraction,
+                  validator: (value) {
+                    String _msg;
+                    RegExp regex = new RegExp(
+                        r'^(([^<>()[\]\\.,;:\s@\"]+(\.[^<>()[\]\\.,;:\s@\"]+)*)|(\".+\"))@((\[[0-9]{1,3}\.[0-9]{1,3}\.[0-9]{1,3}\.[0-9]{1,3}\])|(([a-zA-Z\-0-9]+\.)+[a-zA-Z]{2,}))$');
+                    if (value.isEmpty) {
+                      _msg = "Please enter email";
+                    } else if (!regex.hasMatch(value)) {
+                      _msg = "Please provide a valid email address";
+                    }
+                    return _msg;
                   },
                   controller: _email,
                   decoration: InputDecoration(
@@ -425,11 +434,22 @@ class _RegisterState extends State<Register> {
                 ),
                 TextFormField(
                   autofocus: false,
-                  validator: validateMobile,
+                  autovalidateMode: AutovalidateMode.onUserInteraction,
                   controller: _mobile,
-                  onChanged: (value) {
-                    _storeMobileNumber = value;
-                    checkMobilePresence(value);
+                  validator: (value) {
+                    String _msg;
+                    if (value.isEmpty) {
+                      _msg = "Please enter mobile number";
+                    } else if (value.length < 10) {
+                      _msg = "mobile number should be 10 numbers";
+                    } else if (!value.startsWith("6") &&
+                        !value.startsWith("7") &&
+                        !value.startsWith("8") &&
+                        !value.startsWith("9")) {
+                      _msg = "Contact Number Should Start from 6,7,8,9";
+                    }
+
+                    return _msg;
                   },
                   decoration: InputDecoration(
                     labelText: 'Mobile Number',
@@ -441,19 +461,25 @@ class _RegisterState extends State<Register> {
                 ),
                 TextFormField(
                   autofocus: false,
-                  validator: validateAlternateMobile,
-                  onChanged: (value) {
-                    isAlternative = true;
-                    if (_storeMobileNumber == value) {
-                      isAlternative = false;
-                      Flushbar(
-                        title: "Failed Login",
-                        message: "Mobile and Alternate Mobile can't be same",
-                        duration: Duration(seconds: 3),
-                      ).show(context);
-                    }
-                  },
+                  autovalidateMode: AutovalidateMode.onUserInteraction,
                   controller: _alternateMobile,
+                  validator: (value) {
+                    String _msg;
+                    if (value.isEmpty) {
+                      _msg = "Please enter mobile number";
+                    } else if (value.length < 10) {
+                      _msg = "mobile number should be 10 numbers";
+                    } else if (!value.startsWith("6") &&
+                        !value.startsWith("7") &&
+                        !value.startsWith("8") &&
+                        !value.startsWith("9")) {
+                      _msg = "Contact Number Should Start from 6,7,8,9";
+                    } else if (_alternateMobile.text == value) {
+                      _msg = "Mobile and Alternate Mobile can't be same";
+                    }
+
+                    return _msg;
+                  },
                   decoration: InputDecoration(
                     labelText: 'Alternate Mobile Number',
                     border: OutlineInputBorder(),

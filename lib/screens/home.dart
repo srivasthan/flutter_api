@@ -106,14 +106,6 @@ class _Home extends State<Home> {
           )
         ],
       ),
-      body: Column(
-        children: [
-          SizedBox(
-            height: 100,
-          ),
-          Center(child: Text('Screen 1')),
-        ],
-      ),
     );
   }
 }

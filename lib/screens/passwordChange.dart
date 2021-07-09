@@ -17,7 +17,7 @@ class PasswordChange extends StatefulWidget {
 
 class _PasswordChange extends State<PasswordChange> {
   final formKey = GlobalKey<FormState>();
-  String getEmail, _password, _errormsg, oldPassErrormsg = "";
+  String getEmail, _password;
   TextEditingController oldPasswordController = new TextEditingController();
   TextEditingController passwordController = new TextEditingController();
   TextEditingController confirmPasswordController = new TextEditingController();
@@ -48,6 +48,19 @@ class _PasswordChange extends State<PasswordChange> {
         return alert;
       },
     );
+  }
+
+  setDetails() async {
+    SharedPreferences prefs = await SharedPreferences.getInstance();
+    setState(() {
+      _password = (prefs.getString('password') ?? '');
+    });
+  }
+
+  @override
+  void initState() {
+    super.initState();
+    setDetails();
   }
 
   @override
@@ -120,21 +133,6 @@ class _PasswordChange extends State<PasswordChange> {
       ],
     );
 
-    checkPassword(String value) async {
-      SharedPreferences prefs = await SharedPreferences.getInstance();
-      setState(() {
-        _password = (prefs.getString('password') ?? '');
-      });
-
-      if (value != _password) {
-        _errormsg = "Old Password didn't match. Try again";
-      } else {
-        _errormsg = "";
-      }
-
-      return _errormsg;
-    }
-
     return SafeArea(
       child: Scaffold(
         appBar: AppBar(
@@ -156,32 +154,35 @@ class _PasswordChange extends State<PasswordChange> {
                     height: 5.0,
                   ),
                   TextFormField(
-                    autovalidateMode: AutovalidateMode.onUserInteraction,
-                    decoration: InputDecoration(
-                      hintText: "Old Password",
-                      hintStyle: TextStyle(
-                        color: Colors.grey,
-                        fontSize: 16.0,
+                      autovalidateMode: AutovalidateMode.onUserInteraction,
+                      decoration: InputDecoration(
+                        hintText: "Old Password",
+                        hintStyle: TextStyle(
+                          color: Colors.grey,
+                          fontSize: 16.0,
+                        ),
+                        border: OutlineInputBorder(
+                          borderRadius: BorderRadius.circular(10.0),
+                        ),
+                        suffixIcon: IconButton(
+                          onPressed: _toggleVisibility,
+                          icon: _isHidden
+                              ? Icon(Icons.visibility_off)
+                              : Icon(Icons.visibility),
+                        ),
                       ),
-                      border: OutlineInputBorder(
-                        borderRadius: BorderRadius.circular(10.0),
-                      ),
-                      suffixIcon: IconButton(
-                        onPressed: _toggleVisibility,
-                        icon: _isHidden
-                            ? Icon(Icons.visibility_off)
-                            : Icon(Icons.visibility),
-                      ),
-                    ),
-                    obscureText: _isHidden,
-                    controller: oldPasswordController,
-                    validator: (value) =>
-                        value.isEmpty ? 'Please enter old password' : null,
-                  ),
-                  Text(
-                    oldPassErrormsg,
-                    style: TextStyle(color: Colors.red),
-                  ),
+                      obscureText: _isHidden,
+                      controller: oldPasswordController,
+                      validator: (value) {
+                        String _msg;
+                        if (oldPasswordController.text.isEmpty) {
+                          _msg = "Please Enter Old Password";
+                        } else if (oldPasswordController.text.toString() !=
+                            _password) {
+                          _msg = "Old Password didn't match";
+                        }
+                        return _msg;
+                      }),
                   SizedBox(
                     height: 20.0,
                   ),
@@ -232,37 +233,35 @@ class _PasswordChange extends State<PasswordChange> {
                     height: 5.0,
                   ),
                   TextFormField(
-                    decoration: InputDecoration(
-                      hintText: "Confirm Password",
-                      hintStyle: TextStyle(
-                        color: Colors.grey,
-                        fontSize: 16.0,
+                      autovalidateMode: AutovalidateMode.onUserInteraction,
+                      decoration: InputDecoration(
+                        hintText: "Confirm Password",
+                        hintStyle: TextStyle(
+                          color: Colors.grey,
+                          fontSize: 16.0,
+                        ),
+                        border: OutlineInputBorder(
+                          borderRadius: BorderRadius.circular(10.0),
+                        ),
+                        suffixIcon: IconButton(
+                          onPressed: _toggleVisibility,
+                          icon: _isHidden
+                              ? Icon(Icons.visibility_off)
+                              : Icon(Icons.visibility),
+                        ),
                       ),
-                      border: OutlineInputBorder(
-                        borderRadius: BorderRadius.circular(10.0),
-                      ),
-                      suffixIcon: IconButton(
-                        onPressed: _toggleVisibility,
-                        icon: _isHidden
-                            ? Icon(Icons.visibility_off)
-                            : Icon(Icons.visibility),
-                      ),
-                    ),
-                    obscureText: _isHidden,
-                    controller: confirmPasswordController,
-                    onChanged: (value) {
-                      if (passwordController.text !=
-                          confirmPasswordController.text) {
-                        Fluttertoast.showToast(
-                            msg: "Password and Confirm Password not match",
-                            gravity: ToastGravity.CENTER,
-                            toastLength: Toast.LENGTH_SHORT,
-                            timeInSecForIosWeb: 1);
-                      }
-                    },
-                    validator: (value) =>
-                        value.isEmpty ? 'Please enter confirm password' : null,
-                  ),
+                      obscureText: _isHidden,
+                      controller: confirmPasswordController,
+                      validator: (value) {
+                        String _msg;
+                        if (passwordController.text.isEmpty) {
+                          _msg = "Please Enter Confirm Password";
+                        } else if (passwordController.text.toString() !=
+                            confirmPasswordController.text.toString()) {
+                          _msg = "Password and Confirm Password didn't match";
+                        }
+                        return _msg;
+                      }),
                   SizedBox(
                     height: 20.0,
                   ),

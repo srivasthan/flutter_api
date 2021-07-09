@@ -3,25 +3,21 @@ import 'dart:convert';
 import 'package:flushbar/flushbar.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/scheduler.dart';
-import 'package:flutter_api_json_parse/domain/amc.dart';
 import 'package:flutter_api_json_parse/domain/callCategory.dart';
-import 'package:flutter_api_json_parse/domain/city.dart';
-import 'package:flutter_api_json_parse/domain/country.dart';
-import 'package:flutter_api_json_parse/domain/location.dart';
 import 'package:flutter_api_json_parse/domain/product.dart';
-import 'package:flutter_api_json_parse/domain/state.dart';
+import 'package:flutter_api_json_parse/domain/serialNumber.dart';
 import 'package:flutter_api_json_parse/domain/subProduct.dart';
+import 'package:flutter_api_json_parse/domain/workTYpe.dart';
 import 'package:flutter_api_json_parse/network/api_service.dart';
 import 'package:flutter_api_json_parse/providers/auth_provider.dart';
-import 'package:flutter_api_json_parse/utility/validator.dart';
 import 'package:flutter_api_json_parse/utility/widgets.dart';
 import 'package:fluttertoast/fluttertoast.dart';
+import 'package:image_picker/image_picker.dart';
 import 'package:provider/provider.dart';
 import 'package:dio/dio.dart' as dio;
 import 'package:intl/intl.dart';
-import 'package:searchable_dropdown/searchable_dropdown.dart';
+import 'dart:io';
 import 'package:shared_preferences/shared_preferences.dart';
-import 'dashboard.dart';
 import 'package:connectivity/connectivity.dart';
 
 class RaiseTicketStateless extends StatelessWidget {
@@ -60,61 +56,45 @@ class _RaiseTicket extends State<RaiseTicket> {
   String _cusCode,
       _dummy,
       token,
-      newToken,
       _testcountry,
+      _serialNumber,
       _cusName,
       _contact,
       _alternativecontact,
+      encImageBase64 = "",
       _email;
+  final String base64Format = "data:image/png;base64,";
   Map<String, dynamic> serialArray;
+  File image;
   var body, send;
+  bool imageVisible = false;
   TextEditingController _date = new TextEditingController();
-  TextEditingController _duration = new TextEditingController();
-  TextEditingController _contractDurationDate = new TextEditingController();
   TextEditingController _modelNumber = new TextEditingController();
-  TextEditingController _serialNumber = new TextEditingController();
-  TextEditingController _invoiceNumber = new TextEditingController();
-  TextEditingController _plotNumber = new TextEditingController();
-  TextEditingController _street = new TextEditingController();
-  TextEditingController _landMark = new TextEditingController();
-  TextEditingController _postCode = new TextEditingController();
-  TextEditingController _amount = new TextEditingController();
-  TextEditingController _quantity = new TextEditingController();
+  TextEditingController _contractType = new TextEditingController();
+  TextEditingController _timeController = TextEditingController();
+  TextEditingController _description = TextEditingController();
   DateTime selectedDate = DateTime.now();
+  TimeOfDay selectedTime = TimeOfDay.now();
+  String _hour, _minute, _time;
   List<ProductModel> product = List();
-  List<AmcModel> amc = List();
-  List<CountryModel> country = List();
-  List<StateModel> state = List();
-  List<CityModel> city = List();
-  List<LocationModel> location = List();
   List<CallCategoryModel> callCategoryList = List();
-  List<String> countrytest = new List<String>();
-  List<int> countryid = new List<int>();
+  List<WorkModel> workTypeList = List();
+  List<SerialNumberModel> serialList = List();
   List<SubProductModel> subProduct = new List<SubProductModel>();
-  List<String> serialNumberList = new List<String>();
-  List<SerialNoPojos> serialNoPojosList = new List<SerialNoPojos>();
-  CountryModel countryModel;
-  StateModel stateModel;
-  CityModel cityModel;
-  LocationModel locationModel;
   ProductModel productModel;
   SubProductModel subProductModel;
   CallCategoryModel callCategoryModel;
-  SerialNoPojos amcserial;
-  AmcModel amcModel;
+  WorkModel workModel;
+  SerialNumberModel serialNumberModel;
   bool _loading = true;
-  var inputDate, contractStartDate;
+  var inputDate, inputTime;
   int _productId,
-      _amcId,
-      _countryId,
-      _callCategoryId,
-      _stateId,
-      _cityId,
-      _locationId,
-      _contractDuration,
-      _getAmount,
       _charLength = 0,
-      _subProductId = -1;
+      _callCategoryId,
+      _workTypeId,
+      _customerContractId,
+      _contractTypeId,
+      _subProductId;
 
   showAlertDialog(BuildContext context) {
     AlertDialog alert = AlertDialog(
@@ -138,17 +118,20 @@ class _RaiseTicket extends State<RaiseTicket> {
     var result = await Connectivity().checkConnectivity();
     if (result == ConnectivityResult.mobile ||
         result == ConnectivityResult.wifi) {
+      SharedPreferences prefs = await SharedPreferences.getInstance();
+
       RestClient apiService = RestClient(dio.Dio());
 
-      final response = await apiService.getProduct();
+      final response = await apiService.getUProduct(token, _cusCode);
 
-      if (response.productEntity.responseCode == "200") {
+      if (response.uproductEntity.responseCode == "200") {
         product = new List<ProductModel>();
         setState(() {
-          for (var i = 0; i < response.productEntity.datum.length; i++) {
+          prefs.setString('token', response.uproductEntity.token);
+          for (var i = 0; i < response.uproductEntity.datum.length; i++) {
             product.add(new ProductModel(
-                productId: response.productEntity.datum[i].prouductId,
-                productName: response.productEntity.datum[i].productName));
+                productId: response.uproductEntity.datum[i].prouductId,
+                productName: response.uproductEntity.datum[i].productName));
           }
         });
       }
@@ -162,23 +145,21 @@ class _RaiseTicket extends State<RaiseTicket> {
     }
   }
 
-  getCall() async {
+  getWork() async {
     var result = await Connectivity().checkConnectivity();
     if (result == ConnectivityResult.mobile ||
         result == ConnectivityResult.wifi) {
       RestClient apiService = RestClient(dio.Dio());
 
-      final response = await apiService.getCallCategory();
+      final response = await apiService.getWorkType();
 
-      if (response.callCategoryEntity.responseCode == "200") {
+      if (response.workEntity.responseCode == "200") {
         callCategoryList = new List<CallCategoryModel>();
         setState(() {
-          for (var i = 0; i < response.callCategoryEntity.datum.length; i++) {
-            callCategoryList.add(new CallCategoryModel(
-                callCategoryId:
-                    response.callCategoryEntity.datum[i].callCategoryId,
-                callCategory:
-                    response.callCategoryEntity.datum[i].callCategory));
+          for (var i = 0; i < response.workEntity.datum.length; i++) {
+            workTypeList.add(new WorkModel(
+                workTypeId: response.workEntity.datum[i].workTypeId,
+                workType: response.workEntity.datum[i].workType));
           }
           Navigator.of(context, rootNavigator: true).pop();
         });
@@ -218,26 +199,81 @@ class _RaiseTicket extends State<RaiseTicket> {
     }
   }
 
+  Future<Null> _selectTime(BuildContext context) async {
+    var result = await Connectivity().checkConnectivity();
+    if (result == ConnectivityResult.mobile ||
+        result == ConnectivityResult.wifi) {
+      final TimeOfDay picked = await showTimePicker(
+        context: context,
+        initialTime: selectedTime,
+      );
+      if (picked != null)
+        setState(() {
+          selectedTime = picked;
+          _hour = selectedTime.hour.toString();
+          _minute = selectedTime.minute.toString();
+          _time = _hour + ' : ' + _minute;
+          _timeController.text = DateFormat.jm()
+              .format(DateFormat("hh:mm").parse("$_hour:$_minute"));
+        });
+    } else {
+      Fluttertoast.showToast(
+          msg: "Connect to internet",
+          gravity: ToastGravity.CENTER,
+          timeInSecForIosWeb: 1,
+          toastLength: Toast.LENGTH_SHORT);
+    }
+  }
+
+  Future<void> captureImage(ImageSource imageSource) async {
+    try {
+      final imageFile = ImagePicker.pickImage(source: imageSource);
+      setState(() {
+        //  _imageFile = imageFile;
+      });
+    } catch (e) {
+      print(e);
+    }
+  }
+
+  picker() async {
+    print('Picker is called');
+    File img = await ImagePicker.pickImage(
+        source: ImageSource.camera, imageQuality: 50);
+    if (img != null) {
+      image = img;
+      setState(() {
+        Navigator.of(context, rootNavigator: true).pop();
+
+        final bytes = File(image.path).readAsBytesSync();
+        encImageBase64 = base64Encode(bytes);
+      });
+    }
+  }
+
+  galleryPicker() async {
+    print('Picker is called');
+    File img = await ImagePicker.pickImage(
+        source: ImageSource.gallery, imageQuality: 50);
+    ;
+    if (img != null) {
+      image = img;
+      setState(() {
+        Navigator.of(context, rootNavigator: true).pop();
+
+        final bytes = File(image.path).readAsBytesSync();
+        encImageBase64 = base64Encode(bytes);
+
+        print(encImageBase64);
+      });
+    }
+  }
+
   setDetails() async {
     SharedPreferences prefs = await SharedPreferences.getInstance();
     setState(() {
       _cusCode = (prefs.getString('cuscode') ?? '');
       token = (prefs.getString('token') ?? '');
-      _cusName = (prefs.getString('name') ?? '');
-      _contact = (prefs.getString('contact') ?? '');
-      _alternativecontact = (prefs.getString('alternativecontact') ?? '');
-      _email = (prefs.getString('email') ?? '');
-      _countryId = (prefs.getInt('country_id') ?? 0);
-      _stateId = (prefs.getInt('state_id') ?? 0);
-      _cityId = (prefs.getInt('city_id') ?? 0);
-      _locationId = (prefs.getInt('location_id') ?? 0);
-      _plotNumber.value =
-          TextEditingValue(text: (prefs.getString('plotnumber') ?? ''));
-      _street.value = TextEditingValue(text: (prefs.getString('street') ?? ''));
-      _landMark.value =
-          TextEditingValue(text: (prefs.getString('landmark') ?? ''));
-      _postCode.value =
-          TextEditingValue(text: (prefs.getString('post_code') ?? ''));
     });
   }
 
@@ -248,110 +284,69 @@ class _RaiseTicket extends State<RaiseTicket> {
       showAlertDialog(context);
     });
     getProduct();
-    getCall();
+    getWork();
     setDetails();
   }
 
   @override
   Widget build(BuildContext context) {
-    String _msg;
-    bool isEmail = true, isMobile = true, isAlternative = true;
     final form = formKey.currentState;
 
     AuthProvider auth = Provider.of<AuthProvider>(context);
 
-    Future<void> checkEmailPresence(String text) async {
-      var result = await Connectivity().checkConnectivity();
-      if (result == ConnectivityResult.mobile ||
-          result == ConnectivityResult.wifi) {
-        final Map<String, dynamic> data = {'email_id': text};
-
-        // done , now run app
-        RestClient apiService = RestClient(dio.Dio());
-
-        final response = await apiService.emailVerify(data);
-
-        switch (response.emailEntity.responseCode) {
-          case "200":
-            isEmail = true;
-            break;
-
-          case "400":
-
-          case "500":
-            isEmail = false;
-            Flushbar(
-              title: "Error",
-              message: "Email already exists",
-              duration: Duration(seconds: 3),
-            ).show(context);
-            break;
-        }
-
-        return _msg;
-      } else {
-        Fluttertoast.showToast(
-            msg: "Connect to internet",
-            gravity: ToastGravity.CENTER,
-            timeInSecForIosWeb: 1,
-            toastLength: Toast.LENGTH_SHORT);
-      }
-    }
-
-    Future<void> checkMobilePresence(String text) async {
-      var result = await Connectivity().checkConnectivity();
-      if (result == ConnectivityResult.mobile ||
-          result == ConnectivityResult.wifi) {
-        final Map<String, dynamic> data = {'email_id': text};
-
-        // done , now run app
-        RestClient apiService = RestClient(dio.Dio());
-
-        final response = await apiService.mobileVerify(data);
-
-        switch (response.mobileEntity.responseCode) {
-          case "200":
-            isMobile = true;
-            break;
-
-          case "400":
-
-          case "500":
-            isMobile = false;
-            Flushbar(
-              title: "Error",
-              message: "Mobile Number Already Exists",
-              duration: Duration(seconds: 3),
-            ).show(context);
-            break;
-        }
-
-        return _msg;
-      } else {
-        Fluttertoast.showToast(
-            msg: "Connect to internet",
-            gravity: ToastGravity.CENTER,
-            timeInSecForIosWeb: 1,
-            toastLength: Toast.LENGTH_SHORT);
-      }
-    }
-
-    getSubProduct(int productId) async {
+    getCall() async {
       var result = await Connectivity().checkConnectivity();
       if (result == ConnectivityResult.mobile ||
           result == ConnectivityResult.wifi) {
         RestClient apiService = RestClient(dio.Dio());
 
-        final response = await apiService.getSubProduct(productId);
+        final response = await apiService.getCallCategory();
 
-        if (response.subProductEntity.responseCode == "200") {
+        if (response.callCategoryEntity.responseCode == "200") {
+          callCategoryList = new List<CallCategoryModel>();
           setState(() {
-            for (var i = 0; i < response.subProductEntity.datum.length; i++) {
+            for (var i = 0; i < response.callCategoryEntity.datum.length; i++) {
+              callCategoryList.add(new CallCategoryModel(
+                  callCategoryId:
+                      response.callCategoryEntity.datum[i].callCategoryId,
+                  callCategory:
+                      response.callCategoryEntity.datum[i].callCategory));
+            }
+            Navigator.of(context, rootNavigator: true).pop();
+          });
+        }
+      } else {
+        Navigator.of(context, rootNavigator: true).pop();
+        Fluttertoast.showToast(
+            msg: "Connect to internet",
+            gravity: ToastGravity.CENTER,
+            timeInSecForIosWeb: 1,
+            toastLength: Toast.LENGTH_SHORT);
+      }
+    }
+
+    getSubProduct() async {
+      var result = await Connectivity().checkConnectivity();
+      if (result == ConnectivityResult.mobile ||
+          result == ConnectivityResult.wifi) {
+        SharedPreferences prefs = await SharedPreferences.getInstance();
+        token = (prefs.getString('token') ?? '');
+
+        RestClient apiService = RestClient(dio.Dio());
+
+        final response =
+            await apiService.getUSubProduct(token, _cusCode, _productId);
+
+        if (response.uSubProductEntity.responseCode == "200") {
+          subProduct = new List<SubProductModel>();
+          setState(() {
+            prefs.setString('token', response.uSubProductEntity.token);
+            for (var i = 0; i < response.uSubProductEntity.datum.length; i++) {
               subProduct.add(new SubProductModel(
                   productSubId:
-                      response.subProductEntity.datum[i].prouductSubId,
+                      response.uSubProductEntity.datum[i].prouductSubId,
                   productSubName:
-                      response.subProductEntity.datum[i].productSubName));
+                      response.uSubProductEntity.datum[i].productSubName));
             }
             Navigator.of(context, rootNavigator: true).pop();
           });
@@ -365,56 +360,35 @@ class _RaiseTicket extends State<RaiseTicket> {
       }
     }
 
-    Future<void> checkSerialNo() async {
+    getSerial() async {
       var result = await Connectivity().checkConnectivity();
       if (result == ConnectivityResult.mobile ||
           result == ConnectivityResult.wifi) {
-        if (_cusCode.isEmpty ||
-            _productId == 0 ||
-            _subProductId == 0 ||
-            _modelNumber.text.isEmpty ||
-            _serialNumber.text.isEmpty) {
-          Fluttertoast.showToast(
-              msg: "Details not valid",
-              gravity: ToastGravity.CENTER,
-              timeInSecForIosWeb: 1,
-              toastLength: Toast.LENGTH_SHORT);
-        } else {
-          showAlertDialog(context);
-          final Map<String, dynamic> data = {
-            'customer_code': _cusCode,
-            'product_id': _productId,
-            'product_sub_id': _subProductId,
-            'model_no': _modelNumber.text,
-            'serial_no': _serialNumber.text
-          };
+        SharedPreferences prefs = await SharedPreferences.getInstance();
+        token = (prefs.getString('token') ?? '');
 
-          // done , now run app
-          RestClient apiService = RestClient(dio.Dio());
+        RestClient apiService = RestClient(dio.Dio());
 
-          final response = await apiService.validateSerialNo(data);
+        final response = await apiService.getSerialNumber(
+            token, _cusCode, _productId, _subProductId);
 
-          switch (response.emailEntity.responseCode) {
-            case "200":
-              setState(() {
-                serialNumberList.add(_serialNumber.text.trim());
-                _serialNumber.text = "";
-                _quantity.value =
-                    TextEditingValue(text: serialNumberList.length.toString());
-                _amount.value = TextEditingValue(
-                    text: (serialNumberList.length * _getAmount).toString());
-                Navigator.of(context, rootNavigator: true).pop();
-              });
-              break;
-
-            case "500":
-              Navigator.of(context, rootNavigator: true).pop();
-              Fluttertoast.showToast(
-                  msg: response.emailEntity.message,
-                  gravity: ToastGravity.CENTER,
-                  timeInSecForIosWeb: 1,
-                  toastLength: Toast.LENGTH_SHORT);
-          }
+        if (response.serialNumberEntity.responseCode == "200") {
+          serialList = new List<SerialNumberModel>();
+          setState(() {
+            prefs.setString('token', response.serialNumberEntity.token);
+            for (var i = 0; i < response.serialNumberEntity.datum.length; i++) {
+              serialList.add(new SerialNumberModel(
+                  serialNo: response.serialNumberEntity.datum[i].serialNo,
+                  modelNo: response.serialNumberEntity.datum[i].modelNo,
+                  customerContractId:
+                      response.serialNumberEntity.datum[i].customerContractId,
+                  contractTypeId:
+                      response.serialNumberEntity.datum[i].contractTypeId,
+                  contractType:
+                      response.serialNumberEntity.datum[i].contractType));
+            }
+            Navigator.of(context, rootNavigator: true).pop();
+          });
         }
       } else {
         Fluttertoast.showToast(
@@ -433,71 +407,66 @@ class _RaiseTicket extends State<RaiseTicket> {
       ],
     );
 
-    var generateAmc = () async {
+    var raiseTicket = () async {
       if (form.validate()) {
         form.save();
-
-        SharedPreferences prefs = await SharedPreferences.getInstance();
 
         var result = await Connectivity().checkConnectivity();
         if (result == ConnectivityResult.mobile ||
             result == ConnectivityResult.wifi) {
+          SharedPreferences prefs = await SharedPreferences.getInstance();
+          token = (prefs.getString('token') ?? '');
+
           RestClient apiService = RestClient(dio.Dio());
 
-          final combinedData = <Map<String, dynamic>>[];
-
-          for (int i = 0; i < serialNumberList.length; i++) {
-            String name = serialNumberList[i];
-            Map<String, String> hi = {'serial_no': name};
-            combinedData.add(hi);
-          }
-
           final Map<String, dynamic> apiBodyData = {
-            "alternate_number": _alternativecontact,
-            "ammount": int.parse(_amount.text),
-            "city_id": _cityId,
-            "contact_number": _contact,
-            "contract_period": _contractDuration,
-            "contract_type": _amcId,
-            "country_id": _countryId,
-            "cust_preference_date": contractStartDate.toString(),
             "customer_code": _cusCode,
-            "customer_name": _cusName,
-            "email_id": _email,
-            "invoice_id": _invoiceNumber.text,
-            "landmark": _landMark.text,
-            "location_id": _locationId,
-            "model_no": _modelNumber.text,
-            "plot_number": _plotNumber.text,
-            "post_code": int.parse(_postCode.text),
-            "priority": "P1",
+            "customer_contract_id": _customerContractId,
             "product_id": _productId,
             "product_sub_id": _subProductId,
-            "serial_array": combinedData,
-            "state_id": _stateId,
-            "street": _street.text
+            "model_no": _modelNumber.text,
+            "serial_no": _serialNumber,
+            "call_category_id": _callCategoryId,
+            "cust_preference_date": inputDate.toString(),
+            "contract_type_id": _contractTypeId,
+            "work_type_id": _workTypeId,
+            "problem_desc": _description.text,
+            "image": base64Format + encImageBase64,
+            "priority": "P1"
           };
 
           print(apiBodyData);
 
           showAlertDialog(context);
 
-          final response = await apiService.addAMC(token, apiBodyData);
+          final response = await apiService.raiseTicket(token, apiBodyData);
 
-          if (response.responseEntity.responseCode == "200") {
+          if (response.raiseTicketEntity.responseCode == "200") {
             setState(() {
-              newToken = response.responseEntity.token;
-              prefs.setString('token', newToken.toString());
-
               Fluttertoast.showToast(
-                  msg: response.responseEntity.message,
+                  msg: response.raiseTicketEntity.message,
                   gravity: ToastGravity.CENTER,
                   timeInSecForIosWeb: 1,
                   toastLength: Toast.LENGTH_SHORT);
-
               Navigator.of(context, rootNavigator: true).pop();
-              Navigator.push(context,
-                  MaterialPageRoute(builder: (context) => DashBoard(2)));
+            });
+          } else if (response.raiseTicketEntity.responseCode == "500") {
+            setState(() {
+              Fluttertoast.showToast(
+                  msg: response.raiseTicketEntity.message,
+                  gravity: ToastGravity.CENTER,
+                  timeInSecForIosWeb: 1,
+                  toastLength: Toast.LENGTH_SHORT);
+              Navigator.of(context, rootNavigator: true).pop();
+            });
+          } else if (response.raiseTicketEntity.responseCode == "400") {
+            setState(() {
+              Fluttertoast.showToast(
+                  msg: response.raiseTicketEntity.message,
+                  gravity: ToastGravity.CENTER,
+                  timeInSecForIosWeb: 1,
+                  toastLength: Toast.LENGTH_SHORT);
+              Navigator.of(context, rootNavigator: true).pop();
             });
           }
         } else {
@@ -554,7 +523,7 @@ class _RaiseTicket extends State<RaiseTicket> {
 
                           subProduct.clear();
                           subProductModel = null;
-                          getSubProduct(_productId);
+                          getSubProduct();
                           showAlertDialog(context);
                         });
                       },
@@ -605,6 +574,11 @@ class _RaiseTicket extends State<RaiseTicket> {
                         setState(() {
                           subProductModel = data;
                           _subProductId = subProductModel.productSubId;
+
+                          serialList.clear();
+                          serialNumberModel = null;
+                          getSerial();
+                          showAlertDialog(context);
                         });
                       },
                       validator: (value) =>
@@ -629,19 +603,30 @@ class _RaiseTicket extends State<RaiseTicket> {
                             borderSide: BorderSide(color: Colors.white)),
                         contentPadding: EdgeInsets.all(5),
                       ),
-                      hint: new Text("Select Call Category"),
-                      value: callCategoryModel,
-                      onChanged: (CallCategoryModel data) {
+                      hint: new Text("Select Serial Number"),
+                      value: serialNumberModel,
+                      validator: (value) =>
+                          value == null ? 'Please select serial number' : null,
+                      onChanged: (SerialNumberModel data) {
                         setState(() {
-                          callCategoryModel = data;
-                          _callCategoryId = callCategoryModel.callCategoryId;
+                          serialNumberModel = data;
+                          _serialNumber = serialNumberModel.serialNo;
+                          _customerContractId =
+                              serialNumberModel.customerContractId;
+                          _contractTypeId = serialNumberModel.contractTypeId;
+
+                          //setting contract type and model number
+                          _contractType.value = TextEditingValue(
+                              text: serialNumberModel.contractType);
+                          _modelNumber.value =
+                              TextEditingValue(text: serialNumberModel.modelNo);
                         });
                       },
-                      items: callCategoryList.map((CallCategoryModel value) {
-                        return DropdownMenuItem<CallCategoryModel>(
+                      items: serialList.map((SerialNumberModel value) {
+                        return DropdownMenuItem<SerialNumberModel>(
                           value: value,
                           child: new Text(
-                            value.callCategory,
+                            value.serialNo,
                             textAlign: TextAlign.center,
                             style: new TextStyle(color: Colors.black),
                           ),
@@ -657,7 +642,7 @@ class _RaiseTicket extends State<RaiseTicket> {
                   autofocus: false,
                   validator: (value) =>
                       value.isEmpty ? 'Please enter contract type' : null,
-                  controller: _invoiceNumber,
+                  controller: _contractType,
                   decoration: InputDecoration(
                     labelText: 'Contract type',
                     border: OutlineInputBorder(),
@@ -686,25 +671,30 @@ class _RaiseTicket extends State<RaiseTicket> {
                           borderRadius: BorderRadius.circular(5.0)),
                       contentPadding: EdgeInsets.all(2),
                     ),
-                    child: SearchableDropdown.single(
-                      underline: Padding(
-                        padding: EdgeInsets.all(5),
-                      ),
+                    child: DropdownButtonFormField(
                       isExpanded: true,
-                      hint: "Select Call Category",
-                      value: callCategoryModel,
-                      displayClearIcon: false,
-                      onChanged: (CallCategoryModel data) {
+                      decoration: InputDecoration(
+                        enabledBorder: UnderlineInputBorder(
+                            borderSide: BorderSide(color: Colors.white)),
+                        contentPadding: EdgeInsets.all(5),
+                      ),
+                      hint: Text("Select Work Type"),
+                      validator: (value) =>
+                          value == null ? 'Please select work type' : null,
+                      value: workModel,
+                      onChanged: (WorkModel data) {
                         setState(() {
-                          callCategoryModel = data;
-                          _callCategoryId = callCategoryModel.callCategoryId;
+                          workModel = data;
+                          _workTypeId = workModel.workTypeId;
+                          showAlertDialog(context);
+                          getCall();
                         });
                       },
-                      items: callCategoryList.map((CallCategoryModel value) {
-                        return DropdownMenuItem<CallCategoryModel>(
+                      items: workTypeList.map((WorkModel value) {
+                        return DropdownMenuItem<WorkModel>(
                           value: value,
                           child: new Text(
-                            value.callCategory,
+                            value.workType,
                             textAlign: TextAlign.center,
                             style: new TextStyle(color: Colors.black),
                           ),
@@ -723,14 +713,17 @@ class _RaiseTicket extends State<RaiseTicket> {
                           borderRadius: BorderRadius.circular(5.0)),
                       contentPadding: EdgeInsets.all(2),
                     ),
-                    child: SearchableDropdown.single(
-                      underline: Padding(
-                        padding: EdgeInsets.all(5),
-                      ),
+                    child: DropdownButtonFormField(
                       isExpanded: true,
-                      hint: "Select Call Category",
+                      hint: Text("Call Category"),
+                      decoration: InputDecoration(
+                        enabledBorder: UnderlineInputBorder(
+                            borderSide: BorderSide(color: Colors.white)),
+                        contentPadding: EdgeInsets.all(5),
+                      ),
                       value: callCategoryModel,
-                      displayClearIcon: false,
+                      validator: (value) =>
+                          value == null ? 'Please select subproduct' : null,
                       onChanged: (CallCategoryModel data) {
                         setState(() {
                           callCategoryModel = data;
@@ -754,7 +747,7 @@ class _RaiseTicket extends State<RaiseTicket> {
                   height: 20.0,
                 ),
                 TextFormField(
-                  controller: _date,
+                  controller: _description,
                   keyboardType: TextInputType.multiline,
                   maxLines: null,
                   autofocus: false,
@@ -784,26 +777,83 @@ class _RaiseTicket extends State<RaiseTicket> {
                 SizedBox(
                   height: 10.0,
                 ),
-                Align(
-                  alignment: Alignment.bottomRight,
-                  child: Padding(
-                    padding: EdgeInsets.only(right: 10),
-                    child: Material(
-                      //Wrap with Material
-                      shape: RoundedRectangleBorder(
-                          borderRadius: BorderRadius.circular(5.0)),
-                      // elevation: 18.0,
-                      color: Colors.lightBlue,
-                      clipBehavior: Clip.antiAlias,
-                      // Add This
-                      child: MaterialButton(
-                        child: new Text('Attach Image',
-                            style: new TextStyle(
-                                fontSize: 16.0, color: Colors.white)),
-                        onPressed: getProduct,
+                Row(
+                  children: [
+                    new Expanded(
+                      child: Visibility(
+                        visible: imageVisible,
+                        child: new Column(
+                          crossAxisAlignment: CrossAxisAlignment.end,
+                          children: <Widget>[
+                            Padding(
+                              padding: EdgeInsets.only(top: 10),
+                              child: Stack(
+                                children: <Widget>[
+                                  new Container(
+                                    height: 70,
+                                    child: new Center(
+                                      child: image == null
+                                          ? new Text('No Image to Show ')
+                                          : new Image.file(image),
+                                    ),
+                                  ),
+                                  Positioned(
+                                    top: -17,
+                                    right: 45,
+                                    child: GestureDetector(
+                                      onTap: () {
+                                        print('delete image from List');
+                                        setState(() {
+                                          print('set new state of images');
+                                        });
+                                      },
+                                      child: IconButton(
+                                        onPressed: () {
+                                          setState(() {
+                                            imageVisible = false;
+                                          });
+                                        },
+                                        icon: Image.asset(
+                                          'assets/images/close_icon.png',
+                                          width: 20,
+                                          height: 20,
+                                        ),
+                                      ),
+                                    ),
+                                  ),
+                                ],
+                              ),
+                            )
+                          ],
+                        ),
                       ),
                     ),
-                  ),
+                    new Expanded(
+                      child: Align(
+                        alignment: Alignment.bottomRight,
+                        child: Padding(
+                          padding: EdgeInsets.only(right: 10),
+                          child: Material(
+                            //Wrap with Material
+                            shape: RoundedRectangleBorder(
+                                borderRadius: BorderRadius.circular(5.0)),
+                            // elevation: 18.0,
+                            color: Colors.lightBlue,
+                            clipBehavior: Clip.antiAlias,
+                            // Add This
+                            child: MaterialButton(
+                              child: new Text('Attach Image',
+                                  style: new TextStyle(
+                                      fontSize: 16.0, color: Colors.white)),
+                              onPressed: () {
+                                _showSelectionDialog(context);
+                              },
+                            ),
+                          ),
+                        ),
+                      ),
+                    )
+                  ],
                 ),
                 SizedBox(
                   height: 20.0,
@@ -827,16 +877,16 @@ class _RaiseTicket extends State<RaiseTicket> {
                   height: 20.0,
                 ),
                 TextFormField(
-                  controller: _date,
+                  controller: _timeController,
                   autofocus: false,
                   validator: (value) =>
-                      value.isEmpty ? 'Please select date' : null,
+                      value.isEmpty ? 'Please select time' : null,
                   onTap: () {
-                    _selectDate(context);
+                    _selectTime(context);
                     FocusScope.of(context).requestFocus(new FocusNode());
                   },
                   decoration: InputDecoration(
-                    labelText: 'Select Date',
+                    labelText: 'Select Time',
                     border: OutlineInputBorder(),
                     suffixIcon: Icon(Icons.access_time_outlined),
                   ),
@@ -846,12 +896,53 @@ class _RaiseTicket extends State<RaiseTicket> {
                 ),
                 auth.loggedInStatus == Status.Authenticating
                     ? loading
-                    : longButtons('Raise Ticket', generateAmc)
+                    : longButtons('Raise Ticket', raiseTicket)
               ],
             ),
           ),
         ),
       ),
     );
+  }
+
+  Future<void> _showSelectionDialog(BuildContext context) {
+    return showDialog(
+        context: context,
+        builder: (BuildContext context) {
+          return AlertDialog(
+              title: Text("Choose your action"),
+              content: SingleChildScrollView(
+                child: ListBody(
+                  children: <Widget>[
+                    GestureDetector(
+                      child: Text("Gallery"),
+                      onTap: () {
+                        setState(() {
+                          imageVisible = true;
+                          galleryPicker();
+                        });
+                      },
+                    ),
+                    Padding(padding: EdgeInsets.all(8.0)),
+                    GestureDetector(
+                      child: Text("Camera"),
+                      onTap: () {
+                        setState(() {
+                          imageVisible = true;
+                          picker();
+                        });
+                      },
+                    ),
+                    Padding(padding: EdgeInsets.all(8.0)),
+                    GestureDetector(
+                      child: Text("Cancel"),
+                      onTap: () {
+                        Navigator.of(context, rootNavigator: true).pop();
+                      },
+                    )
+                  ],
+                ),
+              ));
+        });
   }
 }

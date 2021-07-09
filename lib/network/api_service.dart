@@ -9,14 +9,19 @@ import 'package:flutter_api_json_parse/network/response/mobileResponse.dart';
 import 'package:flutter_api_json_parse/network/response/myProductListResponse.dart';
 import 'package:flutter_api_json_parse/network/response/productResponse.dart';
 import 'package:flutter_api_json_parse/network/response/profileResponse.dart';
+import 'package:flutter_api_json_parse/network/response/raiseTIicketResponse.dart';
 import 'package:flutter_api_json_parse/network/response/registerResponse.dart';
 import 'package:flutter_api_json_parse/network/response/resetPasswordResponse.dart';
+import 'package:flutter_api_json_parse/network/response/serialNumberResponse.dart';
 import 'package:flutter_api_json_parse/network/response/stateResponse.dart';
 import 'package:flutter_api_json_parse/network/response/countryResponse.dart';
 import 'package:flutter_api_json_parse/network/response/global_response.dart';
 import 'package:flutter_api_json_parse/network/response/login_response.dart';
 import 'package:flutter_api_json_parse/network/response/subProductResponse.dart';
 import 'package:flutter_api_json_parse/network/response/tokenResponse.dart';
+import 'package:flutter_api_json_parse/network/response/uProductResponse.dart';
+import 'package:flutter_api_json_parse/network/response/uSubProductResponse.dart';
+import 'package:flutter_api_json_parse/network/response/workResponse.dart';
 import 'package:flutter_api_json_parse/utility/app_url.dart';
 import 'package:retrofit/http.dart';
 
@@ -43,7 +48,8 @@ abstract class RestClient {
   Future<RegisterResponse> register(@Body() Map<String, dynamic> body);
 
   @POST("customer_amc/")
-  Future<RegisterResponse> addAMC(String token, @Body() Map<String, dynamic> body);
+  Future<RegisterResponse> addAMC(
+      String token, @Body() Map<String, dynamic> body);
 
   @POST('add_customer_product/')
   Future<RegisterResponse> addProduct(
@@ -77,6 +83,10 @@ abstract class RestClient {
   Future<AmcListResponse> amcList(
       String token, @Body() Map<String, dynamic> body);
 
+  @POST("cus_raise_ticket/")
+  Future<RaiseTicketResponse> raiseTicket(
+      String token, @Body() Map<String, dynamic> body);
+
   @GET('get_country/')
   Future<CountryResponse> getCountry();
 
@@ -98,12 +108,29 @@ abstract class RestClient {
   @GET('get_subproduct_details/')
   Future<SubProductResponse> getSubProduct(int productId);
 
+  @GET('customer_logout/')
+  Future<EmailResponse> logoutCustomer(String email);
+
   @GET('get_amc_details/')
   Future<AmcResponse> getAmcDetails();
 
   @GET('get_call_category/')
   Future<CallCategoryResponse> getCallCategory();
 
+  @GET('get_servicegroup/')
+  Future<WorkResponse> getWorkType();
+
   @GET('my_products/')
   Future<MyProductListResponse> getMyProductList(String token, String email);
+
+  @GET("load_customer_product/")
+  Future<UProductResponse> getUProduct(String token, String customer_code_id);
+
+  @GET("load_customer_subproduct/")
+  Future<USubProductResponse> getUSubProduct(
+      String token, String customer_code_id, int productId);
+
+  @GET("customer_details/")
+  Future<SerialNumberResponse> getSerialNumber(
+      String token, String customer_code_id, int productId, int subProductId);
 }
