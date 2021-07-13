@@ -1,7 +1,7 @@
 import 'dart:convert';
-
 import 'package:flushbar/flushbar.dart';
 import 'package:flutter/material.dart';
+import 'package:flutter/rendering.dart';
 import 'package:flutter/scheduler.dart';
 import 'package:flutter_api_json_parse/domain/callCategory.dart';
 import 'package:flutter_api_json_parse/domain/product.dart';
@@ -19,6 +19,7 @@ import 'package:intl/intl.dart';
 import 'dart:io';
 import 'package:shared_preferences/shared_preferences.dart';
 import 'package:connectivity/connectivity.dart';
+import 'package:flutter_native_image/flutter_native_image.dart';
 
 class RaiseTicketStateless extends StatelessWidget {
   @override
@@ -65,7 +66,6 @@ class _RaiseTicket extends State<RaiseTicket> {
       _email;
   final String base64Format = "data:image/png;base64,";
   Map<String, dynamic> serialArray;
-  File image;
   var body, send;
   bool imageVisible = false;
   TextEditingController _date = new TextEditingController();
@@ -86,7 +86,8 @@ class _RaiseTicket extends State<RaiseTicket> {
   CallCategoryModel callCategoryModel;
   WorkModel workModel;
   SerialNumberModel serialNumberModel;
-  bool _loading = true;
+  File imageResized, _photo;
+  var image;
   var inputDate, inputTime;
   int _productId,
       _charLength = 0,
@@ -181,8 +182,8 @@ class _RaiseTicket extends State<RaiseTicket> {
       final DateTime picked = await showDatePicker(
           context: context,
           initialDate: selectedDate,
-          firstDate: DateTime(2015, 8),
-          lastDate: DateTime.now());
+          firstDate: DateTime.now(),
+          lastDate: DateTime.now().add(Duration(days: 14)));
       if (picked != null && picked != selectedDate)
         setState(() {
           selectedDate = picked;
@@ -225,46 +226,33 @@ class _RaiseTicket extends State<RaiseTicket> {
     }
   }
 
-  Future<void> captureImage(ImageSource imageSource) async {
-    try {
-      final imageFile = ImagePicker.pickImage(source: imageSource);
-      setState(() {
-        //  _imageFile = imageFile;
-      });
-    } catch (e) {
-      print(e);
-    }
-  }
-
   picker() async {
-    print('Picker is called');
-    File img = await ImagePicker.pickImage(
+    var photo = await ImagePicker.pickImage(
         source: ImageSource.camera, imageQuality: 50);
-    if (img != null) {
-      image = img;
-      setState(() {
-        Navigator.of(context, rootNavigator: true).pop();
 
-        final bytes = File(image.path).readAsBytesSync();
-        encImageBase64 = base64Encode(bytes);
+    imageResized = await FlutterNativeImage.compressImage(photo.path,
+        quality: 100, targetWidth: 120, targetHeight: 120);
+
+    if (photo != null) {
+      Navigator.of(context, rootNavigator: true).pop();
+      setState(() {
+        image = photo;
+
+        List<int> imageBytes = imageResized.readAsBytesSync();
+        encImageBase64 = base64Encode(imageBytes);
       });
     }
   }
 
   galleryPicker() async {
-    print('Picker is called');
-    File img = await ImagePicker.pickImage(
+    var photo = await ImagePicker.pickImage(
         source: ImageSource.gallery, imageQuality: 50);
-    ;
-    if (img != null) {
-      image = img;
+    if (photo != null) {
+      Navigator.of(context, rootNavigator: true).pop();
+      image = photo;
       setState(() {
-        Navigator.of(context, rootNavigator: true).pop();
-
         final bytes = File(image.path).readAsBytesSync();
         encImageBase64 = base64Encode(bytes);
-
-        print(encImageBase64);
       });
     }
   }
@@ -480,7 +468,7 @@ class _RaiseTicket extends State<RaiseTicket> {
         Flushbar(
           title: 'Invalid form',
           message: 'Please complete the form properly',
-          duration: Duration(seconds: 10),
+          duration: Duration(seconds: 3),
         ).show(context);
       }
     };
@@ -771,7 +759,7 @@ class _RaiseTicket extends State<RaiseTicket> {
                   alignment: Alignment.bottomRight,
                   child: Padding(
                     padding: EdgeInsets.only(right: 10),
-                    child: Text(_charLength.toString() + "/20"),
+                    child: Text(_charLength.toString() + "/250"),
                   ),
                 ),
                 SizedBox(
@@ -811,6 +799,7 @@ class _RaiseTicket extends State<RaiseTicket> {
                                         onPressed: () {
                                           setState(() {
                                             imageVisible = false;
+                                            encImageBase64 = "";
                                           });
                                         },
                                         icon: Image.asset(

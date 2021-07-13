@@ -1,3 +1,4 @@
+import 'package:connectivity/connectivity.dart';
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_api_json_parse/domain/myProductList.dart';
@@ -48,6 +49,7 @@ class _MyProduct extends State<MyProduct> {
       status;
   List<MyProductListModel> myProductList = new List<MyProductListModel>();
   MyProductListModel myProductListModel;
+  bool isListEmpty = true;
 
   showAlert(BuildContext context) {
     AlertDialog alertDialog = AlertDialog(
@@ -78,32 +80,43 @@ class _MyProduct extends State<MyProduct> {
       email = (prefs.getString("email") ?? '');
     });
 
-    RestClient apiService = RestClient(dio.Dio());
+    var result = await Connectivity().checkConnectivity();
+    if (result == ConnectivityResult.mobile ||
+        result == ConnectivityResult.wifi) {
+      RestClient apiService = RestClient(dio.Dio());
 
-    final response = await apiService.getMyProductList(token, email);
+      final response = await apiService.getMyProductList(token, email);
 
-    if (response.myProductListEntity.responseCode == "200") {
-      setState(() {
-        newToken = response.myProductListEntity.token;
-        for (int i = 0;
-            i < response.myProductListEntity.myProductList.length;
-            i++) {
-          myProductList.add(new MyProductListModel(
-              product: response.myProductListEntity.myProductList[i].product,
-              subProduct:
-                  response.myProductListEntity.myProductList[i].subProduct,
-              serialNo: response.myProductListEntity.myProductList[i].serialNo,
-              modelNo: response.myProductListEntity.myProductList[i].modelNo,
-              contractType:
-                  response.myProductListEntity.myProductList[i].contractType,
-              contractStatusName: response
-                  .myProductListEntity.myProductList[i].contractStatusName));
-        }
+      if (response.myProductListEntity.responseCode == "200") {
+        setState(() {
+          newToken = response.myProductListEntity.token;
+          for (int i = 0;
+              i < response.myProductListEntity.myProductList.length;
+              i++) {
+            myProductList.add(new MyProductListModel(
+                product: response.myProductListEntity.myProductList[i].product,
+                subProduct:
+                    response.myProductListEntity.myProductList[i].subProduct,
+                serialNo:
+                    response.myProductListEntity.myProductList[i].serialNo,
+                modelNo: response.myProductListEntity.myProductList[i].modelNo,
+                contractType:
+                    response.myProductListEntity.myProductList[i].contractType,
+                contractStatusName: response
+                    .myProductListEntity.myProductList[i].contractStatusName));
+          }
 
-        prefs.setString('token', newToken.toString());
+          prefs.setString('token', newToken.toString());
 
-        Navigator.of(context, rootNavigator: true).pop();
-      });
+          Navigator.of(context, rootNavigator: true).pop();
+        });
+      }
+    } else {
+      Navigator.of(context, rootNavigator: true).pop();
+      Fluttertoast.showToast(
+          msg: "Connect to internet",
+          timeInSecForIosWeb: 1,
+          toastLength: Toast.LENGTH_SHORT);
     }
   }
 
@@ -160,6 +173,9 @@ class _MyProduct extends State<MyProduct> {
   }
 
   Widget getTasListView() {
+    if (myProductList.isEmpty) {
+      isListEmpty = false;
+    }
     return myProductList.isNotEmpty
         ? ListView.builder(
             itemCount: myProductList.length,
@@ -328,17 +344,20 @@ class _MyProduct extends State<MyProduct> {
                     ),
                   ])));
             })
-        : Column(
-            crossAxisAlignment: CrossAxisAlignment.stretch,
-            children: [
-              Image.asset("assets/images/no_data.png"),
-              Center(
-                child: Text(
-                  "No Data Available",
-                  style: TextStyle(fontSize: 15),
-                ),
-              )
-            ],
+        : Visibility(
+            child: Column(
+              crossAxisAlignment: CrossAxisAlignment.stretch,
+              children: [
+                Image.asset("assets/images/no_data.png"),
+                Center(
+                  child: Text(
+                    "No Data Available",
+                    style: TextStyle(fontSize: 15),
+                  ),
+                )
+              ],
+            ),
+            visible: isListEmpty,
           );
   }
 }

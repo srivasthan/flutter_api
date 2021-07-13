@@ -1,3 +1,4 @@
+import 'package:connectivity/connectivity.dart';
 import 'package:flushbar/flushbar.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_api_json_parse/network/api_service.dart';
@@ -23,12 +24,25 @@ class _PasswordChange extends State<PasswordChange> {
   TextEditingController confirmPasswordController = new TextEditingController();
 
   // Initially password is obscure
-  bool _isHidden = true;
+  bool _isOldPasswordHidden = true,
+      _isNewPasswordHidden = true,
+      _isConfirmPasswordHidden = true;
 
-  // Toggles the password show status
-  void _toggleVisibility() {
+  void _OldtoggleVisibility() {
     setState(() {
-      _isHidden = !_isHidden;
+      _isOldPasswordHidden = !_isOldPasswordHidden;
+    });
+  }
+
+  void _NewtoggleVisibility() {
+    setState(() {
+      _isNewPasswordHidden = !_isNewPasswordHidden;
+    });
+  }
+
+  void _ConfirmtoggleVisibility() {
+    setState(() {
+      _isConfirmPasswordHidden = !_isConfirmPasswordHidden;
     });
   }
 
@@ -73,54 +87,63 @@ class _PasswordChange extends State<PasswordChange> {
       if (form.validate()) {
         form.save();
 
-        showAlertDialog(context);
+        var result = await Connectivity().checkConnectivity();
+        if (result == ConnectivityResult.mobile ||
+            result == ConnectivityResult.wifi) {
+          showAlertDialog(context);
 
-        SharedPreferences prefs = await SharedPreferences.getInstance();
-        setState(() {
-          getEmail = (prefs.getString("email") ?? '');
-        });
+          SharedPreferences prefs = await SharedPreferences.getInstance();
+          setState(() {
+            getEmail = (prefs.getString("email") ?? '');
+          });
 
-        final Map<String, dynamic> data = {
-          'email': getEmail,
-          'old_password': oldPasswordController.text,
-          'new_password': passwordController.text,
-          'confirm_password': confirmPasswordController.text
-        };
+          final Map<String, dynamic> data = {
+            'email': getEmail,
+            'old_password': oldPasswordController.text,
+            'new_password': passwordController.text,
+            'confirm_password': confirmPasswordController.text
+          };
 
-        // done , now run app
-        RestClient apiService = RestClient(dio.Dio());
+          // done , now run app
+          RestClient apiService = RestClient(dio.Dio());
 
-        final response = await apiService.changePassword(data);
+          final response = await apiService.changePassword(data);
 
-        switch (response.resetPasswordEntity.responseCode) {
-          case "200":
-            {
-              Navigator.of(context, rootNavigator: true).pop();
-              Fluttertoast.showToast(
-                  msg: response.resetPasswordEntity.message,
-                  gravity: ToastGravity.CENTER,
-                  toastLength: Toast.LENGTH_SHORT,
-                  timeInSecForIosWeb: 1);
-              break;
-            }
-          case "400":
+          switch (response.resetPasswordEntity.responseCode) {
+            case "200":
+              {
+                Navigator.of(context, rootNavigator: true).pop();
+                Fluttertoast.showToast(
+                    msg: response.resetPasswordEntity.message,
+                    gravity: ToastGravity.CENTER,
+                    toastLength: Toast.LENGTH_SHORT,
+                    timeInSecForIosWeb: 1);
+                break;
+              }
+            case "400":
 
-          case "500":
-            {
-              Navigator.of(context, rootNavigator: true).pop();
-              Flushbar(
-                title: "Error",
-                message: response.resetPasswordEntity.message,
-                duration: Duration(seconds: 3),
-              ).show(context);
-              break;
-            }
+            case "500":
+              {
+                Navigator.of(context, rootNavigator: true).pop();
+                Flushbar(
+                  title: "Error",
+                  message: response.resetPasswordEntity.message,
+                  duration: Duration(seconds: 3),
+                ).show(context);
+                break;
+              }
+          }
+        } else {
+          Fluttertoast.showToast(
+              msg: "Connect to internet",
+              timeInSecForIosWeb: 1,
+              toastLength: Toast.LENGTH_SHORT);
         }
       } else {
         Flushbar(
           title: 'Invalid form',
           message: 'Please complete the form properly',
-          duration: Duration(seconds: 10),
+          duration: Duration(seconds: 3),
         ).show(context);
       }
     };
@@ -155,6 +178,7 @@ class _PasswordChange extends State<PasswordChange> {
                   ),
                   TextFormField(
                       autovalidateMode: AutovalidateMode.onUserInteraction,
+                      keyboardType: TextInputType.visiblePassword,
                       decoration: InputDecoration(
                         hintText: "Old Password",
                         hintStyle: TextStyle(
@@ -165,13 +189,13 @@ class _PasswordChange extends State<PasswordChange> {
                           borderRadius: BorderRadius.circular(10.0),
                         ),
                         suffixIcon: IconButton(
-                          onPressed: _toggleVisibility,
-                          icon: _isHidden
+                          onPressed: _OldtoggleVisibility,
+                          icon: _isOldPasswordHidden
                               ? Icon(Icons.visibility_off)
                               : Icon(Icons.visibility),
                         ),
                       ),
-                      obscureText: _isHidden,
+                      obscureText: _isOldPasswordHidden,
                       controller: oldPasswordController,
                       validator: (value) {
                         String _msg;
@@ -191,7 +215,8 @@ class _PasswordChange extends State<PasswordChange> {
                     height: 5.0,
                   ),
                   TextFormField(
-                    obscureText: _isHidden,
+                    obscureText: _isNewPasswordHidden,
+                    keyboardType: TextInputType.visiblePassword,
                     controller: passwordController,
                     validator: validatePassword,
                     decoration: InputDecoration(
@@ -204,8 +229,8 @@ class _PasswordChange extends State<PasswordChange> {
                         borderRadius: BorderRadius.circular(10.0),
                       ),
                       suffixIcon: IconButton(
-                        onPressed: _toggleVisibility,
-                        icon: _isHidden
+                        onPressed: _NewtoggleVisibility,
+                        icon: _isNewPasswordHidden
                             ? Icon(Icons.visibility_off)
                             : Icon(Icons.visibility),
                       ),
@@ -234,6 +259,7 @@ class _PasswordChange extends State<PasswordChange> {
                   ),
                   TextFormField(
                       autovalidateMode: AutovalidateMode.onUserInteraction,
+                      keyboardType: TextInputType.visiblePassword,
                       decoration: InputDecoration(
                         hintText: "Confirm Password",
                         hintStyle: TextStyle(
@@ -244,13 +270,13 @@ class _PasswordChange extends State<PasswordChange> {
                           borderRadius: BorderRadius.circular(10.0),
                         ),
                         suffixIcon: IconButton(
-                          onPressed: _toggleVisibility,
-                          icon: _isHidden
+                          onPressed: _ConfirmtoggleVisibility,
+                          icon: _isConfirmPasswordHidden
                               ? Icon(Icons.visibility_off)
                               : Icon(Icons.visibility),
                         ),
                       ),
-                      obscureText: _isHidden,
+                      obscureText: _isConfirmPasswordHidden,
                       controller: confirmPasswordController,
                       validator: (value) {
                         String _msg;

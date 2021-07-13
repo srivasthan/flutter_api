@@ -1,5 +1,7 @@
+import 'package:connectivity/connectivity.dart';
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
+import 'package:flutter/services.dart';
 import 'package:flutter_api_json_parse/network/api_service.dart';
 import 'package:flutter_api_json_parse/utility/validator.dart';
 import 'package:fluttertoast/fluttertoast.dart';
@@ -39,8 +41,9 @@ class _ForgotPasswordState extends State<ForgotPassword> {
                       children: <Widget>[
                         FlatButton(
                             onPressed: () {
-                              Navigator.pushReplacementNamed(context, '/login');
-                              Navigator.pop(context);
+                              Navigator.of(context, rootNavigator: true).pop();
+                              Navigator.pushNamedAndRemoveUntil(
+                                  context, '/login', (route) => false);
                             },
                             padding: EdgeInsets.all(0.0),
                             child: const Text(
@@ -65,8 +68,6 @@ class _ForgotPasswordState extends State<ForgotPassword> {
 
   @override
   Widget build(BuildContext context) {
-    String _errormsg;
-
     showAlertDialog(BuildContext context) {
       AlertDialog alert = AlertDialog(
         content: new Row(
@@ -85,21 +86,10 @@ class _ForgotPasswordState extends State<ForgotPassword> {
       );
     }
 
-    String validatePassword(String value) {
-      if (!(value.length > 5) && value.isNotEmpty) {
-        return "Password should contain more than 5 characters";
-      }
-      return null;
-    }
-
-    Future<void> checkEmailPresence() async {
-      final form = formKey.currentState;
-
-      if (form.validate()) {
-        form.save();
-
-        showAlertDialog(context);
-
+    Future<void> resetPassword() async {
+      var result = await Connectivity().checkConnectivity();
+      if (result == ConnectivityResult.mobile ||
+          result == ConnectivityResult.wifi) {
         final Map<String, dynamic> data = {'email': lastNameController.text};
 
         // done , now run app
@@ -110,6 +100,11 @@ class _ForgotPasswordState extends State<ForgotPassword> {
         switch (response.resetPasswordEntity.responseCode) {
           case "200":
             {
+              Fluttertoast.showToast(
+                  msg: response.resetPasswordEntity.message,
+                  gravity: ToastGravity.CENTER,
+                  timeInSecForIosWeb: 1,
+                  toastLength: Toast.LENGTH_SHORT);
               Navigator.of(context, rootNavigator: true).pop();
               Navigator.pushNamedAndRemoveUntil(
                   context, '/login', (route) => false);
@@ -128,33 +123,63 @@ class _ForgotPasswordState extends State<ForgotPassword> {
               break;
             }
         }
+      } else {
+        Navigator.of(context, rootNavigator: true).pop();
+        Fluttertoast.showToast(
+            msg: "Connect to internet",
+            timeInSecForIosWeb: 1,
+            toastLength: Toast.LENGTH_SHORT);
       }
     }
 
-    Future<String> checkEmail() async {
-      final Map<String, dynamic> data = {'email_id': lastNameController.text};
+    Future<void> checkEmail() async {
+      var result = await Connectivity().checkConnectivity();
+      if (result == ConnectivityResult.mobile ||
+          result == ConnectivityResult.wifi) {
+        final form = formKey.currentState;
+        if (form.validate()) {
+          form.save();
 
-      // done , now run app
-      RestClient apiService = RestClient(dio.Dio());
+          showAlertDialog(context);
+          final Map<String, dynamic> data = {
+            'email_id': lastNameController.text
+          };
 
-      final response = await apiService.emailVerify(data);
+          // done , now run app
+          RestClient apiService = RestClient(dio.Dio());
 
-      switch (response.emailEntity.responseCode) {
-        case "200":
-          Fluttertoast.showToast(
-              msg: "Enter registered email",
-              gravity: ToastGravity.CENTER,
-              timeInSecForIosWeb: 1,
-              toastLength: Toast.LENGTH_SHORT);
-          break;
+          final response = await apiService.emailVerify(data);
 
-        case "400":
+          switch (response.emailEntity.responseCode) {
+            case "200":
+              Navigator.of(context, rootNavigator: true).pop();
+              Fluttertoast.showToast(
+                  msg: "Please Enter Registered Email",
+                  gravity: ToastGravity.CENTER,
+                  timeInSecForIosWeb: 1,
+                  toastLength: Toast.LENGTH_SHORT);
+              break;
 
-        case "500":
-          break;
+            case "400":
+
+            case "500":
+              resetPassword();
+              break;
+          }
+        } else {
+          Flushbar(
+            title: 'Invalid form',
+            message: 'Please complete the form properly',
+            duration: Duration(seconds: 3),
+          ).show(context);
+        }
+      } else {
+        Fluttertoast.showToast(
+            msg: "Connect to internet",
+            gravity: ToastGravity.CENTER,
+            timeInSecForIosWeb: 1,
+            toastLength: Toast.LENGTH_SHORT);
       }
-
-      return _errormsg;
     }
 
     return new WillPopScope(
@@ -196,17 +221,11 @@ class _ForgotPasswordState extends State<ForgotPassword> {
                     ),
                     TextFormField(
                       autofocus: false,
+                      keyboardType: TextInputType.emailAddress,
                       validator: validateEmail,
                       controller: lastNameController,
-                      onChanged: (value) async {
-                        checkEmail();
-                      },
-                      autovalidateMode: AutovalidateMode.onUserInteraction,
                       decoration: InputDecoration(
-                        labelText: 'Email',
-                        border: OutlineInputBorder(),
-                        errorText: validatePassword(lastNameController.text),
-                      ),
+                          labelText: 'Email', border: OutlineInputBorder()),
                     ),
                     SizedBox(
                       height: 30,
@@ -226,7 +245,7 @@ class _ForgotPasswordState extends State<ForgotPassword> {
                           child: new Text('Forgot Password',
                               style: new TextStyle(
                                   fontSize: 16.0, color: Colors.white)),
-                          onPressed: checkEmailPresence,
+                          onPressed: checkEmail,
                         ),
                       ),
                     ),

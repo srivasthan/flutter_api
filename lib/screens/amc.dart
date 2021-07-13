@@ -1,9 +1,11 @@
 import 'dart:ui';
 
+import 'package:connectivity/connectivity.dart';
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_api_json_parse/domain/amclList.dart';
 import 'package:flutter_api_json_parse/network/api_service.dart';
+import 'package:fluttertoast/fluttertoast.dart';
 import 'package:shared_preferences/shared_preferences.dart';
 import 'package:dio/dio.dart' as dio;
 
@@ -37,7 +39,6 @@ class Amc extends StatefulWidget {
 
 class _Amc extends State<Amc> {
   final formKey = GlobalKey<_Amc>();
-
   String token,
       cusCode,
       newToken,
@@ -49,6 +50,7 @@ class _Amc extends State<Amc> {
       status;
   List<AmcListModel> amcList = new List<AmcListModel>();
   AmcListModel amcListModel;
+  bool isListEmpty = true;
 
   showAlert(BuildContext context) {
     AlertDialog alertDialog = AlertDialog(
@@ -79,30 +81,40 @@ class _Amc extends State<Amc> {
       cusCode = (prefs.getString("cuscode") ?? '');
     });
 
-    final Map<String, dynamic> loginData = {'customer_code': cusCode};
+    var result = await Connectivity().checkConnectivity();
+    if (result == ConnectivityResult.mobile ||
+        result == ConnectivityResult.wifi) {
+      final Map<String, dynamic> loginData = {'customer_code': cusCode};
 
-    RestClient apiService = RestClient(dio.Dio());
+      RestClient apiService = RestClient(dio.Dio());
 
-    final response = await apiService.amcList(token, loginData);
+      final response = await apiService.amcList(token, loginData);
 
-    if (response.amcListEntity.responseCode == "200") {
-      setState(() {
-        newToken = response.amcListEntity.token;
-        for (int i = 0; i < response.amcListEntity.amcList.length; i++) {
-          amcList.add(new AmcListModel(
-              product: response.amcListEntity.amcList[i].product,
-              subProduct: response.amcListEntity.amcList[i].subProduct,
-              serialNo: response.amcListEntity.amcList[i].serialNo,
-              modelNo: response.amcListEntity.amcList[i].modelNo,
-              contractType: response.amcListEntity.amcList[i].contractType,
-              contractStatusName:
-                  response.amcListEntity.amcList[i].contractStatusName));
-        }
+      if (response.amcListEntity.responseCode == "200") {
+        setState(() {
+          newToken = response.amcListEntity.token;
+          for (int i = 0; i < response.amcListEntity.amcList.length; i++) {
+            amcList.add(new AmcListModel(
+                product: response.amcListEntity.amcList[i].product,
+                subProduct: response.amcListEntity.amcList[i].subProduct,
+                serialNo: response.amcListEntity.amcList[i].serialNo,
+                modelNo: response.amcListEntity.amcList[i].modelNo,
+                contractType: response.amcListEntity.amcList[i].contractType,
+                contractStatusName:
+                    response.amcListEntity.amcList[i].contractStatusName));
+          }
 
-        prefs.setString('token', newToken.toString());
+          prefs.setString('token', newToken.toString());
 
-        Navigator.of(context, rootNavigator: true).pop();
-      });
+          Navigator.of(context, rootNavigator: true).pop();
+        });
+      }
+    } else {
+      Navigator.of(context, rootNavigator: true).pop();
+      Fluttertoast.showToast(
+          msg: "Connect to internet",
+          timeInSecForIosWeb: 1,
+          toastLength: Toast.LENGTH_SHORT);
     }
   }
 
@@ -159,6 +171,10 @@ class _Amc extends State<Amc> {
   }
 
   Widget getTasListView() {
+    if (amcList.isEmpty) {
+      isListEmpty = false;
+    }
+
     return amcList.isNotEmpty
         ? ListView.builder(
             itemCount: amcList.length,
@@ -306,17 +322,20 @@ class _Amc extends State<Amc> {
                     ),
                   ])));
             })
-        : Column(
-            crossAxisAlignment: CrossAxisAlignment.stretch,
-            children: [
-              Image.asset("assets/images/no_data.png"),
-              Center(
-                child: Text(
-                  "No Data Available",
-                  style: TextStyle(fontSize: 15),
-                ),
-              )
-            ],
+        : Visibility(
+            visible: isListEmpty,
+            child: Column(
+              crossAxisAlignment: CrossAxisAlignment.stretch,
+              children: [
+                Image.asset("assets/images/no_data.png"),
+                Center(
+                  child: Text(
+                    "No Data Available",
+                    style: TextStyle(fontSize: 15),
+                  ),
+                )
+              ],
+            ),
           );
   }
 }

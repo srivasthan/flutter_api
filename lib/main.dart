@@ -1,27 +1,42 @@
+import 'dart:async';
+
 import 'package:flutter/material.dart';
+import 'package:flutter/services.dart';
 import 'package:flutter_api_json_parse/providers/auth_provider.dart';
 import 'package:flutter_api_json_parse/providers/user_provider.dart';
 import 'package:flutter_api_json_parse/screens/addAmc.dart';
 import 'package:flutter_api_json_parse/screens/addProduct.dart';
+import 'package:flutter_api_json_parse/screens/amc.dart';
 import 'package:flutter_api_json_parse/screens/dashboard.dart';
 import 'package:flutter_api_json_parse/screens/forgotPassword.dart';
 import 'package:flutter_api_json_parse/screens/myProduct.dart';
 import 'package:flutter_api_json_parse/screens/passwordChange.dart';
 import 'package:flutter_api_json_parse/screens/profile.dart';
-import 'package:flutter_api_json_parse/screens/raiseTicket.dart';
 import 'package:flutter_api_json_parse/screens/register.dart';
 import 'package:flutter_api_json_parse/utility/userPreferences.dart';
 import 'package:provider/provider.dart';
+import 'package:firebase_crashlytics/firebase_crashlytics.dart';
+import 'package:firebase_core/firebase_core.dart';
+import 'package:shared_preferences/shared_preferences.dart';
 
 import 'domain/user.dart';
 import 'screens/login.dart';
 
-void main() {
+void main() async {
+  Function originalOnError = FlutterError.onError;
+  FlutterError.onError = (FlutterErrorDetails errorDetails) async {
+    await Crashlytics.instance.recordFlutterError(errorDetails);
+    originalOnError(errorDetails);
+  };
+
+  Crashlytics.instance.enableInDevMode = true;
+
   runApp(MyApp());
 }
 
 class MyApp extends StatelessWidget {
   // This widget is the root of your application.
+
   @override
   Widget build(BuildContext context) {
     Future<User> getUserData() => UserPreferences().getUser();
@@ -62,6 +77,7 @@ class MyApp extends StatelessWidget {
           '/passwordChange': (context) => PasswordChange(),
           '/addproduct': (context) => AddProduct(),
           '/myproduct': (context) => MyProductStateless(),
+          '/amc': (context) => AmcStateless(),
           '/addamc': (context) => AddAmc()
         },
       ),

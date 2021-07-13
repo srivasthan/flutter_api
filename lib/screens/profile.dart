@@ -1,5 +1,7 @@
+import 'package:connectivity/connectivity.dart';
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
+import 'package:flutter/services.dart';
 import 'package:flutter_api_json_parse/network/api_service.dart';
 import 'package:dio/dio.dart' as dio;
 import 'package:flutter_api_json_parse/screens/passwordChange.dart';
@@ -109,6 +111,7 @@ class _ProfileState extends State<Profile> {
                             )),
                         FlatButton(
                             onPressed: () {
+                              Navigator.of(context, rootNavigator: true).pop();
                               showAlertDialog(context);
                               customerLogout();
                             },
@@ -147,35 +150,55 @@ class _ProfileState extends State<Profile> {
     SharedPreferences prefs = await SharedPreferences.getInstance();
     email = (prefs.getString('email') ?? '');
 
-    RestClient apiService = RestClient(dio.Dio());
+    var result = await Connectivity().checkConnectivity();
+    if (result == ConnectivityResult.mobile ||
+        result == ConnectivityResult.wifi) {
+      RestClient apiService = RestClient(dio.Dio());
 
-    final response = await apiService.logoutCustomer(email);
+      final response = await apiService.logoutCustomer(email);
 
-    if (response.emailEntity.responseCode == "200") {
+      if (response.emailEntity.responseCode == "200") {
+        Navigator.of(context, rootNavigator: true).pop();
+        SharedPreferences preferences = await SharedPreferences.getInstance();
+        await preferences.clear();
+        Fluttertoast.showToast(
+            msg: response.emailEntity.message,
+            toastLength: Toast.LENGTH_SHORT,
+            gravity: ToastGravity.CENTER,
+            timeInSecForIosWeb: 1);
+        Navigator.pushNamedAndRemoveUntil(context, '/login', (route) => false);
+      }
+    } else {
       Navigator.of(context, rootNavigator: true).pop();
-      SharedPreferences preferences = await SharedPreferences.getInstance();
-      await preferences.clear();
       Fluttertoast.showToast(
-          msg: response.emailEntity.message,
-          toastLength: Toast.LENGTH_SHORT,
-          gravity: ToastGravity.CENTER,
-          timeInSecForIosWeb: 1);
-      Navigator.pushNamedAndRemoveUntil(context, '/login', (route) => false);
+          msg: "Connect to internet",
+          timeInSecForIosWeb: 1,
+          toastLength: Toast.LENGTH_SHORT);
     }
   }
 
   getCustomerToken(String cusCode) async {
-    RestClient apiService = RestClient(dio.Dio());
+    var result = await Connectivity().checkConnectivity();
+    if (result == ConnectivityResult.mobile ||
+        result == ConnectivityResult.wifi) {
+      RestClient apiService = RestClient(dio.Dio());
 
-    final Map<String, dynamic> loginData = {'customer_code': cusCode};
+      final Map<String, dynamic> loginData = {'customer_code': cusCode};
 
-    final response = await apiService.postTokenActivity(loginData);
+      final response = await apiService.postTokenActivity(loginData);
 
-    if (response.tokenEntity.responseCode == "200") {
-      setState(() {
-        getToken = response.tokenEntity.data;
-        getFinalProfile(getToken, cusCode);
-      });
+      if (response.tokenEntity.responseCode == "200") {
+        setState(() {
+          getToken = response.tokenEntity.data;
+          getFinalProfile(getToken, cusCode);
+        });
+      }
+    } else {
+      Navigator.of(context, rootNavigator: true).pop();
+      Fluttertoast.showToast(
+          msg: "Connect to internet",
+          timeInSecForIosWeb: 1,
+          toastLength: Toast.LENGTH_SHORT);
     }
   }
 
@@ -189,46 +212,65 @@ class _ProfileState extends State<Profile> {
   }
 
   getFinalProfile(String token, String cuscode) async {
-    RestClient apiService = RestClient(dio.Dio());
+    var result = await Connectivity().checkConnectivity();
+    if (result == ConnectivityResult.mobile ||
+        result == ConnectivityResult.wifi) {
+      RestClient apiService = RestClient(dio.Dio());
 
-    final response = await apiService.getProfile(token, cuscode);
+      final response = await apiService.getProfile(token, cuscode);
 
-    if (response.profileEntity.responseCode == "200") {
-      setState(() {
-        getProfileResponseToken = response.profileEntity.token;
-        getName = response.profileEntity.profileSaveEntity.cusName;
-        getEmail = response.profileEntity.profileSaveEntity.email;
-        getMobile = response.profileEntity.profileSaveEntity.phone;
-      });
+      if (response.profileEntity.responseCode == "200") {
+        setState(() {
+          getProfileResponseToken = response.profileEntity.token;
+          getName = response.profileEntity.profileSaveEntity.cusName;
+          getEmail = response.profileEntity.profileSaveEntity.email;
+          getMobile = response.profileEntity.profileSaveEntity.phone;
+        });
 
-      nameController.value = TextEditingValue(text: getName.toString());
-      emailController.value = TextEditingValue(text: getEmail.toString());
-      mobileController.value = TextEditingValue(text: getMobile.toString());
+        nameController.value = TextEditingValue(text: getName.toString());
+        emailController.value = TextEditingValue(text: getEmail.toString());
+        mobileController.value = TextEditingValue(text: getMobile.toString());
 
+        Navigator.of(context, rootNavigator: true).pop();
+      }
+    } else {
       Navigator.of(context, rootNavigator: true).pop();
+      Fluttertoast.showToast(
+          msg: "Connect to internet",
+          timeInSecForIosWeb: 1,
+          toastLength: Toast.LENGTH_SHORT);
     }
   }
 
   changePassword() async {
-    //showAlertDialog(context);
-    final Map<String, dynamic> loginData = {
-      'customer_code': stringValue,
-      'customer_name': nameController.text,
-      'email_id': emailController.text,
-      'contact_number': mobileController.text,
-      'alternate_number': ''
-    };
+    var result = await Connectivity().checkConnectivity();
+    if (result == ConnectivityResult.mobile ||
+        result == ConnectivityResult.wifi) {
+      final Map<String, dynamic> loginData = {
+        'customer_code': stringValue,
+        'customer_name': nameController.text,
+        'email_id': emailController.text,
+        'contact_number': mobileController.text,
+        'alternate_number': ''
+      };
 
-    RestClient apiService = RestClient(dio.Dio());
+      RestClient apiService = RestClient(dio.Dio());
 
-    final response =
-        await apiService.editProfile(getProfileResponseToken, loginData);
+      final response =
+          await apiService.editProfile(getProfileResponseToken, loginData);
 
-    if (response.responseEntity.responseCode == "200") {
-      setState(() {
-        showAlertDialog(context);
-        getProfileDetails();
-      });
+      if (response.responseEntity.responseCode == "200") {
+        setState(() {
+          showAlertDialog(context);
+          getProfileDetails();
+        });
+      }
+    } else {
+      Navigator.of(context, rootNavigator: true).pop();
+      Fluttertoast.showToast(
+          msg: "Connect to internet",
+          timeInSecForIosWeb: 1,
+          toastLength: Toast.LENGTH_SHORT);
     }
   }
 
@@ -290,6 +332,7 @@ class _ProfileState extends State<Profile> {
                     ),
                     TextFormField(
                       autofocus: false,
+                      keyboardType: TextInputType.name,
                       validator: (value) =>
                           value.isEmpty ? "Please enter " : null,
                       controller: nameController,
@@ -301,8 +344,8 @@ class _ProfileState extends State<Profile> {
                     ),
                     TextFormField(
                       autofocus: false,
+                      keyboardType: TextInputType.emailAddress,
                       controller: emailController,
-                      //  validator: validateEmail,
                       decoration:
                           buildInputDecoration('Enter Email', Icons.email),
                     ),
@@ -311,6 +354,7 @@ class _ProfileState extends State<Profile> {
                     ),
                     TextFormField(
                       autofocus: false,
+                      keyboardType: TextInputType.number,
                       controller: mobileController,
                       validator: validateMobile,
                       decoration:

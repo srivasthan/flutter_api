@@ -1,13 +1,14 @@
+import 'package:connectivity/connectivity.dart';
+import 'package:firebase_auth/firebase_auth.dart';
+import 'package:firebase_messaging/firebase_messaging.dart';
 import 'package:flushbar/flushbar.dart';
 import 'package:flutter/material.dart';
-import 'package:flutter_api_json_parse/domain/user.dart';
+import 'package:flutter/services.dart';
 import 'package:flutter_api_json_parse/providers/auth_provider.dart';
-import 'package:flutter_api_json_parse/providers/user_provider.dart';
 import 'package:flutter_api_json_parse/utility/validator.dart';
 import 'package:flutter_api_json_parse/utility/widgets.dart';
 import 'package:fluttertoast/fluttertoast.dart';
 import 'package:provider/provider.dart';
-import 'package:firebase_messaging/firebase_messaging.dart';
 import 'package:shared_preferences/shared_preferences.dart';
 
 class Login extends StatefulWidget {
@@ -17,7 +18,8 @@ class Login extends StatefulWidget {
 
 class _LoginState extends State<Login> {
   final formKey = GlobalKey<FormState>();
-  String _userName, _password, status;
+  String _userName, _password, status, _fcmToken;
+  final FirebaseMessaging _fcm = FirebaseMessaging();
   TextEditingController emailController = new TextEditingController();
   TextEditingController passwordController = new TextEditingController();
 
@@ -43,79 +45,74 @@ class _LoginState extends State<Login> {
     });
   }
 
+  getToken() async {
+    var result = await Connectivity().checkConnectivity();
+    if (result == ConnectivityResult.mobile ||
+        result == ConnectivityResult.wifi) {
+      _fcmToken = await _fcm.getToken();
+    } else {
+      Fluttertoast.showToast(
+          msg: "Connect to internet",
+          timeInSecForIosWeb: 1,
+          toastLength: Toast.LENGTH_SHORT);
+    }
+  }
+
   @override
   void initState() {
     super.initState();
     checkLogin();
+    getToken();
   }
 
   @override
   Widget build(BuildContext context) {
-    String fcmtoken;
-    final FirebaseMessaging _firebaseMessaging = FirebaseMessaging();
-    _firebaseMessaging.configure(
-      onLaunch: (Map<String, dynamic> message) {
-        print('onLaunch called');
-      },
-      onResume: (Map<String, dynamic> message) {
-        print('onResume called');
-      },
-      onMessage: (Map<String, dynamic> message) {
-        print('onMessage called');
-      },
-    );
-    _firebaseMessaging.subscribeToTopic('all');
-    _firebaseMessaging.requestNotificationPermissions(IosNotificationSettings(
-      sound: true,
-      badge: true,
-      alert: true,
-    ));
-    _firebaseMessaging.onIosSettingsRegistered
-        .listen((IosNotificationSettings settings) {
-      print('Hello');
-    });
-    _firebaseMessaging.getToken().then((token) {
-      print(token); // Print the Token in Console
-      fcmtoken = token;
-    });
-
     AuthProvider auth = Provider.of<AuthProvider>(context);
 
     var doLogin = () async {
       final form = formKey.currentState;
 
-      if (form.validate()) {
-        form.save();
-        final Future<Map<String, dynamic>> respose =
-            auth.login(_userName, _password, fcmtoken);
+      var result = await Connectivity().checkConnectivity();
+      if (result == ConnectivityResult.mobile ||
+          result == ConnectivityResult.wifi) {
+        if (form.validate()) {
+          form.save();
+          final Future<Map<String, dynamic>> respose =
+              auth.login(_userName, _password, _fcmToken);
 
-        respose.then((response) async {
-          if (response['status']) {
-            SharedPreferences prefs = await SharedPreferences.getInstance();
-            prefs.setString('password', passwordController.text.toString());
+          respose.then((response) async {
+            if (response['status']) {
+              SharedPreferences prefs = await SharedPreferences.getInstance();
+              prefs.setString('password', passwordController.text.toString());
 
-            Flushbar(
-              title: "Failed Login",
-              message: "Login Successful",
-              duration: Duration(seconds: 3),
-            ).show(context);
+              Flushbar(
+                title: "Failed Login",
+                message: "Login Successful",
+                duration: Duration(seconds: 3),
+              ).show(context);
 
-            Navigator.pushNamedAndRemoveUntil(
-                context, '/dashboard', (route) => false);
-          } else {
-            Flushbar(
-              title: "Failed Login",
-              message: "Login Failed",
-              duration: Duration(seconds: 3),
-            ).show(context);
-          }
-        });
+              Navigator.pushNamedAndRemoveUntil(
+                  context, '/dashboard', (route) => false);
+            } else {
+              Flushbar(
+                title: "Failed Login",
+                message: "Login Failed",
+                duration: Duration(seconds: 3),
+              ).show(context);
+            }
+          });
+        } else {
+          Flushbar(
+            title: 'Invalid form',
+            message: 'Please complete the form properly',
+            duration: Duration(seconds: 3),
+          ).show(context);
+        }
       } else {
-        Flushbar(
-          title: 'Invalid form',
-          message: 'Please complete the form properly',
-          duration: Duration(seconds: 10),
-        ).show(context);
+        Fluttertoast.showToast(
+            msg: "Connect to internet",
+            timeInSecForIosWeb: 1,
+            toastLength: Toast.LENGTH_SHORT);
       }
     };
 
@@ -153,6 +150,21 @@ class _LoginState extends State<Login> {
         appBar: AppBar(
           title: Text('Login'),
         ),
+        bottomNavigationBar: Row(
+          mainAxisAlignment: MainAxisAlignment.spaceEvenly,
+          children: <Widget>[
+            Container(
+              color: Colors.transparent,
+              child: Padding(
+                padding: EdgeInsets.all(15.0),
+                child: Text(
+                  "\u00a9 Kaspon Techworks Pvt Ltd. All rights reserved",
+                  style: TextStyle(fontSize: 15),
+                ),
+              ),
+            )
+          ],
+        ),
         body: SingleChildScrollView(
           child: Container(
             padding: EdgeInsets.all(40.0),
@@ -169,6 +181,7 @@ class _LoginState extends State<Login> {
                     height: 5.0,
                   ),
                   TextFormField(
+                    keyboardType: TextInputType.emailAddress,
                     decoration: InputDecoration(
                       hintText: "Email",
                       hintStyle: TextStyle(
@@ -181,7 +194,7 @@ class _LoginState extends State<Login> {
                       prefixIcon: Icon(Icons.email),
                     ),
                     onSaved: (value) => _userName = value,
-                    //  validator: validateEmail,
+                    validator: validateEmail,
                   ),
                   SizedBox(
                     height: 20.0,
@@ -223,7 +236,7 @@ class _LoginState extends State<Login> {
                   SizedBox(
                     height: 8.0,
                   ),
-                  forgotLabel
+                  forgotLabel,
                 ],
               ),
             ),

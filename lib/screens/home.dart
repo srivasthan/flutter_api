@@ -1,6 +1,8 @@
+import 'package:connectivity/connectivity.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/widgets.dart';
 import 'package:flutter_api_json_parse/network/api_service.dart';
+import 'package:fluttertoast/fluttertoast.dart';
 import 'package:shared_preferences/shared_preferences.dart';
 import 'package:dio/dio.dart' as dio;
 
@@ -61,21 +63,31 @@ class _Home extends State<Home> {
       cusCode = (prefs.getString('cuscode') ?? '');
     });
 
-    RestClient apiService = RestClient(dio.Dio());
+    var result = await Connectivity().checkConnectivity();
+    if (result == ConnectivityResult.mobile ||
+        result == ConnectivityResult.wifi) {
+      RestClient apiService = RestClient(dio.Dio());
 
-    final Map<String, dynamic> loginData = {'customer_code': cusCode};
+      final Map<String, dynamic> loginData = {'customer_code': cusCode};
 
-    final response = await apiService.postTokenActivity(loginData);
+      final response = await apiService.postTokenActivity(loginData);
 
-    if (response.tokenEntity.responseCode == "200") {
-      setState(() {
-        token = response.tokenEntity.data;
-      });
+      if (response.tokenEntity.responseCode == "200") {
+        setState(() {
+          token = response.tokenEntity.data;
+        });
+      }
+
+      prefs.setString('token', token.toString());
+
+      Navigator.of(context, rootNavigator: true).pop();
+    } else {
+      Navigator.of(context, rootNavigator: true).pop();
+      Fluttertoast.showToast(
+          msg: "Connect to internet",
+          timeInSecForIosWeb: 1,
+          toastLength: Toast.LENGTH_SHORT);
     }
-
-    prefs.setString('token', token.toString());
-
-    Navigator.of(context, rootNavigator: true).pop();
   }
 
   @override

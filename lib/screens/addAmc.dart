@@ -1,8 +1,10 @@
 import 'dart:convert';
 
+import 'package:custom_searchable_dropdown/custom_searchable_dropdown.dart';
 import 'package:flushbar/flushbar.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/scheduler.dart';
+import 'package:flutter/services.dart';
 import 'package:flutter_api_json_parse/domain/amc.dart';
 import 'package:flutter_api_json_parse/domain/callCategory.dart';
 import 'package:flutter_api_json_parse/domain/city.dart';
@@ -15,6 +17,7 @@ import 'package:flutter_api_json_parse/network/api_service.dart';
 import 'package:flutter_api_json_parse/providers/auth_provider.dart';
 import 'package:flutter_api_json_parse/utility/validator.dart';
 import 'package:flutter_api_json_parse/utility/widgets.dart';
+import 'package:flutter_form_builder/flutter_form_builder.dart';
 import 'package:fluttertoast/fluttertoast.dart';
 import 'package:provider/provider.dart';
 import 'package:dio/dio.dart' as dio;
@@ -83,14 +86,70 @@ class _AddAmc extends State<AddAmc> {
   var inputDate, contractStartDate;
   int _productId,
       _amcId,
+      _initialCountryId,
+      _initialStateId,
+      _initialCityId,
+      _initialLocationId,
       _countryId,
-      _callCategoryId,
       _stateId,
       _cityId,
       _locationId,
       _contractDuration,
       _getAmount,
       _subProductId = -1;
+
+  Future<bool> _onBackPressed() {
+    return showDialog(
+            context: context,
+            builder: (context) => new AlertDialog(
+                  title: const Text(
+                    "Field Pro",
+                    style: TextStyle(fontSize: 20),
+                  ),
+                  content: SingleChildScrollView(
+                    child: ListBody(
+                      children: const [
+                        Text(
+                          "Do you want to Exit?",
+                          style: TextStyle(fontSize: 15),
+                        ),
+                      ],
+                    ),
+                  ),
+                  actions: <Widget>[
+                    Row(
+                      mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                      children: <Widget>[
+                        FlatButton(
+                            onPressed: () {
+                              // Navigator.of(context, rootNavigator: true).pop();
+                              Navigator.pop(context,
+                                  true); // It worked for me instead of above line
+                              Navigator.pushReplacement(
+                                  context,
+                                  MaterialPageRoute(
+                                      builder: (context) => DashBoard(3)));
+                            },
+                            padding: EdgeInsets.all(0.0),
+                            child: const Text(
+                              'Yes',
+                              style: TextStyle(
+                                  fontSize: 15, color: Colors.lightBlue),
+                            )),
+                        FlatButton(
+                            onPressed: () => {Navigator.pop(context)},
+                            padding: EdgeInsets.only(left: 0.0),
+                            child: const Text(
+                              "No",
+                              style: TextStyle(
+                                  fontSize: 15, color: Colors.lightBlue),
+                            ))
+                      ],
+                    ),
+                  ],
+                )) ??
+        false;
+  }
 
   showAlertDialog(BuildContext context) {
     AlertDialog alert = AlertDialog(
@@ -122,6 +181,9 @@ class _AddAmc extends State<AddAmc> {
         country = new List<CountryModel>();
         setState(() {
           for (var i = 0; i < response.countryEntity.datum.length; i++) {
+            if (response.countryEntity.datum[i].countryId == _countryId) {
+              _initialCountryId = i;
+            }
             country.add(new CountryModel(
                 countryId: response.countryEntity.datum[i].countryId,
                 countryName: response.countryEntity.datum[i].countryName));
@@ -175,11 +237,10 @@ class _AddAmc extends State<AddAmc> {
     var result = await Connectivity().checkConnectivity();
     if (result == ConnectivityResult.mobile ||
         result == ConnectivityResult.wifi) {
+      showAlertDialog(context);
       RestClient apiService = RestClient(dio.Dio());
 
       final response = await apiService.getCity(stateId);
-
-      showAlertDialog(context);
 
       if (response.cityEntity.responseCode == "200") {
         city = new List<CityModel>();
@@ -206,11 +267,10 @@ class _AddAmc extends State<AddAmc> {
     var result = await Connectivity().checkConnectivity();
     if (result == ConnectivityResult.mobile ||
         result == ConnectivityResult.wifi) {
+      showAlertDialog(context);
       RestClient apiService = RestClient(dio.Dio());
 
       final response = await apiService.getLocation(cityId);
-
-      showAlertDialog(context);
 
       if (response.locationEntity.responseCode == "200") {
         location = new List<LocationModel>();
@@ -222,6 +282,97 @@ class _AddAmc extends State<AddAmc> {
           }
           Navigator.of(context, rootNavigator: true).pop();
         });
+      }
+    } else {
+      Fluttertoast.showToast(
+          msg: "Connect to internet",
+          gravity: ToastGravity.CENTER,
+          timeInSecForIosWeb: 1,
+          toastLength: Toast.LENGTH_SHORT);
+    }
+  }
+
+  initialState(int countryId) async {
+    var result = await Connectivity().checkConnectivity();
+    if (result == ConnectivityResult.mobile ||
+        result == ConnectivityResult.wifi) {
+      RestClient apiService = RestClient(dio.Dio());
+
+      final response = await apiService.getState(countryId);
+
+      if (response.stateEntity.responseCode == "200") {
+        state = new List<StateModel>();
+        setState(() {
+          for (var i = 0; i < response.stateEntity.datum.length; i++) {
+            if (response.stateEntity.datum[i].stateId == _stateId) {
+              _initialStateId = i;
+            }
+            state.add(new StateModel(
+                stateId: response.stateEntity.datum[i].stateId,
+                stateName: response.stateEntity.datum[i].stateName));
+          }
+        });
+      }
+    } else {
+      Fluttertoast.showToast(
+          msg: "Connect to internet",
+          gravity: ToastGravity.CENTER,
+          timeInSecForIosWeb: 1,
+          toastLength: Toast.LENGTH_SHORT);
+    }
+  }
+
+  initialCity(int stateId) async {
+    var result = await Connectivity().checkConnectivity();
+    if (result == ConnectivityResult.mobile ||
+        result == ConnectivityResult.wifi) {
+      RestClient apiService = RestClient(dio.Dio());
+
+      final response = await apiService.getCity(stateId);
+
+      if (response.cityEntity.responseCode == "200") {
+        city = new List<CityModel>();
+        setState(() {
+          for (var i = 0; i < response.cityEntity.datum.length; i++) {
+            if (response.cityEntity.datum[i].cityId == _cityId) {
+              _initialCityId = i;
+            }
+            city.add(new CityModel(
+                cityId: response.cityEntity.datum[i].cityId,
+                cityName: response.cityEntity.datum[i].cityName));
+          }
+        });
+      }
+    } else {
+      Fluttertoast.showToast(
+          msg: "Connect to internet",
+          gravity: ToastGravity.CENTER,
+          timeInSecForIosWeb: 1,
+          toastLength: Toast.LENGTH_SHORT);
+    }
+  }
+
+  initialLocation(int cityId) async {
+    var result = await Connectivity().checkConnectivity();
+    if (result == ConnectivityResult.mobile ||
+        result == ConnectivityResult.wifi) {
+      RestClient apiService = RestClient(dio.Dio());
+
+      final response = await apiService.getLocation(cityId);
+
+      if (response.locationEntity.responseCode == "200") {
+        location = new List<LocationModel>();
+        setState(() {
+          for (var i = 0; i < response.locationEntity.datum.length; i++) {
+            if (response.locationEntity.datum[i].locationId == _locationId) {
+              _initialLocationId = i;
+            }
+            location.add(new LocationModel(
+                locationId: response.locationEntity.datum[i].locationId,
+                locationName: response.locationEntity.datum[i].locationName));
+          }
+        });
+        Navigator.of(context, rootNavigator: true).pop();
       }
     } else {
       Fluttertoast.showToast(
@@ -277,37 +428,6 @@ class _AddAmc extends State<AddAmc> {
                 duration: response.amcEntity.datum[i].duration,
                 cost: response.amcEntity.datum[i].cost,
                 amcName: response.amcEntity.datum[i].amcType));
-          }
-        });
-        Navigator.of(context, rootNavigator: true).pop();
-      }
-    } else {
-      Navigator.of(context, rootNavigator: true).pop();
-      Fluttertoast.showToast(
-          msg: "Connect to internet",
-          gravity: ToastGravity.CENTER,
-          timeInSecForIosWeb: 1,
-          toastLength: Toast.LENGTH_SHORT);
-    }
-  }
-
-  getCall() async {
-    var result = await Connectivity().checkConnectivity();
-    if (result == ConnectivityResult.mobile ||
-        result == ConnectivityResult.wifi) {
-      RestClient apiService = RestClient(dio.Dio());
-
-      final response = await apiService.getCallCategory();
-
-      if (response.callCategoryEntity.responseCode == "200") {
-        callCategoryList = new List<CallCategoryModel>();
-        setState(() {
-          for (var i = 0; i < response.callCategoryEntity.datum.length; i++) {
-            callCategoryList.add(new CallCategoryModel(
-                callCategoryId:
-                    response.callCategoryEntity.datum[i].callCategoryId,
-                callCategory:
-                    response.callCategoryEntity.datum[i].callCategory));
           }
         });
       }
@@ -392,6 +512,9 @@ class _AddAmc extends State<AddAmc> {
           TextEditingValue(text: (prefs.getString('landmark') ?? ''));
       _postCode.value =
           TextEditingValue(text: (prefs.getString('post_code') ?? ''));
+      initialState(_countryId);
+      initialCity(_stateId);
+      initialLocation(_cityId);
     });
   }
 
@@ -401,11 +524,10 @@ class _AddAmc extends State<AddAmc> {
     Future.delayed(Duration.zero, () {
       showAlertDialog(context);
     });
+    setDetails();
     getCountry();
     getProduct();
     getAmc();
-    getCall();
-    setDetails();
   }
 
   @override
@@ -496,6 +618,7 @@ class _AddAmc extends State<AddAmc> {
       var result = await Connectivity().checkConnectivity();
       if (result == ConnectivityResult.mobile ||
           result == ConnectivityResult.wifi) {
+        showAlertDialog(context);
         RestClient apiService = RestClient(dio.Dio());
 
         final response = await apiService.getSubProduct(productId);
@@ -651,8 +774,9 @@ class _AddAmc extends State<AddAmc> {
                   timeInSecForIosWeb: 1,
                   toastLength: Toast.LENGTH_SHORT);
 
-              Navigator.of(context, rootNavigator: true).pop();
-              Navigator.push(context,
+              Navigator.pop(
+                  context, true); // It worked for me instead of above line
+              Navigator.pushReplacement(context,
                   MaterialPageRoute(builder: (context) => DashBoard(3)));
             });
           }
@@ -667,510 +791,467 @@ class _AddAmc extends State<AddAmc> {
         Flushbar(
           title: 'Invalid form',
           message: 'Please complete the form properly',
-          duration: Duration(seconds: 10),
+          duration: Duration(seconds: 3),
         ).show(context);
       }
     };
 
-    return Scaffold(
-      appBar: AppBar(
-        title: Text('Add AMC Contract'),
-      ),
-      body: SingleChildScrollView(
-        child: Container(
-          padding: EdgeInsets.all(40.0),
-          child: Form(
-            key: formKey,
-            child: Column(
-              crossAxisAlignment: CrossAxisAlignment.start,
-              children: [
-                SizedBox(
-                  height: 15.0,
-                ),
-                Center(
-                  child: Text(
-                    "Customer Information",
-                    style: TextStyle(fontSize: 20),
+    return WillPopScope(
+      onWillPop: _onBackPressed,
+      child: Scaffold(
+        appBar: AppBar(
+          automaticallyImplyLeading: false,
+          title: Text('Add AMC Contract'),
+        ),
+        body: SingleChildScrollView(
+          child: Container(
+            padding: EdgeInsets.all(40.0),
+            child: Form(
+              key: formKey,
+              child: Column(
+                crossAxisAlignment: CrossAxisAlignment.start,
+                children: [
+                  SizedBox(
+                    height: 15.0,
                   ),
-                ),
-                SizedBox(
-                  height: 20.0,
-                ),
-                TextFormField(
-                  autofocus: false,
-                  validator: (value) =>
-                      value.isEmpty ? 'Please enter plot number' : null,
-                  controller: _plotNumber,
-                  decoration: InputDecoration(
-                    labelText: 'Plot Number',
-                    border: OutlineInputBorder(),
-                  ),
-                ),
-                SizedBox(
-                  height: 20.0,
-                ),
-                TextFormField(
-                  autofocus: false,
-                  validator: (value) =>
-                      value.isEmpty ? 'Please enter street' : null,
-                  controller: _street,
-                  decoration: InputDecoration(
-                    labelText: 'Street',
-                    border: OutlineInputBorder(),
-                  ),
-                ),
-                SizedBox(
-                  height: 20.0,
-                ),
-                TextFormField(
-                  autofocus: false,
-                  controller: _landMark,
-                  validator: (value) =>
-                      value.isEmpty ? 'Please enter landmark' : null,
-                  decoration: InputDecoration(
-                    labelText: 'Landmark',
-                    border: OutlineInputBorder(),
-                  ),
-                ),
-                SizedBox(
-                  height: 20.0,
-                ),
-                Container(
-                  child: InputDecorator(
-                    decoration: InputDecoration(
-                      border: OutlineInputBorder(
-                          borderRadius: BorderRadius.circular(5.0)),
-                      contentPadding: EdgeInsets.all(2),
+                  Center(
+                    child: Text(
+                      "Customer Information",
+                      style: TextStyle(fontSize: 20),
                     ),
-                    child: SearchableDropdown.single(
-                      underline: Padding(
-                        padding: EdgeInsets.all(5),
-                      ),
-                      isExpanded: true,
-                      hint: "Select Country",
-                      value: countryModel,
-                      displayClearIcon: false,
-                      onChanged: (CountryModel data) {
-                        setState(() {
-                          _testcountry = data.countryName;
-                          countryModel = data;
-                          _countryId = countryModel.countryId;
+                  ),
+                  SizedBox(
+                    height: 20.0,
+                  ),
+                  TextFormField(
+                    autofocus: false,
+                    keyboardType: TextInputType.text,
+                    validator: (value) =>
+                        value.isEmpty ? 'Please enter plot number' : null,
+                    controller: _plotNumber,
+                    decoration: InputDecoration(
+                      labelText: 'Plot Number',
+                      border: OutlineInputBorder(),
+                    ),
+                  ),
+                  SizedBox(
+                    height: 20.0,
+                  ),
+                  TextFormField(
+                    autofocus: false,
+                    keyboardType: TextInputType.text,
+                    inputFormatters: [
+                      FilteringTextInputFormatter.allow(RegExp("[0-9a-zA-Z]"))
+                    ],
+                    validator: (value) =>
+                        value.isEmpty ? 'Please enter street' : null,
+                    controller: _street,
+                    decoration: InputDecoration(
+                      labelText: 'Street',
+                      border: OutlineInputBorder(),
+                    ),
+                  ),
+                  SizedBox(
+                    height: 20.0,
+                  ),
+                  TextFormField(
+                    autofocus: false,
+                    controller: _landMark,
+                    keyboardType: TextInputType.text,
+                    inputFormatters: [
+                      FilteringTextInputFormatter.allow(RegExp("[0-9a-zA-Z]"))
+                    ],
+                    validator: (value) =>
+                        value.isEmpty ? 'Please enter landmark' : null,
+                    decoration: InputDecoration(
+                      labelText: 'Landmark',
+                      border: OutlineInputBorder(),
+                    ),
+                  ),
+                  SizedBox(
+                    height: 20.0,
+                  ),
+                  Text('Country'),
+                  SizedBox(
+                    height: 5.0,
+                  ),
+                  Container(
+                    height: 60,
+                    child: customSearchableDropDown(
+                      items: country,
+                      initialIndex: _initialCountryId,
+                      label: 'Select Country',
+                      decoration: BoxDecoration(
+                          border: Border.all(color: Colors.black54),
+                          borderRadius: BorderRadius.circular(5)),
+                      dropDownMenuItems: country?.map((items) {
+                            return items.countryName;
+                          })?.toList() ??
+                          [],
+                      onChanged: (data) {
+                        if (data != null) {
+                          setState(() {
+                            countryModel = data;
+                            _countryId = countryModel.countryId;
+                            _initialCountryId = country.indexOf(data);
 
-                          state.clear();
-                          stateModel = null;
-                          getState(_countryId);
-                        });
-                      },
-                      items: country.map((CountryModel value) {
-                        if (_countryId == 101) {
-                          return DropdownMenuItem<CountryModel>(
-                            value: value,
-                            child: new Text(
-                              value.countryName,
-                              textAlign: TextAlign.center,
-                              style: new TextStyle(color: Colors.black),
-                            ),
-                          );
+                            state.clear();
+                            stateModel = null;
+                            city.clear();
+                            location.clear();
+                            cityModel = null;
+                            locationModel = null;
+                            getState(_countryId);
+                          });
                         } else {
-                          return DropdownMenuItem<CountryModel>(
-                            value: value,
-                            child: new Text(
-                              value.countryName,
-                              textAlign: TextAlign.center,
-                              style: new TextStyle(color: Colors.black),
-                            ),
-                          );
+                          _initialCountryId = null;
                         }
-                      }).toList(),
-                    ),
-                  ),
-                ),
-                SizedBox(
-                  height: 20.0,
-                ),
-                Text('State'),
-                SearchableDropdown.single(
-                  isExpanded: true,
-                  value: stateModel,
-                  hint: new Text("Select State"),
-                  displayClearIcon: false,
-                  onChanged: (StateModel data) {
-                    setState(() {
-                      stateModel = data;
-                      _stateId = stateModel.stateId;
-                      city.clear();
-                      cityModel = null;
-                      getCity(_stateId);
-                    });
-                  },
-                  items: state.map((StateModel value) {
-                    return DropdownMenuItem<StateModel>(
-                      value: value,
-                      child: new Text(
-                        value.stateName,
-                        textAlign: TextAlign.center,
-                        style: new TextStyle(color: Colors.black),
-                      ),
-                    );
-                  }).toList(),
-                ),
-                SizedBox(
-                  height: 20.0,
-                ),
-                Text('City'),
-                SearchableDropdown.single(
-                  isExpanded: true,
-                  value: cityModel,
-                  hint: new Text("Select City"),
-                  displayClearIcon: false,
-                  underline: Container(
-                    height: 2,
-                    color: Colors.deepPurpleAccent,
-                  ),
-                  onChanged: (CityModel data) {
-                    setState(() {
-                      cityModel = data;
-                      _cityId = cityModel.cityId;
-                      location.clear();
-                      locationModel = null;
-                      getLocation(_cityId);
-                    });
-                  },
-                  items: city.map((CityModel value) {
-                    return DropdownMenuItem<CityModel>(
-                      value: value,
-                      child: new Text(
-                        value.cityName,
-                        textAlign: TextAlign.center,
-                        style: new TextStyle(color: Colors.black),
-                      ),
-                    );
-                  }).toList(),
-                ),
-                SizedBox(
-                  height: 20.0,
-                ),
-                Text('Location'),
-                SearchableDropdown.single(
-                  isExpanded: true,
-                  value: locationModel,
-                  hint: new Text("Select Location"),
-                  displayClearIcon: false,
-                  underline: Container(
-                    height: 2,
-                    color: Colors.deepPurpleAccent,
-                  ),
-                  onChanged: (LocationModel data) {
-                    setState(() {
-                      locationModel = data;
-                      _locationId = locationModel.locationId;
-                    });
-                  },
-                  items: location.map((LocationModel value) {
-                    return DropdownMenuItem<LocationModel>(
-                      value: value,
-                      child: new Text(
-                        value.locationName,
-                        textAlign: TextAlign.center,
-                        style: new TextStyle(color: Colors.black),
-                      ),
-                    );
-                  }).toList(),
-                ),
-                SizedBox(
-                  height: 20.0,
-                ),
-                TextFormField(
-                  autofocus: false,
-                  validator: validatePostcode,
-                  controller: _postCode,
-                  decoration: InputDecoration(
-                    labelText: 'Postcode',
-                    border: OutlineInputBorder(),
-                  ),
-                ),
-                SizedBox(
-                  height: 20.0,
-                ),
-                Center(
-                  child: Text(
-                    "Contract Information",
-                    style: TextStyle(fontSize: 20),
-                  ),
-                ),
-                SizedBox(
-                  height: 20.0,
-                ),
-                Text('Amc Type'),
-                SearchableDropdown.single(
-                  isExpanded: true,
-                  value: amcModel,
-                  hint: new Text("Select Amc Type"),
-                  displayClearIcon: false,
-                  onChanged: (AmcModel data) {
-                    setState(() {
-                      amcModel = data;
-                      _amcId = amcModel.amcId;
-                      _contractDuration = amcModel.duration;
-                      _dummy = _contractDuration.toString() + "  months";
-                      _duration.value = TextEditingValue(text: _dummy);
-                      _getAmount = amcModel.cost.toInt();
-                    });
-                  },
-                  validator: (value) =>
-                      value == null ? 'Please amc type' : null,
-                  items: amc.map((AmcModel value) {
-                    return DropdownMenuItem<AmcModel>(
-                      value: value,
-                      child: new Text(
-                        value.amcName,
-                        textAlign: TextAlign.center,
-                        style: new TextStyle(color: Colors.black),
-                      ),
-                    );
-                  }).toList(),
-                ),
-                SizedBox(
-                  height: 20.0,
-                ),
-                TextFormField(
-                  controller: _duration,
-                  validator: (value) =>
-                      value.isEmpty ? 'Please enter contract duration' : null,
-                  autofocus: false,
-                  onTap: () {
-                    FocusScope.of(context).requestFocus(new FocusNode());
-                  },
-                  decoration: InputDecoration(
-                    labelText: 'Contract Duration',
-                    border: OutlineInputBorder(),
-                  ),
-                ),
-                SizedBox(
-                  height: 20.0,
-                ),
-                TextFormField(
-                  controller: _contractDurationDate,
-                  autofocus: false,
-                  validator: (value) => value.isEmpty
-                      ? 'Please select contract start date'
-                      : null,
-                  onTap: () {
-                    _selectContractDurationDate(context);
-                    FocusScope.of(context).requestFocus(new FocusNode());
-                  },
-                  decoration: InputDecoration(
-                    labelText: 'Select Contract Start Date',
-                    border: OutlineInputBorder(),
-                    suffixIcon: Icon(Icons.calendar_today),
-                  ),
-                ),
-                SizedBox(
-                  height: 20.0,
-                ),
-                Center(
-                  child: Text(
-                    "Product Information",
-                    style: TextStyle(fontSize: 20),
-                  ),
-                ),
-                SizedBox(
-                  height: 20.0,
-                ),
-                Text('Product'),
-                SearchableDropdown.single(
-                  isExpanded: true,
-                  value: productModel,
-                  hint: new Text("Select Product"),
-                  displayClearIcon: false,
-                  onChanged: (ProductModel data) {
-                    setState(() {
-                      productModel = data;
-                      _productId = productModel.productId;
-
-                      subProduct.clear();
-                      subProductModel = null;
-                      getSubProduct(_productId);
-                      showAlertDialog(context);
-                    });
-                  },
-                  validator: (value) =>
-                      value == null ? 'Please select product' : null,
-                  items: product.map((ProductModel value) {
-                    return DropdownMenuItem<ProductModel>(
-                      value: value,
-                      child: new Text(
-                        value.productName,
-                        textAlign: TextAlign.center,
-                        style: new TextStyle(color: Colors.black),
-                      ),
-                    );
-                  }).toList(),
-                ),
-                SizedBox(
-                  height: 20.0,
-                ),
-                Text('Sub Product'),
-                SearchableDropdown.single(
-                  items: subProduct.map((SubProductModel value) {
-                    return DropdownMenuItem<SubProductModel>(
-                      value: value,
-                      child: new Text(
-                        value.productSubName,
-                        textAlign: TextAlign.center,
-                        style: new TextStyle(color: Colors.black),
-                      ),
-                    );
-                  }).toList(),
-                  value: subProductModel,
-                  hint: "Select Sub Product",
-                  displayClearIcon: false,
-                  onChanged: (SubProductModel data) {
-                    setState(() {
-                      subProductModel = data;
-                      _subProductId = subProductModel.productSubId;
-                    });
-                  },
-                  validator: (value) =>
-                      value == null ? 'Please select subproduct' : null,
-                  dialogBox: false,
-                  isExpanded: true,
-                  menuConstraints: BoxConstraints.tight(Size.fromHeight(250)),
-                ),
-                SizedBox(
-                  height: 20.0,
-                ),
-                Container(
-                  child: InputDecorator(
-                    decoration: InputDecoration(
-                      border: OutlineInputBorder(
-                          borderRadius: BorderRadius.circular(5.0)),
-                      contentPadding: EdgeInsets.all(2),
-                    ),
-                    child: SearchableDropdown.single(
-                      underline: Padding(
-                        padding: EdgeInsets.all(5),
-                      ),
-                      isExpanded: true,
-                      hint: "Select Call Category",
-                      value: callCategoryModel,
-                      displayClearIcon: false,
-                      onChanged: (CallCategoryModel data) {
-                        setState(() {
-                          callCategoryModel = data;
-                          _callCategoryId = callCategoryModel.callCategoryId;
-                        });
                       },
-                      items: callCategoryList.map((CallCategoryModel value) {
-                        return DropdownMenuItem<CallCategoryModel>(
-                          value: value,
-                          child: new Text(
-                            value.callCategory,
-                            textAlign: TextAlign.center,
-                            style: new TextStyle(color: Colors.black),
-                          ),
-                        );
-                      }).toList(),
                     ),
                   ),
-                ),
-                SizedBox(
-                  height: 20.0,
-                ),
-                TextFormField(
-                  autofocus: false,
-                  validator: (value) =>
-                      value.isEmpty ? 'Please model number' : null,
-                  controller: _modelNumber,
-                  decoration: InputDecoration(
-                    labelText: 'Model Number',
-                    border: OutlineInputBorder(),
+                  SizedBox(
+                    height: 20.0,
                   ),
-                ),
-                SizedBox(
-                  height: 20.0,
-                ),
-                TextFormField(
-                  autofocus: false,
-                  validator: (value) =>
-                      value.isEmpty ? 'Please enter invoice number' : null,
-                  controller: _invoiceNumber,
-                  decoration: InputDecoration(
-                    labelText: 'Enter Invoice Number',
-                    border: OutlineInputBorder(),
+                  Text('State'),
+                  SizedBox(
+                    height: 5.0,
                   ),
-                ),
-                SizedBox(
-                  height: 20.0,
-                ),
-                TextFormField(
-                  controller: _date,
-                  autofocus: false,
-                  validator: (value) =>
-                      value.isEmpty ? 'Please select purchase date' : null,
-                  onTap: () {
-                    _selectDate(context);
-                    FocusScope.of(context).requestFocus(new FocusNode());
-                  },
-                  decoration: InputDecoration(
-                    labelText: 'Select Purchase Date',
-                    border: OutlineInputBorder(),
-                    suffixIcon: Icon(Icons.calendar_today),
-                  ),
-                ),
-                SizedBox(
-                  height: 20.0,
-                ),
-                Row(
-                  mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                  children: <Widget>[
-                    new Expanded(
-                      child: new TextFormField(
-                        autofocus: false,
-                        controller: _quantity,
-                        enabled: false,
-                        validator: (value) =>
-                            value.isEmpty ? 'Please enter quantity' : null,
-                        // controller: _invoiceNumber,
-                        decoration: InputDecoration(
-                          labelText: 'Quantity',
-                          border: OutlineInputBorder(),
-                        ),
-                      ),
+                  Container(
+                    height: 60,
+                    child: customSearchableDropDown(
+                      items: state,
+                      initialIndex: _initialStateId,
+                      label: 'Select State',
+                      decoration: BoxDecoration(
+                          border: Border.all(color: Colors.black54),
+                          borderRadius: BorderRadius.circular(5)),
+                      dropDownMenuItems: state?.map((items) {
+                            return items.stateName;
+                          })?.toList() ??
+                          [],
+                      onChanged: (data) {
+                        if (data != null) {
+                          setState(() {
+                            stateModel = data;
+                            _stateId = stateModel.stateId;
+                            _initialStateId = state.indexOf(data);
+
+                            city.clear();
+                            location.clear();
+                            cityModel = null;
+                            locationModel = null;
+                            getCity(_stateId);
+                          });
+                        } else {
+                          _initialStateId = null;
+                        }
+                      },
                     ),
-                    SizedBox(
-                      width: 50.0,
+                  ),
+                  SizedBox(
+                    height: 20.0,
+                  ),
+                  Text('City'),
+                  SizedBox(
+                    height: 5.0,
+                  ),
+                  Container(
+                    height: 60,
+                    child: customSearchableDropDown(
+                      items: city,
+                      label: 'Select City',
+                      initialIndex: _initialCityId,
+                      decoration: BoxDecoration(
+                          border: Border.all(color: Colors.black54),
+                          borderRadius: BorderRadius.circular(5)),
+                      dropDownMenuItems: city?.map((items) {
+                            return items.cityName;
+                          })?.toList() ??
+                          [],
+                      onChanged: (data) {
+                        if (data != null) {
+                          setState(() {
+                            cityModel = data;
+                            _cityId = cityModel.cityId;
+                            _initialCityId = city.indexOf(data);
+
+                            location.clear();
+                            locationModel = null;
+                            getLocation(_cityId);
+                          });
+                        } else {
+                          _initialCityId = null;
+                        }
+                      },
                     ),
-                    new Expanded(
-                        child: new GestureDetector(
-                            onTap: () {
-                              setState(() {
-                                serialRowVisible = true;
-                              });
-                            },
-                            child: new Text(
-                              'Add',
-                              style: new TextStyle(
-                                  color: Colors.blueAccent,
-                                  fontSize: 20,
-                                  fontWeight: FontWeight.bold),
-                            )))
-                  ],
-                ),
-                SizedBox(
-                  height: 20.0,
-                ),
-                Visibility(
-                  visible: serialRowVisible,
-                  child: Row(
-                    mainAxisAlignment: MainAxisAlignment.start,
+                  ),
+                  SizedBox(
+                    height: 20.0,
+                  ),
+                  Text('Location'),
+                  SizedBox(
+                    height: 5.0,
+                  ),
+                  Container(
+                    height: 60,
+                    child: customSearchableDropDown(
+                      items: location,
+                      initialIndex: _initialLocationId,
+                      label: 'Select Location',
+                      decoration: BoxDecoration(
+                          border: Border.all(color: Colors.black54),
+                          borderRadius: BorderRadius.circular(5)),
+                      dropDownMenuItems: location?.map((items) {
+                            return items.locationName;
+                          })?.toList() ??
+                          [],
+                      onChanged: (data) {
+                        if (data != null) {
+                          setState(() {
+                            locationModel = data;
+                            _locationId = locationModel.locationId;
+                            _initialLocationId = location.indexOf(data);
+                          });
+                        } else {
+                          _initialLocationId = null;
+                        }
+                      },
+                    ),
+                  ),
+                  SizedBox(
+                    height: 20.0,
+                  ),
+                  TextFormField(
+                    autofocus: false,
+                    validator: validatePostcode,
+                    keyboardType: TextInputType.number,
+                    controller: _postCode,
+                    decoration: InputDecoration(
+                      labelText: 'Postcode',
+                      border: OutlineInputBorder(),
+                    ),
+                  ),
+                  SizedBox(
+                    height: 20.0,
+                  ),
+                  Center(
+                    child: Text(
+                      "Contract Information",
+                      style: TextStyle(fontSize: 20),
+                    ),
+                  ),
+                  SizedBox(
+                    height: 20.0,
+                  ),
+                  Text('Amc Type'),
+                  SizedBox(
+                    height: 5.0,
+                  ),
+                  Container(
+                    height: 60,
+                    child: customSearchableDropDown(
+                      items: amc,
+                      label: 'Select AMC Type',
+                      decoration: BoxDecoration(
+                          border: Border.all(color: Colors.black54),
+                          borderRadius: BorderRadius.circular(5)),
+                      dropDownMenuItems: amc?.map((items) {
+                            return items.amcName;
+                          })?.toList() ??
+                          [],
+                      onChanged: (data) {
+                        if (data != null) {
+                          setState(() {
+                            amcModel = data;
+                            _amcId = amcModel.amcId;
+                            _contractDuration = amcModel.duration;
+                            _dummy = _contractDuration.toString() + "  months";
+                            _duration.value = TextEditingValue(text: _dummy);
+                          });
+                        } else {
+                          amcModel = null;
+                        }
+                      },
+                    ),
+                  ),
+                  SizedBox(
+                    height: 20.0,
+                  ),
+                  TextFormField(
+                    controller: _duration,
+                    validator: (value) =>
+                        value.isEmpty ? 'Please enter contract duration' : null,
+                    autofocus: false,
+                    onTap: () {
+                      FocusScope.of(context).requestFocus(new FocusNode());
+                    },
+                    decoration: InputDecoration(
+                      labelText: 'Contract Duration',
+                      border: OutlineInputBorder(),
+                    ),
+                  ),
+                  SizedBox(
+                    height: 20.0,
+                  ),
+                  TextFormField(
+                    controller: _contractDurationDate,
+                    autofocus: false,
+                    validator: (value) => value.isEmpty
+                        ? 'Please select contract start date'
+                        : null,
+                    onTap: () {
+                      _selectContractDurationDate(context);
+                      FocusScope.of(context).requestFocus(new FocusNode());
+                    },
+                    decoration: InputDecoration(
+                      labelText: 'Select Contract Start Date',
+                      border: OutlineInputBorder(),
+                      suffixIcon: Icon(Icons.calendar_today),
+                    ),
+                  ),
+                  SizedBox(
+                    height: 20.0,
+                  ),
+                  Center(
+                    child: Text(
+                      "Product Information",
+                      style: TextStyle(fontSize: 20),
+                    ),
+                  ),
+                  SizedBox(
+                    height: 20.0,
+                  ),
+                  Text('Product'),
+                  SizedBox(
+                    height: 5.0,
+                  ),
+                  Container(
+                    height: 60,
+                    child: customSearchableDropDown(
+                      items: product,
+                      label: 'Select Product',
+                      decoration: BoxDecoration(
+                          border: Border.all(color: Colors.black54),
+                          borderRadius: BorderRadius.circular(5)),
+                      dropDownMenuItems: product?.map((items) {
+                            return items.productName;
+                          })?.toList() ??
+                          [],
+                      onChanged: (data) {
+                        if (data != null) {
+                          setState(() {
+                            productModel = data;
+                            _productId = productModel.productId;
+
+                            subProduct.clear();
+                            subProductModel = null;
+                            getSubProduct(_productId);
+                          });
+                        } else {
+                          productModel = null;
+                        }
+                      },
+                    ),
+                  ),
+                  SizedBox(
+                    height: 20.0,
+                  ),
+                  Text('Sub Product'),
+                  SizedBox(
+                    height: 5.0,
+                  ),
+                  Container(
+                    height: 60,
+                    child: customSearchableDropDown(
+                      items: subProduct,
+                      label: 'Select Product',
+                      decoration: BoxDecoration(
+                          border: Border.all(color: Colors.black54),
+                          borderRadius: BorderRadius.circular(5)),
+                      dropDownMenuItems: subProduct?.map((items) {
+                            return items.productSubName;
+                          })?.toList() ??
+                          [],
+                      onChanged: (data) {
+                        if (data != null) {
+                          setState(() {
+                            subProductModel = data;
+                            _subProductId = subProductModel.productSubId;
+                          });
+                        } else {
+                          subProductModel = null;
+                        }
+                      },
+                    ),
+                  ),
+                  SizedBox(
+                    height: 20.0,
+                  ),
+                  TextFormField(
+                    autofocus: false,
+                    keyboardType: TextInputType.text,
+                    inputFormatters: [
+                      FilteringTextInputFormatter.allow(RegExp("[0-9a-zA-Z]"))
+                    ],
+                    validator: (value) =>
+                        value.isEmpty ? 'Please enter model number' : null,
+                    controller: _modelNumber,
+                    decoration: InputDecoration(
+                      labelText: 'Model Number',
+                      border: OutlineInputBorder(),
+                    ),
+                  ),
+                  SizedBox(
+                    height: 20.0,
+                  ),
+                  TextFormField(
+                    autofocus: false,
+                    keyboardType: TextInputType.text,
+                    inputFormatters: [
+                      FilteringTextInputFormatter.allow(RegExp("[0-9a-zA-Z]"))
+                    ],
+                    validator: (value) =>
+                        value.isEmpty ? 'Please enter invoice number' : null,
+                    controller: _invoiceNumber,
+                    decoration: InputDecoration(
+                      labelText: 'Enter Invoice Number',
+                      border: OutlineInputBorder(),
+                    ),
+                  ),
+                  SizedBox(
+                    height: 20.0,
+                  ),
+                  TextFormField(
+                    controller: _date,
+                    autofocus: false,
+                    validator: (value) =>
+                        value.isEmpty ? 'Please select purchase date' : null,
+                    onTap: () {
+                      _selectDate(context);
+                      FocusScope.of(context).requestFocus(new FocusNode());
+                    },
+                    decoration: InputDecoration(
+                      labelText: 'Select Purchase Date',
+                      border: OutlineInputBorder(),
+                      suffixIcon: Icon(Icons.calendar_today),
+                    ),
+                  ),
+                  SizedBox(
+                    height: 20.0,
+                  ),
+                  Row(
+                    mainAxisAlignment: MainAxisAlignment.spaceBetween,
                     children: <Widget>[
                       new Expanded(
                         child: new TextFormField(
                           autofocus: false,
-                          controller: _serialNumber,
+                          controller: _quantity,
+                          enabled: false,
+                          validator: (value) =>
+                              value.isEmpty ? 'Please enter quantity' : null,
+                          // controller: _invoiceNumber,
                           decoration: InputDecoration(
-                            labelText: 'Serial Number',
+                            labelText: 'Quantity',
                             border: OutlineInputBorder(),
                           ),
                         ),
@@ -1178,48 +1259,93 @@ class _AddAmc extends State<AddAmc> {
                       SizedBox(
                         width: 50.0,
                       ),
-                      new GestureDetector(
-                          onTap: () {
-                            setState(() {
-                              itemsRowVisible = true;
-                              checkSerialNo();
-                            });
-                          },
-                          child: new Text(
-                            'Save',
-                            style: new TextStyle(
-                                color: Colors.blueAccent,
-                                fontSize: 20,
-                                fontWeight: FontWeight.bold),
-                          ))
+                      new Expanded(
+                          child: new GestureDetector(
+                              onTap: () {
+                                setState(() {
+                                  serialRowVisible = true;
+                                });
+                              },
+                              child: new Text(
+                                'Add',
+                                style: new TextStyle(
+                                    color: Colors.blueAccent,
+                                    fontSize: 20,
+                                    fontWeight: FontWeight.bold),
+                              )))
                     ],
                   ),
-                ),
-                SizedBox(
-                  height: 20.0,
-                ),
-                getTasListView(),
-                SizedBox(
-                  height: 20.0,
-                ),
-                TextFormField(
-                  autofocus: false,
-                  controller: _amount,
-                  validator: (value) =>
-                      value.isEmpty ? 'Please enter amount' : null,
-                  // controller: _invoiceNumber,
-                  decoration: InputDecoration(
-                    labelText: 'Amount',
-                    border: OutlineInputBorder(),
+                  SizedBox(
+                    height: 20.0,
                   ),
-                ),
-                SizedBox(
-                  height: 20.0,
-                ),
-                auth.loggedInStatus == Status.Authenticating
-                    ? loading
-                    : longButtons('Generate', generateAmc)
-              ],
+                  Visibility(
+                    visible: serialRowVisible,
+                    child: Row(
+                      mainAxisAlignment: MainAxisAlignment.start,
+                      children: <Widget>[
+                        new Expanded(
+                          child: new TextFormField(
+                            autofocus: false,
+                            controller: _serialNumber,
+                            keyboardType: TextInputType.text,
+                            inputFormatters: [
+                              FilteringTextInputFormatter.allow(
+                                  RegExp("[0-9a-zA-Z]"))
+                            ],
+                            decoration: InputDecoration(
+                              labelText: 'Serial Number',
+                              border: OutlineInputBorder(),
+                            ),
+                          ),
+                        ),
+                        SizedBox(
+                          width: 50.0,
+                        ),
+                        new GestureDetector(
+                            onTap: () {
+                              setState(() {
+                                itemsRowVisible = true;
+                                checkSerialNo();
+                              });
+                            },
+                            child: new Text(
+                              'Save',
+                              style: new TextStyle(
+                                  color: Colors.blueAccent,
+                                  fontSize: 20,
+                                  fontWeight: FontWeight.bold),
+                            ))
+                      ],
+                    ),
+                  ),
+                  SizedBox(
+                    height: 20.0,
+                  ),
+                  getTasListView(),
+                  SizedBox(
+                    height: 20.0,
+                  ),
+                  TextFormField(
+                    autofocus: false,
+                    controller: _amount,
+                    keyboardType:
+                        TextInputType.numberWithOptions(decimal: true),
+                    validator: (value) =>
+                        value.isEmpty ? 'Please enter amount' : null,
+                    // controller: _invoiceNumber,
+                    decoration: InputDecoration(
+                      labelText: 'Amount',
+                      border: OutlineInputBorder(),
+                    ),
+                  ),
+                  SizedBox(
+                    height: 20.0,
+                  ),
+                  auth.loggedInStatus == Status.Authenticating
+                      ? loading
+                      : longButtons('Generate', generateAmc)
+                ],
+              ),
             ),
           ),
         ),
