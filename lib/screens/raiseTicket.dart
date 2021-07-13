@@ -241,6 +241,8 @@ class _RaiseTicket extends State<RaiseTicket> {
         List<int> imageBytes = imageResized.readAsBytesSync();
         encImageBase64 = base64Encode(imageBytes);
       });
+    } else {
+      Navigator.of(context, rootNavigator: true).pop();
     }
   }
 
@@ -254,6 +256,8 @@ class _RaiseTicket extends State<RaiseTicket> {
         final bytes = File(image.path).readAsBytesSync();
         encImageBase64 = base64Encode(bytes);
       });
+    } else {
+      Navigator.of(context, rootNavigator: true).pop();
     }
   }
 
@@ -779,6 +783,7 @@ class _RaiseTicket extends State<RaiseTicket> {
                                 children: <Widget>[
                                   new Container(
                                     height: 70,
+                                    width: 70,
                                     child: new Center(
                                       child: image == null
                                           ? new Text('No Image to Show ')

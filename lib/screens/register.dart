@@ -270,6 +270,7 @@ class _RegisterState extends State<Register> {
       var result = await Connectivity().checkConnectivity();
       if (result == ConnectivityResult.mobile ||
           result == ConnectivityResult.wifi) {
+        showAlertDialog(context);
         RestClient apiService = RestClient(dio.Dio());
 
         final response = await apiService.getSubProduct(productId);
@@ -284,6 +285,7 @@ class _RegisterState extends State<Register> {
                       response.subProductEntity.datum[i].productSubName));
             }
           });
+          Navigator.of(context, rootNavigator: true).pop();
         }
       } else {
         Navigator.of(context, rootNavigator: true).pop();
@@ -298,6 +300,7 @@ class _RegisterState extends State<Register> {
       var result = await Connectivity().checkConnectivity();
       if (result == ConnectivityResult.mobile ||
           result == ConnectivityResult.wifi) {
+        showAlertDialog(context);
         RestClient apiService = RestClient(dio.Dio());
 
         final response = await apiService.getState(countryId);
@@ -311,6 +314,7 @@ class _RegisterState extends State<Register> {
                   stateName: response.stateEntity.datum[i].stateName));
             }
           });
+          Navigator.of(context, rootNavigator: true).pop();
         }
       } else {
         Navigator.of(context, rootNavigator: true).pop();
@@ -325,6 +329,7 @@ class _RegisterState extends State<Register> {
       var result = await Connectivity().checkConnectivity();
       if (result == ConnectivityResult.mobile ||
           result == ConnectivityResult.wifi) {
+        showAlertDialog(context);
         RestClient apiService = RestClient(dio.Dio());
 
         final response = await apiService.getCity(stateId);
@@ -338,6 +343,7 @@ class _RegisterState extends State<Register> {
                   cityName: response.cityEntity.datum[i].cityName));
             }
           });
+          Navigator.of(context, rootNavigator: true).pop();
         }
       } else {
         Navigator.of(context, rootNavigator: true).pop();
@@ -352,6 +358,7 @@ class _RegisterState extends State<Register> {
       var result = await Connectivity().checkConnectivity();
       if (result == ConnectivityResult.mobile ||
           result == ConnectivityResult.wifi) {
+        showAlertDialog(context);
         RestClient apiService = RestClient(dio.Dio());
 
         final response = await apiService.getLocation(cityId);
@@ -365,6 +372,7 @@ class _RegisterState extends State<Register> {
                   locationName: response.locationEntity.datum[i].locationName));
             }
           });
+          Navigator.of(context, rootNavigator: true).pop();
         }
       } else {
         Navigator.of(context, rootNavigator: true).pop();
@@ -386,22 +394,14 @@ class _RegisterState extends State<Register> {
 
         final response = await apiService.emailVerify(data);
 
-        switch (response.emailEntity.responseCode) {
-          case "200":
-            isEmail = true;
-            break;
-
-          case "400":
-
-          case "500":
-            isEmail = false;
-            Navigator.of(context, rootNavigator: true).pop();
-            Flushbar(
-              title: "Error",
-              message: "Email already exists",
-              duration: Duration(seconds: 3),
-            ).show(context);
-            break;
+        if (response.emailEntity.responseCode == "500") {
+          isEmail = false;
+          Navigator.of(context, rootNavigator: true).pop();
+          Flushbar(
+            title: "Error",
+            message: "Email already exists",
+            duration: Duration(seconds: 3),
+          ).show(context);
         }
       } else {
         Navigator.of(context, rootNavigator: true).pop();
@@ -416,29 +416,21 @@ class _RegisterState extends State<Register> {
       var result = await Connectivity().checkConnectivity();
       if (result == ConnectivityResult.mobile ||
           result == ConnectivityResult.wifi) {
-        final Map<String, dynamic> data = {'contact_number': _modelNumber.text};
+        final Map<String, dynamic> data = {'contact_number': _mobile.text};
 
         // done , now run app
         RestClient apiService = RestClient(dio.Dio());
 
         final response = await apiService.mobileVerify(data);
 
-        switch (response.mobileEntity.responseCode) {
-          case "200":
-            isMobile = true;
-            break;
-
-          case "400":
-
-          case "500":
-            isMobile = false;
-            Navigator.of(context, rootNavigator: true).pop();
-            Flushbar(
-              title: "Error",
-              message: "Mobile Number Already Exists",
-              duration: Duration(seconds: 3),
-            ).show(context);
-            break;
+        if (response.mobileEntity.responseCode == "500") {
+          isMobile = false;
+          Navigator.of(context, rootNavigator: true).pop();
+          Flushbar(
+            title: "Error",
+            message: "Mobile already exists",
+            duration: Duration(seconds: 3),
+          ).show(context);
         }
       } else {
         Navigator.of(context, rootNavigator: true).pop();
@@ -448,16 +440,6 @@ class _RegisterState extends State<Register> {
             toastLength: Toast.LENGTH_SHORT);
       }
     }
-
-    var loading = () {
-      Row(
-        mainAxisAlignment: MainAxisAlignment.center,
-        children: <Widget>[
-          CircularProgressIndicator(),
-          Text(" Registering ... Please wait")
-        ],
-      );
-    };
 
     var doRegister = () async {
       if (form.validate()) {
@@ -472,17 +454,7 @@ class _RegisterState extends State<Register> {
           checkMobilePresence();
 
           if (isEmail == false) {
-            Flushbar(
-              title: "Error",
-              message: "Email Already Exists",
-              duration: Duration(seconds: 3),
-            ).show(context);
           } else if (isMobile == false) {
-            Flushbar(
-              title: "Error",
-              message: "Mobile Number Already Exists",
-              duration: Duration(seconds: 3),
-            ).show(context);
           } else {
             final Future<Map<String, dynamic>> respose = auth.register(
                 _username.text,
@@ -635,7 +607,7 @@ class _RegisterState extends State<Register> {
                           _msg = "Contact Number Should Start from 6,7,8,9";
                         } else if (value.length < 10) {
                           _msg = "mobile number should be 10 numbers";
-                        } else if (_alternateMobile.text == value) {
+                        } else if (_mobile.text == value) {
                           _msg = "Mobile and Alternate Mobile can't be same";
                         }
 
@@ -884,13 +856,6 @@ class _RegisterState extends State<Register> {
                     SizedBox(
                       height: 5.0,
                     ),
-                    SizedBox(
-                      height: 20.0,
-                    ),
-                    Text('Country'),
-                    SizedBox(
-                      height: 5.0,
-                    ),
                     Container(
                       height: 60,
                       child: customSearchableDropDown(
@@ -1042,9 +1007,28 @@ class _RegisterState extends State<Register> {
                     SizedBox(
                       height: 20.0,
                     ),
-                    auth.loggedInStatus == Status.Authenticating
-                        ? loading
-                        : longButtons('Register', doRegister)
+                    Center(
+                      child: Material(
+                        //Wrap with Material
+                        shape: RoundedRectangleBorder(
+                            borderRadius: BorderRadius.circular(22.0)),
+                        // elevation: 18.0,
+                        color: Colors.lightBlue,
+                        clipBehavior: Clip.antiAlias,
+                        // Add This
+                        child: MaterialButton(
+                          minWidth: 200.0,
+                          height: 35,
+                          child: new Text('Register',
+                              style: new TextStyle(
+                                  fontSize: 16.0, color: Colors.white)),
+                          onPressed: doRegister,
+                        ),
+                      ),
+                    ),
+                    // auth.loggedInStatus == Status.Authenticating
+                    //     ? loading
+                    //     : longButtons('Register', doRegister)
                   ],
                 ),
               ),

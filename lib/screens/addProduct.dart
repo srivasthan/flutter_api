@@ -499,6 +499,7 @@ class _AddProduct extends State<AddProduct> {
   @override
   Widget build(BuildContext context) {
     final form = formKey.currentState;
+    bool isSerialExists = true;
     AuthProvider auth = Provider.of<AuthProvider>(context);
 
     getSubProduct(int productId) async {
@@ -539,6 +540,60 @@ class _AddProduct extends State<AddProduct> {
       ],
     );
 
+    Future<void> checkSerialNo() async {
+      var result = await Connectivity().checkConnectivity();
+      if (result == ConnectivityResult.mobile ||
+          result == ConnectivityResult.wifi) {
+        if (_cusCode.isEmpty ||
+            _productId == 0 ||
+            _subProductId == 0 ||
+            _modelNumber.text.isEmpty ||
+            _serialNumber.text.isEmpty) {
+          Fluttertoast.showToast(
+              msg: "Details not valid",
+              gravity: ToastGravity.CENTER,
+              timeInSecForIosWeb: 1,
+              toastLength: Toast.LENGTH_SHORT);
+        } else {
+          final Map<String, dynamic> data = {
+            'customer_code': _cusCode,
+            'product_id': _productId,
+            'product_sub_id': _subProductId,
+            'model_no': _modelNumber.text,
+            'serial_no': _serialNumber.text
+          };
+
+          print(data);
+
+          // done , now run app
+          RestClient apiService = RestClient(dio.Dio());
+
+          final response = await apiService.validateSerialNo(data);
+
+          if (response.emailEntity.responseCode == "500") {
+            setState(() {
+              isSerialExists = false;
+              _serialNumber.text = "";
+              Navigator.of(context, rootNavigator: true).pop();
+              Fluttertoast.showToast(
+                  msg:
+                      "Serial Number already exists. Please enter different serial number",
+                  gravity: ToastGravity.CENTER,
+                  timeInSecForIosWeb: 1,
+                  toastLength: Toast.LENGTH_SHORT);
+            });
+          }
+        }
+      } else {
+        Navigator.of(context, rootNavigator: true).pop();
+        Fluttertoast.showToast(
+            msg: "Connect to internet",
+            gravity: ToastGravity.CENTER,
+            timeInSecForIosWeb: 1,
+            toastLength: Toast.LENGTH_SHORT);
+      }
+    }
+
     var addProduct = () async {
       if (form.validate()) {
         form.save();
@@ -548,51 +603,53 @@ class _AddProduct extends State<AddProduct> {
         var result = await Connectivity().checkConnectivity();
         if (result == ConnectivityResult.mobile ||
             result == ConnectivityResult.wifi) {
-          RestClient apiService = RestClient(dio.Dio());
-
-          final Map<String, dynamic> apiBodyData = {
-            'customer_code': _cusCode.toString(),
-            'product_id': _productId,
-            'product_sub_id': _subProductId,
-            'model_no': _modelNumber.text,
-            'serial_no': _serialNumber.text,
-            'contract_type_id': _amcId,
-            'contract_duration': _contractDuration,
-            'start_date': contractStartDate.toString(),
-            'plot_number': _plotNumber.text,
-            'street': _street.text,
-            'post_code': _postCode.text,
-            'landmark': _landMark.text,
-            'country_id': _countryId.toString(),
-            'state_id': _stateId.toString(),
-            'city_id': _cityId.toString(),
-            'location_id': _locationId.toString(),
-            'purchase_date': inputDate.toString(),
-            'invoice_id': _invoiceNumber.text
-          };
-
-          print(apiBodyData);
-
           showAlertDialog(context);
+          checkSerialNo();
 
-          final response = await apiService.addProduct(token, apiBodyData);
+          if (isSerialExists == false) {
+            setState(() {});
+          } else {
+            RestClient apiService = RestClient(dio.Dio());
 
-          if (response.responseEntity.responseCode == "200") {
-            setState(() {
-              newToken = response.responseEntity.token;
-              prefs.setString('token', newToken.toString());
+            final Map<String, dynamic> apiBodyData = {
+              'customer_code': _cusCode.toString(),
+              'product_id': _productId,
+              'product_sub_id': _subProductId,
+              'model_no': _modelNumber.text,
+              'serial_no': _serialNumber.text,
+              'contract_type_id': _amcId,
+              'contract_duration': _contractDuration,
+              'start_date': contractStartDate.toString(),
+              'plot_number': _plotNumber.text,
+              'street': _street.text,
+              'post_code': _postCode.text,
+              'landmark': _landMark.text,
+              'country_id': _countryId.toString(),
+              'state_id': _stateId.toString(),
+              'city_id': _cityId.toString(),
+              'location_id': _locationId.toString(),
+              'purchase_date': inputDate.toString(),
+              'invoice_id': _invoiceNumber.text
+            };
 
-              Fluttertoast.showToast(
-                  msg: response.responseEntity.message,
-                  gravity: ToastGravity.CENTER,
-                  timeInSecForIosWeb: 1,
-                  toastLength: Toast.LENGTH_SHORT);
+            final response = await apiService.addProduct(token, apiBodyData);
 
-              Navigator.pop(
-                  context, true); // It worked for me instead of above line
-              Navigator.pushReplacement(context,
-                  MaterialPageRoute(builder: (context) => DashBoard(2)));
-            });
+            if (response.responseEntity.responseCode == "200") {
+              setState(() {
+                newToken = response.responseEntity.token;
+                prefs.setString('token', newToken.toString());
+
+                Fluttertoast.showToast(
+                    msg: response.responseEntity.message,
+                    gravity: ToastGravity.CENTER,
+                    timeInSecForIosWeb: 1,
+                    toastLength: Toast.LENGTH_SHORT);
+
+                Navigator.of(context, rootNavigator: true).pop();
+                Navigator.pushReplacement(context,
+                    MaterialPageRoute(builder: (context) => DashBoard(2)));
+              });
+            }
           }
         } else {
           Fluttertoast.showToast(

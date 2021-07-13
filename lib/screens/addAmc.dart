@@ -668,31 +668,30 @@ class _AddAmc extends State<AddAmc> {
             'serial_no': _serialNumber.text
           };
 
+          print(data);
+
           // done , now run app
           RestClient apiService = RestClient(dio.Dio());
 
           final response = await apiService.validateSerialNo(data);
 
-          switch (response.emailEntity.responseCode) {
-            case "200":
-              setState(() {
-                serialNumberList.add(_serialNumber.text.trim());
-                _serialNumber.text = "";
-                _quantity.value =
-                    TextEditingValue(text: serialNumberList.length.toString());
-                _amount.value = TextEditingValue(
-                    text: (serialNumberList.length * _getAmount).toString());
-                Navigator.of(context, rootNavigator: true).pop();
-              });
-              break;
-
-            case "500":
+          if (response.emailEntity.responseCode == "200") {
+            setState(() {
               Navigator.of(context, rootNavigator: true).pop();
-              Fluttertoast.showToast(
-                  msg: response.emailEntity.message,
-                  gravity: ToastGravity.CENTER,
-                  timeInSecForIosWeb: 1,
-                  toastLength: Toast.LENGTH_SHORT);
+              serialNumberList.add(_serialNumber.text.trim());
+              _serialNumber.text = "";
+              _quantity.value =
+                  TextEditingValue(text: serialNumberList.length.toString());
+              _amount.value = TextEditingValue(
+                  text: (serialNumberList.length * _getAmount).toString());
+            });
+          } else if (response.emailEntity.responseCode == "500") {
+            Navigator.of(context, rootNavigator: true).pop();
+            Fluttertoast.showToast(
+                msg: response.emailEntity.message,
+                gravity: ToastGravity.CENTER,
+                timeInSecForIosWeb: 1,
+                toastLength: Toast.LENGTH_SHORT);
           }
         }
       } else {
@@ -1067,6 +1066,7 @@ class _AddAmc extends State<AddAmc> {
                             _contractDuration = amcModel.duration;
                             _dummy = _contractDuration.toString() + "  months";
                             _duration.value = TextEditingValue(text: _dummy);
+                            _getAmount = amcModel.cost.toInt();
                           });
                         } else {
                           amcModel = null;
@@ -1328,8 +1328,6 @@ class _AddAmc extends State<AddAmc> {
                   TextFormField(
                     autofocus: false,
                     controller: _amount,
-                    keyboardType:
-                        TextInputType.numberWithOptions(decimal: true),
                     validator: (value) =>
                         value.isEmpty ? 'Please enter amount' : null,
                     // controller: _invoiceNumber,
