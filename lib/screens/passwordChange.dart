@@ -5,7 +5,6 @@ import 'package:flutter_api_json_parse/network/api_service.dart';
 import 'package:flutter_api_json_parse/utility/validator.dart';
 import 'package:flutter_api_json_parse/utility/widgets.dart';
 import 'package:fluttertoast/fluttertoast.dart';
-import 'package:provider/provider.dart';
 import 'package:dio/dio.dart' as dio;
 import 'package:shared_preferences/shared_preferences.dart';
 import 'package:flutter_pw_validator/flutter_pw_validator.dart';
@@ -144,14 +143,6 @@ class _PasswordChange extends State<PasswordChange> {
         ).show(context);
       }
     };
-
-    final loading = Row(
-      mainAxisAlignment: MainAxisAlignment.center,
-      children: <Widget>[
-        CircularProgressIndicator(),
-        Text(" Login ... Please wait")
-      ],
-    );
 
     return SafeArea(
       child: Scaffold(

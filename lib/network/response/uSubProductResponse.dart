@@ -1,7 +1,5 @@
-import 'package:flutter_api_json_parse/network/entity/productEntity.dart';
 import 'package:flutter_api_json_parse/network/entity/uSubProductEntity.dart';
 import 'package:json_annotation/json_annotation.dart';
-import 'package:flutter_api_json_parse/network/entity/uProductEntity.dart';
 
 @JsonSerializable()
 class USubProductResponse {

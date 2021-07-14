@@ -1,5 +1,4 @@
 import 'package:flutter_api_json_parse/network/entity/myProductListEntity.dart';
-import 'package:flutter_api_json_parse/network/entity/productEntity.dart';
 import 'package:json_annotation/json_annotation.dart';
 
 @JsonSerializable()

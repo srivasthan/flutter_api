@@ -1,5 +1,3 @@
-import 'dart:convert';
-
 import 'package:custom_searchable_dropdown/custom_searchable_dropdown.dart';
 import 'package:flushbar/flushbar.dart';
 import 'package:flutter/material.dart';
@@ -16,12 +14,9 @@ import 'package:flutter_api_json_parse/domain/subProduct.dart';
 import 'package:flutter_api_json_parse/network/api_service.dart';
 import 'package:flutter_api_json_parse/utility/validator.dart';
 import 'package:flutter_api_json_parse/utility/widgets.dart';
-import 'package:flutter_form_builder/flutter_form_builder.dart';
 import 'package:fluttertoast/fluttertoast.dart';
-import 'package:provider/provider.dart';
 import 'package:dio/dio.dart' as dio;
 import 'package:intl/intl.dart';
-import 'package:searchable_dropdown/searchable_dropdown.dart';
 import 'package:shared_preferences/shared_preferences.dart';
 import 'dashboard.dart';
 import 'package:connectivity/connectivity.dart';
@@ -40,7 +35,6 @@ class _AddAmc extends State<AddAmc> {
       _dummy,
       token,
       newToken,
-      _testcountry,
       _cusName,
       _contact,
       _alternativecontact,
@@ -60,15 +54,12 @@ class _AddAmc extends State<AddAmc> {
   TextEditingController _amount = new TextEditingController();
   TextEditingController _quantity = new TextEditingController();
   DateTime selectedDate = DateTime.now();
-  List<ProductModel> product = List();
-  List<AmcModel> amc = List();
-  List<CountryModel> country = List();
-  List<StateModel> state = List();
-  List<CityModel> city = List();
-  List<LocationModel> location = List();
-  List<CallCategoryModel> callCategoryList = List();
-  List<String> countrytest = new List<String>();
-  List<int> countryid = new List<int>();
+  List<ProductModel> product = new List<ProductModel>();
+  List<AmcModel> amc = new List<AmcModel>();
+  List<CountryModel> country = new List<CountryModel>();
+  List<StateModel> state = new List<StateModel>();
+  List<CityModel> city = new List<CityModel>();
+  List<LocationModel> location = new List<LocationModel>();
   List<SubProductModel> subProduct = new List<SubProductModel>();
   List<String> serialNumberList = new List<String>();
   List<SerialNoPojos> serialNoPojosList = new List<SerialNoPojos>();
@@ -81,7 +72,6 @@ class _AddAmc extends State<AddAmc> {
   CallCategoryModel callCategoryModel;
   SerialNoPojos amcserial;
   AmcModel amcModel;
-  bool _loading = true;
   var inputDate, contractStartDate;
   int _productId,
       _amcId,
@@ -177,7 +167,6 @@ class _AddAmc extends State<AddAmc> {
       final response = await apiService.getCountry();
 
       if (response.countryEntity.responseCode == "200") {
-        country = new List<CountryModel>();
         setState(() {
           for (var i = 0; i < response.countryEntity.datum.length; i++) {
             if (response.countryEntity.datum[i].countryId == _countryId) {
@@ -186,11 +175,7 @@ class _AddAmc extends State<AddAmc> {
             country.add(new CountryModel(
                 countryId: response.countryEntity.datum[i].countryId,
                 countryName: response.countryEntity.datum[i].countryName));
-            countrytest.add(response.countryEntity.datum[i].countryName);
-            countryid.add(response.countryEntity.datum[i].countryId);
           }
-
-          _testcountry = "India";
         });
       }
     } else {
@@ -213,7 +198,6 @@ class _AddAmc extends State<AddAmc> {
       final response = await apiService.getState(countryId);
 
       if (response.stateEntity.responseCode == "200") {
-        state = new List<StateModel>();
         setState(() {
           for (var i = 0; i < response.stateEntity.datum.length; i++) {
             state.add(new StateModel(
@@ -242,7 +226,6 @@ class _AddAmc extends State<AddAmc> {
       final response = await apiService.getCity(stateId);
 
       if (response.cityEntity.responseCode == "200") {
-        city = new List<CityModel>();
         setState(() {
           for (var i = 0; i < response.cityEntity.datum.length; i++) {
             city.add(new CityModel(
@@ -272,7 +255,6 @@ class _AddAmc extends State<AddAmc> {
       final response = await apiService.getLocation(cityId);
 
       if (response.locationEntity.responseCode == "200") {
-        location = new List<LocationModel>();
         setState(() {
           for (var i = 0; i < response.locationEntity.datum.length; i++) {
             location.add(new LocationModel(
@@ -300,7 +282,6 @@ class _AddAmc extends State<AddAmc> {
       final response = await apiService.getState(countryId);
 
       if (response.stateEntity.responseCode == "200") {
-        state = new List<StateModel>();
         setState(() {
           for (var i = 0; i < response.stateEntity.datum.length; i++) {
             if (response.stateEntity.datum[i].stateId == _stateId) {
@@ -330,7 +311,6 @@ class _AddAmc extends State<AddAmc> {
       final response = await apiService.getCity(stateId);
 
       if (response.cityEntity.responseCode == "200") {
-        city = new List<CityModel>();
         setState(() {
           for (var i = 0; i < response.cityEntity.datum.length; i++) {
             if (response.cityEntity.datum[i].cityId == _cityId) {
@@ -360,7 +340,6 @@ class _AddAmc extends State<AddAmc> {
       final response = await apiService.getLocation(cityId);
 
       if (response.locationEntity.responseCode == "200") {
-        location = new List<LocationModel>();
         setState(() {
           for (var i = 0; i < response.locationEntity.datum.length; i++) {
             if (response.locationEntity.datum[i].locationId == _locationId) {
@@ -391,7 +370,6 @@ class _AddAmc extends State<AddAmc> {
       final response = await apiService.getProduct();
 
       if (response.productEntity.responseCode == "200") {
-        product = new List<ProductModel>();
         setState(() {
           for (var i = 0; i < response.productEntity.datum.length; i++) {
             product.add(new ProductModel(
@@ -419,7 +397,6 @@ class _AddAmc extends State<AddAmc> {
       final response = await apiService.getAmcDetails();
 
       if (response.amcEntity.responseCode == "200") {
-        amc = new List<AmcModel>();
         setState(() {
           for (var i = 0; i < response.amcEntity.datum.length; i++) {
             amc.add(new AmcModel(
@@ -531,85 +508,7 @@ class _AddAmc extends State<AddAmc> {
 
   @override
   Widget build(BuildContext context) {
-    String _msg;
-    bool isEmail = true, isMobile = true, isAlternative = true;
     final form = formKey.currentState;
-
-    Future<void> checkEmailPresence(String text) async {
-      var result = await Connectivity().checkConnectivity();
-      if (result == ConnectivityResult.mobile ||
-          result == ConnectivityResult.wifi) {
-        final Map<String, dynamic> data = {'email_id': text};
-
-        // done , now run app
-        RestClient apiService = RestClient(dio.Dio());
-
-        final response = await apiService.emailVerify(data);
-
-        switch (response.emailEntity.responseCode) {
-          case "200":
-            isEmail = true;
-            break;
-
-          case "400":
-
-          case "500":
-            isEmail = false;
-            Flushbar(
-              title: "Error",
-              message: "Email already exists",
-              duration: Duration(seconds: 3),
-            ).show(context);
-            break;
-        }
-
-        return _msg;
-      } else {
-        Fluttertoast.showToast(
-            msg: "Connect to internet",
-            gravity: ToastGravity.CENTER,
-            timeInSecForIosWeb: 1,
-            toastLength: Toast.LENGTH_SHORT);
-      }
-    }
-
-    Future<void> checkMobilePresence(String text) async {
-      var result = await Connectivity().checkConnectivity();
-      if (result == ConnectivityResult.mobile ||
-          result == ConnectivityResult.wifi) {
-        final Map<String, dynamic> data = {'email_id': text};
-
-        // done , now run app
-        RestClient apiService = RestClient(dio.Dio());
-
-        final response = await apiService.mobileVerify(data);
-
-        switch (response.mobileEntity.responseCode) {
-          case "200":
-            isMobile = true;
-            break;
-
-          case "400":
-
-          case "500":
-            isMobile = false;
-            Flushbar(
-              title: "Error",
-              message: "Mobile Number Already Exists",
-              duration: Duration(seconds: 3),
-            ).show(context);
-            break;
-        }
-
-        return _msg;
-      } else {
-        Fluttertoast.showToast(
-            msg: "Connect to internet",
-            gravity: ToastGravity.CENTER,
-            timeInSecForIosWeb: 1,
-            toastLength: Toast.LENGTH_SHORT);
-      }
-    }
 
     getSubProduct(int productId) async {
       var result = await Connectivity().checkConnectivity();
@@ -700,14 +599,6 @@ class _AddAmc extends State<AddAmc> {
       }
     }
 
-    var loading = Row(
-      mainAxisAlignment: MainAxisAlignment.center,
-      children: <Widget>[
-        CircularProgressIndicator(),
-        Text(" Registering ... Please wait")
-      ],
-    );
-
     var generateAmc = () async {
       if (form.validate()) {
         form.save();
@@ -770,8 +661,7 @@ class _AddAmc extends State<AddAmc> {
                   timeInSecForIosWeb: 1,
                   toastLength: Toast.LENGTH_SHORT);
 
-              Navigator.pop(
-                  context, true); // It worked for me instead of above line
+              Navigator.pop(context, true);
               Navigator.pushReplacement(context,
                   MaterialPageRoute(builder: (context) => DashBoard(3)));
             });

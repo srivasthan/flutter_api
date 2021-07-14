@@ -52,16 +52,7 @@ class _RaiseTicket extends State<RaiseTicket> {
 
   final formKey = GlobalKey<FormState>();
   bool isValidate = true, serialRowVisible = false, itemsRowVisible = false;
-  String _cusCode,
-      _dummy,
-      token,
-      _testcountry,
-      _serialNumber,
-      _cusName,
-      _contact,
-      _alternativecontact,
-      encImageBase64 = "",
-      _email;
+  String _cusCode, token, _serialNumber, encImageBase64 = "";
   final String base64Format = "data:image/png;base64,";
   Map<String, dynamic> serialArray;
   var body, send;
@@ -73,18 +64,18 @@ class _RaiseTicket extends State<RaiseTicket> {
   TextEditingController _description = TextEditingController();
   DateTime selectedDate = DateTime.now();
   TimeOfDay selectedTime = TimeOfDay.now();
-  String _hour, _minute, _time;
-  List<ProductModel> product = List();
-  List<CallCategoryModel> callCategoryList = List();
-  List<WorkModel> workTypeList = List();
-  List<SerialNumberModel> serialList = List();
+  String _hour, _minute;
+  List<ProductModel> product = new List<ProductModel>();
+  List<CallCategoryModel> callCategoryList = new List<CallCategoryModel>();
+  List<WorkModel> workTypeList = new List<WorkModel>();
+  List<SerialNumberModel> serialList = new List<SerialNumberModel>();
   List<SubProductModel> subProduct = new List<SubProductModel>();
   ProductModel productModel;
   SubProductModel subProductModel;
   CallCategoryModel callCategoryModel;
   WorkModel workModel;
   SerialNumberModel serialNumberModel;
-  File imageResized, _photo;
+  File imageResized;
   var image;
   var inputDate, inputTime;
   int _productId,
@@ -124,7 +115,6 @@ class _RaiseTicket extends State<RaiseTicket> {
       final response = await apiService.getUProduct(token, _cusCode);
 
       if (response.uproductEntity.responseCode == "200") {
-        product = new List<ProductModel>();
         setState(() {
           prefs.setString('token', response.uproductEntity.token);
           for (var i = 0; i < response.uproductEntity.datum.length; i++) {
@@ -153,7 +143,6 @@ class _RaiseTicket extends State<RaiseTicket> {
       final response = await apiService.getWorkType();
 
       if (response.workEntity.responseCode == "200") {
-        callCategoryList = new List<CallCategoryModel>();
         setState(() {
           for (var i = 0; i < response.workEntity.datum.length; i++) {
             workTypeList.add(new WorkModel(
@@ -211,7 +200,6 @@ class _RaiseTicket extends State<RaiseTicket> {
           selectedTime = picked;
           _hour = selectedTime.hour.toString();
           _minute = selectedTime.minute.toString();
-          _time = _hour + ' : ' + _minute;
           _timeController.text = DateFormat.jm()
               .format(DateFormat("hh:mm").parse("$_hour:$_minute"));
         });
@@ -291,7 +279,6 @@ class _RaiseTicket extends State<RaiseTicket> {
         final response = await apiService.getCallCategory();
 
         if (response.callCategoryEntity.responseCode == "200") {
-          callCategoryList = new List<CallCategoryModel>();
           setState(() {
             for (var i = 0; i < response.callCategoryEntity.datum.length; i++) {
               callCategoryList.add(new CallCategoryModel(
@@ -361,7 +348,6 @@ class _RaiseTicket extends State<RaiseTicket> {
             token, _cusCode, _productId, _subProductId);
 
         if (response.serialNumberEntity.responseCode == "200") {
-          serialList = new List<SerialNumberModel>();
           setState(() {
             prefs.setString('token', response.serialNumberEntity.token);
             for (var i = 0; i < response.serialNumberEntity.datum.length; i++) {
@@ -386,14 +372,6 @@ class _RaiseTicket extends State<RaiseTicket> {
             toastLength: Toast.LENGTH_SHORT);
       }
     }
-
-    var loading = Row(
-      mainAxisAlignment: MainAxisAlignment.center,
-      children: <Widget>[
-        CircularProgressIndicator(),
-        Text(" Registering ... Please wait")
-      ],
-    );
 
     var raiseTicket = () async {
       if (form.validate()) {

@@ -39,12 +39,7 @@ class UserPreferences {
         phone: phone,
         alternateNumber: alternatenumber,
         plotNumber: plotnumber);
-  }
 
-  Future<CountryModel> getCountryId() async {
-    final SharedPreferences prefs = await SharedPreferences.getInstance();
-
-    String countryId = prefs.getString("country_id");
   }
 
   void removeUser() async {

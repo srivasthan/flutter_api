@@ -1,7 +1,3 @@
-import 'dart:convert';
-
-import 'package:dio/dio.dart';
-import 'package:flutter_api_json_parse/network/entity/user_entity.dart';
 import 'package:json_annotation/json_annotation.dart';
 
 part 'login_response.g.dart';

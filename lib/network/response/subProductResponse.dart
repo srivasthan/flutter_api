@@ -1,4 +1,3 @@
-import 'package:flutter_api_json_parse/network/entity/productEntity.dart';
 import 'package:flutter_api_json_parse/network/entity/subProductEntity.dart';
 import 'package:json_annotation/json_annotation.dart';
 

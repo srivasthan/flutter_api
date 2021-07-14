@@ -17,7 +17,6 @@ import 'package:flutter_api_json_parse/utility/shared_preference.dart';
 import 'package:flutter_api_json_parse/utility/validator.dart';
 import 'package:flutter_api_json_parse/utility/widgets.dart';
 import 'package:fluttertoast/fluttertoast.dart';
-import 'package:provider/provider.dart';
 import 'package:dio/dio.dart' as dio;
 import 'package:intl/intl.dart';
 
@@ -48,13 +47,12 @@ class _RegisterState extends State<Register> {
   TextEditingController _landMark = new TextEditingController();
   TextEditingController _postCode = new TextEditingController();
   DateTime selectedDate = DateTime.now();
-  List<ProductModel> product = List();
-  List<AmcModel> amc = List();
-  List<CountryModel> country = List();
-  List<StateModel> state = List();
-  List<CityModel> city = List();
-  List<LocationModel> location = List();
-  List<String> test = new List<String>();
+  List<ProductModel> product = new List<ProductModel>();
+  List<AmcModel> amc = new List<AmcModel>();
+  List<CountryModel> country = new List<CountryModel>();
+  List<StateModel> state = new List<StateModel>();
+  List<CityModel> city = new List<CityModel>();
+  List<LocationModel> location = new List<LocationModel>();
   List<SubProductModel> subProduct = new List<SubProductModel>();
   CountryModel countryModel;
   StateModel stateModel;
@@ -63,7 +61,6 @@ class _RegisterState extends State<Register> {
   ProductModel productModel;
   SubProductModel subProductModel;
   AmcModel amcModel;
-  bool _loading = true;
   var inputDate;
   int _productId,
       _amcId,
@@ -153,7 +150,6 @@ class _RegisterState extends State<Register> {
       final response = await apiService.getCountry();
 
       if (response.countryEntity.responseCode == "200") {
-        country = new List<CountryModel>();
         setState(() {
           for (var i = 0; i < response.countryEntity.datum.length; i++) {
             country.add(new CountryModel(
@@ -180,7 +176,6 @@ class _RegisterState extends State<Register> {
       final response = await apiService.getProduct();
 
       if (response.productEntity.responseCode == "200") {
-        product = new List<ProductModel>();
         setState(() {
           for (var i = 0; i < response.productEntity.datum.length; i++) {
             product.add(new ProductModel(
@@ -207,7 +202,6 @@ class _RegisterState extends State<Register> {
       final response = await apiService.getAmcDetails();
 
       if (response.amcEntity.responseCode == "200") {
-        amc = new List<AmcModel>();
         setState(() {
           for (var i = 0; i < response.amcEntity.datum.length; i++) {
             amc.add(new AmcModel(
@@ -307,7 +301,6 @@ class _RegisterState extends State<Register> {
         final response = await apiService.getState(countryId);
 
         if (response.stateEntity.responseCode == "200") {
-          state = new List<StateModel>();
           setState(() {
             for (var i = 0; i < response.stateEntity.datum.length; i++) {
               state.add(new StateModel(
@@ -336,7 +329,6 @@ class _RegisterState extends State<Register> {
         final response = await apiService.getCity(stateId);
 
         if (response.cityEntity.responseCode == "200") {
-          city = new List<CityModel>();
           setState(() {
             for (var i = 0; i < response.cityEntity.datum.length; i++) {
               city.add(new CityModel(
@@ -365,7 +357,6 @@ class _RegisterState extends State<Register> {
         final response = await apiService.getLocation(cityId);
 
         if (response.locationEntity.responseCode == "200") {
-          location = new List<LocationModel>();
           setState(() {
             for (var i = 0; i < response.locationEntity.datum.length; i++) {
               location.add(new LocationModel(

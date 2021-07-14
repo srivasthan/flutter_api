@@ -13,10 +13,8 @@ import 'package:flutter_api_json_parse/network/api_service.dart';
 import 'package:flutter_api_json_parse/utility/validator.dart';
 import 'package:flutter_api_json_parse/utility/widgets.dart';
 import 'package:fluttertoast/fluttertoast.dart';
-import 'package:provider/provider.dart';
 import 'package:dio/dio.dart' as dio;
 import 'package:intl/intl.dart';
-import 'package:searchable_dropdown/searchable_dropdown.dart';
 import 'package:custom_searchable_dropdown/custom_searchable_dropdown.dart';
 import 'package:shared_preferences/shared_preferences.dart';
 import 'dashboard.dart';
@@ -32,7 +30,7 @@ class _AddProduct extends State<AddProduct> {
 
   final formKey = GlobalKey<FormState>();
   bool isValidate = true;
-  String _cusCode, _dummy, token, newToken, _testcountry;
+  String _cusCode, _dummy, token, newToken;
   TextEditingController _date = new TextEditingController();
   TextEditingController _duration = new TextEditingController();
   TextEditingController _contractDurationDate = new TextEditingController();
@@ -44,14 +42,12 @@ class _AddProduct extends State<AddProduct> {
   TextEditingController _landMark = new TextEditingController();
   TextEditingController _postCode = new TextEditingController();
   DateTime selectedDate = DateTime.now();
-  List<ProductModel> product = List();
-  List<AmcModel> amc = List();
-  List<CountryModel> country = List();
-  List<StateModel> state = List();
-  List<CityModel> city = List();
-  List<LocationModel> location = List();
-  List<String> countrytest = new List<String>();
-  List<int> countryid = new List<int>();
+  List<ProductModel> product = new List<ProductModel>();
+  List<AmcModel> amc = new List<AmcModel>();
+  List<CountryModel> country = new List<CountryModel>();
+  List<StateModel> state = new List<StateModel>();
+  List<CityModel> city = new List<CityModel>();
+  List<LocationModel> location = new List<LocationModel>();
   List<SubProductModel> subProduct = new List<SubProductModel>();
   CountryModel countryModel;
   StateModel stateModel;
@@ -153,7 +149,6 @@ class _AddProduct extends State<AddProduct> {
       final response = await apiService.getCountry();
 
       if (response.countryEntity.responseCode == "200") {
-        country = new List<CountryModel>();
         setState(() {
           for (var i = 0; i < response.countryEntity.datum.length; i++) {
             if (response.countryEntity.datum[i].countryId == _countryId) {
@@ -185,7 +180,6 @@ class _AddProduct extends State<AddProduct> {
       final response = await apiService.getState(countryId);
 
       if (response.stateEntity.responseCode == "200") {
-        state = new List<StateModel>();
         setState(() {
           for (var i = 0; i < response.stateEntity.datum.length; i++) {
             state.add(new StateModel(
@@ -213,7 +207,6 @@ class _AddProduct extends State<AddProduct> {
       final response = await apiService.getState(countryId);
 
       if (response.stateEntity.responseCode == "200") {
-        state = new List<StateModel>();
         setState(() {
           for (var i = 0; i < response.stateEntity.datum.length; i++) {
             if (response.stateEntity.datum[i].stateId == _stateId) {
@@ -244,7 +237,6 @@ class _AddProduct extends State<AddProduct> {
       final response = await apiService.getCity(stateId);
 
       if (response.cityEntity.responseCode == "200") {
-        city = new List<CityModel>();
         setState(() {
           for (var i = 0; i < response.cityEntity.datum.length; i++) {
             city.add(new CityModel(
@@ -272,7 +264,6 @@ class _AddProduct extends State<AddProduct> {
       final response = await apiService.getCity(stateId);
 
       if (response.cityEntity.responseCode == "200") {
-        city = new List<CityModel>();
         setState(() {
           for (var i = 0; i < response.cityEntity.datum.length; i++) {
             if (response.cityEntity.datum[i].cityId == _cityId) {
@@ -303,7 +294,6 @@ class _AddProduct extends State<AddProduct> {
       final response = await apiService.getLocation(cityId);
 
       if (response.locationEntity.responseCode == "200") {
-        location = new List<LocationModel>();
         setState(() {
           for (var i = 0; i < response.locationEntity.datum.length; i++) {
             location.add(new LocationModel(
@@ -331,7 +321,6 @@ class _AddProduct extends State<AddProduct> {
       final response = await apiService.getLocation(cityId);
 
       if (response.locationEntity.responseCode == "200") {
-        location = new List<LocationModel>();
         setState(() {
           for (var i = 0; i < response.locationEntity.datum.length; i++) {
             if (response.locationEntity.datum[i].locationId == _locationId) {
@@ -362,7 +351,6 @@ class _AddProduct extends State<AddProduct> {
       final response = await apiService.getProduct();
 
       if (response.productEntity.responseCode == "200") {
-        product = new List<ProductModel>();
         setState(() {
           for (var i = 0; i < response.productEntity.datum.length; i++) {
             product.add(new ProductModel(
@@ -390,7 +378,6 @@ class _AddProduct extends State<AddProduct> {
       final response = await apiService.getAmcDetails();
 
       if (response.amcEntity.responseCode == "200") {
-        amc = new List<AmcModel>();
         setState(() {
           for (var i = 0; i < response.amcEntity.datum.length; i++) {
             amc.add(new AmcModel(
@@ -530,14 +517,6 @@ class _AddProduct extends State<AddProduct> {
       }
     }
 
-    var loading = Row(
-      mainAxisAlignment: MainAxisAlignment.center,
-      children: <Widget>[
-        CircularProgressIndicator(),
-        Text(" Registering ... Please wait")
-      ],
-    );
-
     Future<void> checkSerialNo() async {
       var result = await Connectivity().checkConnectivity();
       if (result == ConnectivityResult.mobile ||
@@ -580,6 +559,10 @@ class _AddProduct extends State<AddProduct> {
                   timeInSecForIosWeb: 1,
                   toastLength: Toast.LENGTH_SHORT);
             });
+          } else {
+            setState(() {
+              isSerialExists = true;
+            });
           }
         }
       } else {
@@ -605,7 +588,6 @@ class _AddProduct extends State<AddProduct> {
           checkSerialNo();
 
           if (isSerialExists == false) {
-            setState(() {});
           } else {
             RestClient apiService = RestClient(dio.Dio());
 
@@ -643,7 +625,7 @@ class _AddProduct extends State<AddProduct> {
                     timeInSecForIosWeb: 1,
                     toastLength: Toast.LENGTH_SHORT);
 
-                Navigator.of(context, rootNavigator: true).pop();
+                Navigator.pop(context, true);
                 Navigator.pushReplacement(context,
                     MaterialPageRoute(builder: (context) => DashBoard(2)));
               });

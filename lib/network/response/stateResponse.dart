@@ -1,4 +1,3 @@
-import 'package:flutter_api_json_parse/network/entity/countryEntity.dart';
 import 'package:flutter_api_json_parse/network/entity/stateEntity.dart';
 import 'package:json_annotation/json_annotation.dart';
 

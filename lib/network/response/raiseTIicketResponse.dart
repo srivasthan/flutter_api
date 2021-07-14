@@ -1,7 +1,3 @@
-import 'package:flutter_api_json_parse/network/entity/amcEntity.dart';
-import 'package:flutter_api_json_parse/network/entity/cityEntity.dart';
-import 'package:flutter_api_json_parse/network/entity/countryEntity.dart';
-import 'package:flutter_api_json_parse/network/entity/emailEntity.dart';
 import 'package:flutter_api_json_parse/network/entity/raiseTicketEntity.dart';
 import 'package:json_annotation/json_annotation.dart';
 

@@ -1,5 +1,4 @@
 import 'package:connectivity/connectivity.dart';
-import 'package:firebase_auth/firebase_auth.dart';
 import 'package:firebase_messaging/firebase_messaging.dart';
 import 'package:flushbar/flushbar.dart';
 import 'package:flutter/material.dart';
@@ -10,7 +9,6 @@ import 'package:flutter_api_json_parse/utility/userPreferences.dart';
 import 'package:flutter_api_json_parse/utility/validator.dart';
 import 'package:flutter_api_json_parse/utility/widgets.dart';
 import 'package:fluttertoast/fluttertoast.dart';
-import 'package:provider/provider.dart';
 import 'package:shared_preferences/shared_preferences.dart';
 import 'package:dio/dio.dart' as dio;
 
@@ -21,7 +19,7 @@ class Login extends StatefulWidget {
 
 class _LoginState extends State<Login> {
   final formKey = GlobalKey<FormState>();
-  String _userName, _password, status, _fcmToken;
+  String status, _fcmToken;
   final FirebaseMessaging _fcm = FirebaseMessaging();
   TextEditingController emailController = new TextEditingController();
   TextEditingController passwordController = new TextEditingController();
@@ -114,8 +112,6 @@ class _LoginState extends State<Login> {
           RestClient apiService = RestClient(dio.Dio());
 
           final response = await apiService.login(loginData);
-
-          print('${response.toJson()}');
 
           if (response.responseEntity.responseCode == '200') {
             User authUser = User(
@@ -264,7 +260,6 @@ class _LoginState extends State<Login> {
                       ),
                       prefixIcon: Icon(Icons.email),
                     ),
-                    onSaved: (value) => _userName = value,
                     validator: validateEmail,
                   ),
                   SizedBox(
@@ -296,7 +291,6 @@ class _LoginState extends State<Login> {
                     controller: passwordController,
                     validator: (value) =>
                         value.isEmpty ? 'Please enter password' : null,
-                    onSaved: (value) => _password = value,
                   ),
                   SizedBox(
                     height: 20.0,

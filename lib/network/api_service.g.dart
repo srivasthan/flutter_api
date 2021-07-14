@@ -280,7 +280,6 @@ class _RestClient implements RestClient {
   getProfile(token, customerCode) async {
     const _extra = <String, dynamic>{};
     final queryParameters = <String, dynamic>{};
-    Map<String, String> requestHeaders = {'Token': token};
     Map<String, String> queryParams = {
       'customer_code': customerCode.toString()
     };

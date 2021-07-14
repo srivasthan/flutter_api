@@ -1,10 +1,5 @@
-import 'dart:convert';
-
 import 'package:flutter_api_json_parse/network/entity/response_entity.dart';
-import 'package:flutter_api_json_parse/network/entity/user_entity.dart';
 import 'package:json_annotation/json_annotation.dart';
-
-import 'login_response.dart';
 
 part 'global_response.g.dart';
 

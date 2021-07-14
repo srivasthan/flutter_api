@@ -16,13 +16,11 @@ import 'package:flutter_api_json_parse/network/response/serialNumberResponse.dar
 import 'package:flutter_api_json_parse/network/response/stateResponse.dart';
 import 'package:flutter_api_json_parse/network/response/countryResponse.dart';
 import 'package:flutter_api_json_parse/network/response/global_response.dart';
-import 'package:flutter_api_json_parse/network/response/login_response.dart';
 import 'package:flutter_api_json_parse/network/response/subProductResponse.dart';
 import 'package:flutter_api_json_parse/network/response/tokenResponse.dart';
 import 'package:flutter_api_json_parse/network/response/uProductResponse.dart';
 import 'package:flutter_api_json_parse/network/response/uSubProductResponse.dart';
 import 'package:flutter_api_json_parse/network/response/workResponse.dart';
-import 'package:flutter_api_json_parse/utility/app_url.dart';
 import 'package:retrofit/http.dart';
 
 part 'api_service.g.dart';
