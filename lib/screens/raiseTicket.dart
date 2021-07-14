@@ -9,11 +9,9 @@ import 'package:flutter_api_json_parse/domain/serialNumber.dart';
 import 'package:flutter_api_json_parse/domain/subProduct.dart';
 import 'package:flutter_api_json_parse/domain/workTYpe.dart';
 import 'package:flutter_api_json_parse/network/api_service.dart';
-import 'package:flutter_api_json_parse/providers/auth_provider.dart';
 import 'package:flutter_api_json_parse/utility/widgets.dart';
 import 'package:fluttertoast/fluttertoast.dart';
 import 'package:image_picker/image_picker.dart';
-import 'package:provider/provider.dart';
 import 'package:dio/dio.dart' as dio;
 import 'package:intl/intl.dart';
 import 'dart:io';
@@ -283,8 +281,6 @@ class _RaiseTicket extends State<RaiseTicket> {
   @override
   Widget build(BuildContext context) {
     final form = formKey.currentState;
-
-    AuthProvider auth = Provider.of<AuthProvider>(context);
 
     getCall() async {
       var result = await Connectivity().checkConnectivity();
@@ -888,9 +884,7 @@ class _RaiseTicket extends State<RaiseTicket> {
                 SizedBox(
                   height: 20.0,
                 ),
-                auth.loggedInStatus == Status.Authenticating
-                    ? loading
-                    : longButtons('Raise Ticket', raiseTicket)
+                longButtons('Raise Ticket', raiseTicket)
               ],
             ),
           ),

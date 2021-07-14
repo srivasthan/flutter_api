@@ -1,8 +1,3 @@
-import 'package:flutter_api_json_parse/network/api_service.dart';
-import 'package:dio/dio.dart' as dio;
-import 'package:flutter_api_json_parse/providers/auth_provider.dart';
-import 'package:provider/provider.dart';
-
 String validateEmail(String value) {
   String _msg;
   RegExp regex = new RegExp(

@@ -4,12 +4,15 @@ import 'package:firebase_messaging/firebase_messaging.dart';
 import 'package:flushbar/flushbar.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
-import 'package:flutter_api_json_parse/providers/auth_provider.dart';
+import 'package:flutter_api_json_parse/domain/user.dart';
+import 'package:flutter_api_json_parse/network/api_service.dart';
+import 'package:flutter_api_json_parse/utility/userPreferences.dart';
 import 'package:flutter_api_json_parse/utility/validator.dart';
 import 'package:flutter_api_json_parse/utility/widgets.dart';
 import 'package:fluttertoast/fluttertoast.dart';
 import 'package:provider/provider.dart';
 import 'package:shared_preferences/shared_preferences.dart';
+import 'package:dio/dio.dart' as dio;
 
 class Login extends StatefulWidget {
   @override
@@ -67,7 +70,25 @@ class _LoginState extends State<Login> {
 
   @override
   Widget build(BuildContext context) {
-    AuthProvider auth = Provider.of<AuthProvider>(context);
+    var saveUser;
+
+    showAlertDialog(BuildContext context) {
+      AlertDialog alert = AlertDialog(
+        content: new Row(
+          children: [
+            CircularProgressIndicator(),
+            Container(margin: EdgeInsets.only(left: 5), child: Text("Loading")),
+          ],
+        ),
+      );
+      showDialog(
+        barrierDismissible: false,
+        context: context,
+        builder: (BuildContext context) {
+          return alert;
+        },
+      );
+    }
 
     var doLogin = () async {
       final form = formKey.currentState;
@@ -77,30 +98,87 @@ class _LoginState extends State<Login> {
           result == ConnectivityResult.wifi) {
         if (form.validate()) {
           form.save();
-          final Future<Map<String, dynamic>> respose =
-              auth.login(_userName, _password, _fcmToken);
 
-          respose.then((response) async {
-            if (response['status']) {
-              SharedPreferences prefs = await SharedPreferences.getInstance();
-              prefs.setString('password', passwordController.text.toString());
+          final Map<String, dynamic> loginData = {
+            'username': emailController.text,
+            'password': passwordController.text,
+            'device_token': _fcmToken,
+            'device_type': 'Android'
+          };
 
-              Flushbar(
-                title: "Failed Login",
-                message: "Login Successful",
-                duration: Duration(seconds: 3),
-              ).show(context);
+          print(loginData);
 
-              Navigator.pushNamedAndRemoveUntil(
-                  context, '/dashboard', (route) => false);
-            } else {
-              Flushbar(
-                title: "Failed Login",
-                message: "Login Failed",
-                duration: Duration(seconds: 3),
-              ).show(context);
-            }
-          });
+          showAlertDialog(context);
+
+          // done , now run app
+          RestClient apiService = RestClient(dio.Dio());
+
+          final response = await apiService.login(loginData);
+
+          print('${response.toJson()}');
+
+          if (response.responseEntity.responseCode == '200') {
+            User authUser = User(
+              cusCode: response.responseEntity.userEntity.cusCode,
+              cusName: response.responseEntity.userEntity.cusName,
+              email: response.responseEntity.userEntity.email,
+              phone: response.responseEntity.userEntity.phone,
+            );
+
+            SharedPreferences prefs = await SharedPreferences.getInstance();
+            prefs.setString('password', passwordController.text.toString());
+            prefs.setString('cuscode',
+                response.responseEntity.userEntity.cusCode.toString());
+            prefs.setString(
+                "email", response.responseEntity.userEntity.email.toString());
+            prefs.setInt(
+                "country_id", response.responseEntity.userEntity.countryId);
+            prefs.setInt(
+                "state_id", response.responseEntity.userEntity.stateId);
+            prefs.setInt("city_id", response.responseEntity.userEntity.cityId);
+            prefs.setInt(
+                "location_id", response.responseEntity.userEntity.locationId);
+            prefs.setString("plotnumber",
+                response.responseEntity.userEntity.plotNumber.toString());
+            prefs.setString(
+                "street", response.responseEntity.userEntity.street.toString());
+            prefs.setString("landmark",
+                response.responseEntity.userEntity.landmark.toString());
+            prefs.setString("post_code",
+                response.responseEntity.userEntity.postCode.toString());
+            prefs.setString(
+                "contact", response.responseEntity.userEntity.phone.toString());
+            prefs.setString("alternativecontact",
+                response.responseEntity.userEntity.alternateNumber.toString());
+            prefs.setString(
+                "name", response.responseEntity.userEntity.cusName.toString());
+
+            UserPreferences().saveUser(authUser);
+
+            saveUser = {
+              'status': true,
+              'message': 'Successful',
+              'user': authUser
+            };
+
+            Fluttertoast.showToast(
+                msg: response.responseEntity.message,
+                timeInSecForIosWeb: 1,
+                toastLength: Toast.LENGTH_SHORT);
+
+            Navigator.pushNamedAndRemoveUntil(
+                context, '/dashboard', (route) => false);
+          } else if (response.responseEntity.responseCode == '500') {
+            Fluttertoast.showToast(
+                msg: "Connect to internet",
+                timeInSecForIosWeb: 1,
+                toastLength: Toast.LENGTH_SHORT);
+            Navigator.of(context, rootNavigator: true).pop();
+            Fluttertoast.showToast(
+                msg: response.responseEntity.message,
+                timeInSecForIosWeb: 1,
+                toastLength: Toast.LENGTH_SHORT);
+          }
         } else {
           Flushbar(
             title: 'Invalid form',
@@ -115,14 +193,6 @@ class _LoginState extends State<Login> {
             toastLength: Toast.LENGTH_SHORT);
       }
     };
-
-    final loading = Row(
-      mainAxisAlignment: MainAxisAlignment.center,
-      children: <Widget>[
-        CircularProgressIndicator(),
-        Text(" Login ... Please wait")
-      ],
-    );
 
     final forgotLabel = Row(
       mainAxisAlignment: MainAxisAlignment.spaceBetween,
@@ -182,6 +252,7 @@ class _LoginState extends State<Login> {
                   ),
                   TextFormField(
                     keyboardType: TextInputType.emailAddress,
+                    controller: emailController,
                     decoration: InputDecoration(
                       hintText: "Email",
                       hintStyle: TextStyle(
@@ -230,9 +301,7 @@ class _LoginState extends State<Login> {
                   SizedBox(
                     height: 20.0,
                   ),
-                  auth.loggedInStatus == Status.Authenticating
-                      ? loading
-                      : longButtons('Login', doLogin),
+                  longButtons('Login', doLogin),
                   SizedBox(
                     height: 8.0,
                   ),

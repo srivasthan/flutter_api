@@ -12,7 +12,8 @@ import 'package:flutter_api_json_parse/domain/product.dart';
 import 'package:flutter_api_json_parse/domain/state.dart';
 import 'package:flutter_api_json_parse/domain/subProduct.dart';
 import 'package:flutter_api_json_parse/network/api_service.dart';
-import 'package:flutter_api_json_parse/providers/auth_provider.dart';
+import 'package:flutter_api_json_parse/network/entity/registerEntity.dart';
+import 'package:flutter_api_json_parse/utility/shared_preference.dart';
 import 'package:flutter_api_json_parse/utility/validator.dart';
 import 'package:flutter_api_json_parse/utility/widgets.dart';
 import 'package:fluttertoast/fluttertoast.dart';
@@ -29,8 +30,10 @@ class _RegisterState extends State<Register> {
   Duration get loginTime => Duration(milliseconds: timeDilation.ceil() * 2250);
 
   final formKey = GlobalKey<FormState>();
-  bool isValidate = true;
-  String _storeMobileNumber, _dummy, dropdownValue;
+  bool isValidate = true,
+      isEmailErrorPresence = false,
+      isMobileErrorPresence = false;
+  String _mobileNumberError = "", _dummy, _emailError = "";
   TextEditingController _date = new TextEditingController();
   TextEditingController _duration = new TextEditingController();
   TextEditingController _username = new TextEditingController();
@@ -236,7 +239,7 @@ class _RegisterState extends State<Register> {
       if (picked != null && picked != selectedDate)
         setState(() {
           selectedDate = picked;
-          final DateFormat formatter = DateFormat('dd-MM-yyyy');
+          final DateFormat formatter = DateFormat('yyyy-MM-dd');
           inputDate = formatter.format(selectedDate);
           _date.value = TextEditingValue(text: inputDate.toString());
         });
@@ -261,10 +264,8 @@ class _RegisterState extends State<Register> {
 
   @override
   Widget build(BuildContext context) {
-    String _msg;
-    bool isEmail = true, isMobile = true;
     final form = formKey.currentState;
-    AuthProvider auth = Provider.of<AuthProvider>(context);
+    var saveUser;
 
     getSubProduct(int productId) async {
       var result = await Connectivity().checkConnectivity();
@@ -395,16 +396,16 @@ class _RegisterState extends State<Register> {
         final response = await apiService.emailVerify(data);
 
         if (response.emailEntity.responseCode == "500") {
-          isEmail = false;
-          Navigator.of(context, rootNavigator: true).pop();
-          Flushbar(
-            title: "Error",
-            message: "Email already exists",
-            duration: Duration(seconds: 3),
-          ).show(context);
+          setState(() {
+            isEmailErrorPresence = true;
+            _emailError = response.emailEntity.message;
+          });
+        } else {
+          setState(() {
+            isEmailErrorPresence = false;
+          });
         }
       } else {
-        Navigator.of(context, rootNavigator: true).pop();
         Fluttertoast.showToast(
             msg: "Connect to internet",
             timeInSecForIosWeb: 1,
@@ -424,16 +425,16 @@ class _RegisterState extends State<Register> {
         final response = await apiService.mobileVerify(data);
 
         if (response.mobileEntity.responseCode == "500") {
-          isMobile = false;
-          Navigator.of(context, rootNavigator: true).pop();
-          Flushbar(
-            title: "Error",
-            message: "Mobile already exists",
-            duration: Duration(seconds: 3),
-          ).show(context);
+          setState(() {
+            isMobileErrorPresence = true;
+            _mobileNumberError = response.mobileEntity.message;
+          });
+        } else {
+          setState(() {
+            isMobileErrorPresence = false;
+          });
         }
       } else {
-        Navigator.of(context, rootNavigator: true).pop();
         Fluttertoast.showToast(
             msg: "Connect to internet",
             timeInSecForIosWeb: 1,
@@ -450,44 +451,65 @@ class _RegisterState extends State<Register> {
         var result = await Connectivity().checkConnectivity();
         if (result == ConnectivityResult.mobile ||
             result == ConnectivityResult.wifi) {
-          checkEmailPresence();
-          checkMobilePresence();
+          final Map<String, dynamic> apiBodyData = {
+            'customer_name': _username.text,
+            'email_id': _email.text,
+            'contact_number': _mobile.text,
+            'alternate_number': _alternateMobile.text,
+            'product_id': _productId,
+            'product_sub_id': _subProductId,
+            'model_no': _modelNumber.text,
+            'serial_no': _serialNumber.text,
+            'amc_id': _amcId,
+            'contract_duration': _contractDuration,
+            'plot_number': _plotNumber.text,
+            'street': _street.text,
+            'post_code': int.parse(_postCode.text),
+            'country_id': _countryId,
+            'state_id': _stateId,
+            'city_id': _cityId,
+            'location_id': _locationId,
+            'landmark': _landMark.text,
+            'purchase_date': inputDate.toString(),
+            'invoice_id': _invoiceNumber.text
+          };
 
-          if (isEmail == false) {
-          } else if (isMobile == false) {
-          } else {
-            final Future<Map<String, dynamic>> respose = auth.register(
-                _username.text,
-                _email.text,
-                _mobile.text,
-                _alternateMobile.text,
-                _productId,
-                _subProductId,
-                _modelNumber.text,
-                _serialNumber.text,
-                inputDate.toString(),
-                _amcId,
-                _contractDuration,
-                _plotNumber.text,
-                _street.text,
-                _landMark.text,
-                _countryId,
-                _stateId,
-                _cityId,
-                _locationId,
-                int.parse(_postCode.text),
-                _invoiceNumber.text);
+          // done , now run app
+          RestClient apiService = RestClient(dio.Dio());
 
-            auth.loggedInStatus = Status.Authenticating;
-            auth.notifyListeners();
+          final response = await apiService.register(apiBodyData);
 
-            respose.then((response) {
-              if (response['status']) {
-                Navigator.of(context, rootNavigator: true).pop();
-                Navigator.pushNamedAndRemoveUntil(
-                    context, '/login', (route) => false);
-              }
-            });
+          print('${response.toJson()}');
+
+          if (response.responseEntity.responseCode == '200') {
+            RegisterEntity authUser = RegisterEntity(
+                message: response.responseEntity.message,
+                token: response.responseEntity.token);
+
+            MySharedPreferences.instance
+                .setStringValue("token", response.responseEntity.token);
+
+            saveUser = {
+              'status': true,
+              'message': 'Successfully registered',
+              'data': authUser
+            };
+
+            Navigator.of(context, rootNavigator: true).pop();
+
+            Fluttertoast.showToast(
+                msg: response.responseEntity.message,
+                timeInSecForIosWeb: 1,
+                toastLength: Toast.LENGTH_SHORT);
+
+            Navigator.pushNamedAndRemoveUntil(
+                context, '/login', (route) => false);
+          } else if (response.responseEntity.responseCode == "500") {
+            Navigator.of(context, rootNavigator: true).pop();
+            Fluttertoast.showToast(
+                msg: response.responseEntity.message,
+                timeInSecForIosWeb: 1,
+                toastLength: Toast.LENGTH_SHORT);
           }
         } else {
           Navigator.of(context, rootNavigator: true).pop();
@@ -553,6 +575,11 @@ class _RegisterState extends State<Register> {
                           _msg = "Please enter email";
                         } else if (!regex.hasMatch(value)) {
                           _msg = "Please provide a valid email address";
+                        } else {
+                          checkEmailPresence();
+                          if (isEmailErrorPresence == true) {
+                            _msg = _emailError;
+                          }
                         }
                         return _msg;
                       },
@@ -581,6 +608,11 @@ class _RegisterState extends State<Register> {
                           _msg = "Contact Number Should Start from 6,7,8,9";
                         } else if (value.length < 10) {
                           _msg = "mobile number should be 10 numbers";
+                        } else {
+                          checkMobilePresence();
+                          if (isMobileErrorPresence == true) {
+                            _msg = _mobileNumberError;
+                          }
                         }
 
                         return _msg;
@@ -1007,28 +1039,7 @@ class _RegisterState extends State<Register> {
                     SizedBox(
                       height: 20.0,
                     ),
-                    Center(
-                      child: Material(
-                        //Wrap with Material
-                        shape: RoundedRectangleBorder(
-                            borderRadius: BorderRadius.circular(22.0)),
-                        // elevation: 18.0,
-                        color: Colors.lightBlue,
-                        clipBehavior: Clip.antiAlias,
-                        // Add This
-                        child: MaterialButton(
-                          minWidth: 200.0,
-                          height: 35,
-                          child: new Text('Register',
-                              style: new TextStyle(
-                                  fontSize: 16.0, color: Colors.white)),
-                          onPressed: doRegister,
-                        ),
-                      ),
-                    ),
-                    // auth.loggedInStatus == Status.Authenticating
-                    //     ? loading
-                    //     : longButtons('Register', doRegister)
+                    longButtons('Register', doRegister),
                   ],
                 ),
               ),

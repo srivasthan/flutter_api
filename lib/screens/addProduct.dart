@@ -10,7 +10,6 @@ import 'package:flutter_api_json_parse/domain/product.dart';
 import 'package:flutter_api_json_parse/domain/state.dart';
 import 'package:flutter_api_json_parse/domain/subProduct.dart';
 import 'package:flutter_api_json_parse/network/api_service.dart';
-import 'package:flutter_api_json_parse/providers/auth_provider.dart';
 import 'package:flutter_api_json_parse/utility/validator.dart';
 import 'package:flutter_api_json_parse/utility/widgets.dart';
 import 'package:fluttertoast/fluttertoast.dart';
@@ -500,7 +499,6 @@ class _AddProduct extends State<AddProduct> {
   Widget build(BuildContext context) {
     final form = formKey.currentState;
     bool isSerialExists = true;
-    AuthProvider auth = Provider.of<AuthProvider>(context);
 
     getSubProduct(int productId) async {
       var result = await Connectivity().checkConnectivity();
@@ -1127,9 +1125,7 @@ class _AddProduct extends State<AddProduct> {
                   SizedBox(
                     height: 20.0,
                   ),
-                  auth.loggedInStatus == Status.Authenticating
-                      ? loading
-                      : longButtons('Add Product', addProduct)
+                  longButtons('Add Product', addProduct)
                 ],
               ),
             ),

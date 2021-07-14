@@ -14,7 +14,6 @@ import 'package:flutter_api_json_parse/domain/product.dart';
 import 'package:flutter_api_json_parse/domain/state.dart';
 import 'package:flutter_api_json_parse/domain/subProduct.dart';
 import 'package:flutter_api_json_parse/network/api_service.dart';
-import 'package:flutter_api_json_parse/providers/auth_provider.dart';
 import 'package:flutter_api_json_parse/utility/validator.dart';
 import 'package:flutter_api_json_parse/utility/widgets.dart';
 import 'package:flutter_form_builder/flutter_form_builder.dart';
@@ -535,8 +534,6 @@ class _AddAmc extends State<AddAmc> {
     String _msg;
     bool isEmail = true, isMobile = true, isAlternative = true;
     final form = formKey.currentState;
-
-    AuthProvider auth = Provider.of<AuthProvider>(context);
 
     Future<void> checkEmailPresence(String text) async {
       var result = await Connectivity().checkConnectivity();
@@ -1339,9 +1336,7 @@ class _AddAmc extends State<AddAmc> {
                   SizedBox(
                     height: 20.0,
                   ),
-                  auth.loggedInStatus == Status.Authenticating
-                      ? loading
-                      : longButtons('Generate', generateAmc)
+                  longButtons('Generate', generateAmc)
                 ],
               ),
             ),

@@ -1,8 +1,6 @@
 import 'dart:async';
 
 import 'package:flutter/material.dart';
-import 'package:flutter/services.dart';
-import 'package:flutter_api_json_parse/providers/auth_provider.dart';
 import 'package:flutter_api_json_parse/providers/user_provider.dart';
 import 'package:flutter_api_json_parse/screens/addAmc.dart';
 import 'package:flutter_api_json_parse/screens/addProduct.dart';
@@ -16,8 +14,6 @@ import 'package:flutter_api_json_parse/screens/register.dart';
 import 'package:flutter_api_json_parse/utility/userPreferences.dart';
 import 'package:provider/provider.dart';
 import 'package:firebase_crashlytics/firebase_crashlytics.dart';
-import 'package:firebase_core/firebase_core.dart';
-import 'package:shared_preferences/shared_preferences.dart';
 
 import 'domain/user.dart';
 import 'screens/login.dart';
@@ -43,7 +39,6 @@ class MyApp extends StatelessWidget {
 
     return MultiProvider(
       providers: [
-        ChangeNotifierProvider(create: (_) => AuthProvider()),
         ChangeNotifierProvider(create: (_) => UserProvider())
       ],
       child: MaterialApp(

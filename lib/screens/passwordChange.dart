@@ -2,7 +2,6 @@ import 'package:connectivity/connectivity.dart';
 import 'package:flushbar/flushbar.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_api_json_parse/network/api_service.dart';
-import 'package:flutter_api_json_parse/providers/auth_provider.dart';
 import 'package:flutter_api_json_parse/utility/validator.dart';
 import 'package:flutter_api_json_parse/utility/widgets.dart';
 import 'package:fluttertoast/fluttertoast.dart';
@@ -79,8 +78,6 @@ class _PasswordChange extends State<PasswordChange> {
 
   @override
   Widget build(BuildContext context) {
-    AuthProvider auth = Provider.of<AuthProvider>(context);
-
     var changePassword = () async {
       final form = formKey.currentState;
 
@@ -309,9 +306,7 @@ class _PasswordChange extends State<PasswordChange> {
                   SizedBox(
                     height: 20.0,
                   ),
-                  auth.loggedInStatus == Status.Authenticating
-                      ? loading
-                      : longButtons('Change Password', changePassword),
+                  longButtons('Change Password', changePassword),
                 ],
               ),
             ),
