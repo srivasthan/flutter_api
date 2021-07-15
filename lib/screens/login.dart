@@ -1,16 +1,15 @@
 import 'package:connectivity/connectivity.dart';
+import 'package:dio/dio.dart';
 import 'package:firebase_messaging/firebase_messaging.dart';
 import 'package:flushbar/flushbar.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 import 'package:flutter_api_json_parse/domain/user.dart';
-import 'package:flutter_api_json_parse/network/api_service.dart';
 import 'package:flutter_api_json_parse/utility/userPreferences.dart';
 import 'package:flutter_api_json_parse/utility/validator.dart';
 import 'package:flutter_api_json_parse/utility/widgets.dart';
 import 'package:fluttertoast/fluttertoast.dart';
 import 'package:shared_preferences/shared_preferences.dart';
-import 'package:dio/dio.dart' as dio;
 
 class Login extends StatefulWidget {
   @override
@@ -104,50 +103,66 @@ class _LoginState extends State<Login> {
             'device_type': 'Android'
           };
 
-          print(loginData);
-
           showAlertDialog(context);
 
-          // done , now run app
-          RestClient apiService = RestClient(dio.Dio());
+          final Response<Map<String, dynamic>> _result = await Dio().request(
+              'customer_login/',
+              queryParameters: <String, dynamic>{},
+              options: RequestOptions(
+                  method: 'POST',
+                  headers: {'Content-Type': 'application/json'},
+                  extra: <String, dynamic>{},
+                  baseUrl: 'https://dev.kaspontech.com/djadmin/'),
+              data: loginData);
 
-          final response = await apiService.login(loginData);
+          final value = _result.data;
 
-          if (response.responseEntity.responseCode == '200') {
+          print(value);
+
+          String responseCode = value['response']['response_code'];
+
+          if (responseCode == "500") {
+            Navigator.of(context, rootNavigator: true).pop();
+            Fluttertoast.showToast(
+                msg: value['response']['message'],
+                timeInSecForIosWeb: 1,
+                toastLength: Toast.LENGTH_SHORT);
+          } else if (responseCode == "200") {
             User authUser = User(
-              cusCode: response.responseEntity.userEntity.cusCode,
-              cusName: response.responseEntity.userEntity.cusName,
-              email: response.responseEntity.userEntity.email,
-              phone: response.responseEntity.userEntity.phone,
+              cusCode: value['response']['customer_details']['customer_code'],
+              cusName: value['response']['customer_details']['customer_name'],
+              email: value['response']['customer_details']['email_id'],
+              phone: value['response']['customer_details']['contact_number'],
             );
 
             SharedPreferences prefs = await SharedPreferences.getInstance();
             prefs.setString('password', passwordController.text.toString());
             prefs.setString('cuscode',
-                response.responseEntity.userEntity.cusCode.toString());
+                value['response']['customer_details']['customer_code']);
             prefs.setString(
-                "email", response.responseEntity.userEntity.email.toString());
+                "email", value['response']['customer_details']['email_id']);
+            prefs.setInt("country_id",
+                value['response']['customer_details']['country_id']);
             prefs.setInt(
-                "country_id", response.responseEntity.userEntity.countryId);
+                "state_id", value['response']['customer_details']['state_id']);
             prefs.setInt(
-                "state_id", response.responseEntity.userEntity.stateId);
-            prefs.setInt("city_id", response.responseEntity.userEntity.cityId);
-            prefs.setInt(
-                "location_id", response.responseEntity.userEntity.locationId);
+                "city_id", value['response']['customer_details']['city_id']);
+            prefs.setInt("location_id",
+                value['response']['customer_details']['location_id']);
             prefs.setString("plotnumber",
-                response.responseEntity.userEntity.plotNumber.toString());
+                value['response']['customer_details']['plot_number']);
             prefs.setString(
-                "street", response.responseEntity.userEntity.street.toString());
-            prefs.setString("landmark",
-                response.responseEntity.userEntity.landmark.toString());
+                "street", value['response']['customer_details']['street']);
+            prefs.setString(
+                "landmark", value['response']['customer_details']['landmark']);
             prefs.setString("post_code",
-                response.responseEntity.userEntity.postCode.toString());
-            prefs.setString(
-                "contact", response.responseEntity.userEntity.phone.toString());
+                value['response']['customer_details']['post_code'].toString());
+            prefs.setString("contact",
+                value['response']['customer_details']['contact_number']);
             prefs.setString("alternativecontact",
-                response.responseEntity.userEntity.alternateNumber.toString());
+                value['response']['customer_details']['alternate_number']);
             prefs.setString(
-                "name", response.responseEntity.userEntity.cusName.toString());
+                "name", value['response']['customer_details']['customer_name']);
 
             UserPreferences().saveUser(authUser);
 
@@ -158,22 +173,12 @@ class _LoginState extends State<Login> {
             };
 
             Fluttertoast.showToast(
-                msg: response.responseEntity.message,
+                msg: value['response']['message'],
                 timeInSecForIosWeb: 1,
                 toastLength: Toast.LENGTH_SHORT);
 
             Navigator.pushNamedAndRemoveUntil(
                 context, '/dashboard', (route) => false);
-          } else if (response.responseEntity.responseCode == '500') {
-            Fluttertoast.showToast(
-                msg: "Connect to internet",
-                timeInSecForIosWeb: 1,
-                toastLength: Toast.LENGTH_SHORT);
-            Navigator.of(context, rootNavigator: true).pop();
-            Fluttertoast.showToast(
-                msg: response.responseEntity.message,
-                timeInSecForIosWeb: 1,
-                toastLength: Toast.LENGTH_SHORT);
           }
         } else {
           Flushbar(
