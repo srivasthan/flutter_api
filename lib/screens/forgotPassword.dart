@@ -223,6 +223,7 @@ class _ForgotPasswordState extends State<ForgotPassword> {
                       autofocus: false,
                       keyboardType: TextInputType.emailAddress,
                       validator: validateEmail,
+                      autovalidateMode: AutovalidateMode.onUserInteraction,
                       controller: lastNameController,
                       decoration: InputDecoration(
                           labelText: 'Email', border: OutlineInputBorder()),

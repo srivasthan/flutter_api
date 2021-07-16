@@ -16,6 +16,7 @@ import 'package:flutter_api_json_parse/network/entity/registerEntity.dart';
 import 'package:flutter_api_json_parse/utility/shared_preference.dart';
 import 'package:flutter_api_json_parse/utility/validator.dart';
 import 'package:flutter_api_json_parse/utility/widgets.dart';
+import 'package:flutter_form_builder/flutter_form_builder.dart';
 import 'package:fluttertoast/fluttertoast.dart';
 import 'package:dio/dio.dart' as dio;
 import 'package:intl/intl.dart';
@@ -513,7 +514,7 @@ class _RegisterState extends State<Register> {
         Flushbar(
           title: 'Invalid form',
           message: 'Please complete the form properly',
-          duration: Duration(seconds: 10),
+          duration: Duration(seconds: 3),
         ).show(context);
       }
     };
@@ -540,6 +541,7 @@ class _RegisterState extends State<Register> {
                     TextFormField(
                       keyboardType: TextInputType.name,
                       autofocus: false,
+                      autovalidateMode: AutovalidateMode.onUserInteraction,
                       controller: _username,
                       validator: (value) =>
                           value.isEmpty ? 'Please enter name' : null,
@@ -621,20 +623,29 @@ class _RegisterState extends State<Register> {
                       keyboardType: TextInputType.number,
                       autovalidateMode: AutovalidateMode.onUserInteraction,
                       controller: _alternateMobile,
-                      validator: (value) {
-                        String _msg;
-                        if (!value.startsWith("6") &&
-                            !value.startsWith("7") &&
-                            !value.startsWith("8") &&
-                            !value.startsWith("9")) {
-                          _msg = "Contact Number Should Start from 6,7,8,9";
-                        } else if (value.length < 10) {
-                          _msg = "mobile number should be 10 numbers";
-                        } else if (_mobile.text == value) {
-                          _msg = "Mobile and Alternate Mobile can't be same";
+                      // validator: (value) {
+                      //   String _msg;
+                      //   if (!value.startsWith("6") &&
+                      //       !value.startsWith("7") &&
+                      //       !value.startsWith("8") &&
+                      //       !value.startsWith("9")) {
+                      //     _msg = "Contact Number Should Start from 6,7,8,9";
+                      //   } else if (value.length < 10) {
+                      //     _msg = "mobile number should be 10 numbers";
+                      //   } else if (_mobile.text == value) {
+                      //     _msg = "Mobile and Alternate Mobile can't be same";
+                      //   }
+                      //
+                      //   return _msg;
+                      // },
+                      onChanged: (value) {
+                        if (value == _mobile.text) {
+                          Fluttertoast.showToast(
+                              msg:
+                                  "Mobile number and alternative mobile number can't be same",
+                              timeInSecForIosWeb: 1,
+                              toastLength: Toast.LENGTH_SHORT);
                         }
-
-                        return _msg;
                       },
                       decoration: InputDecoration(
                         labelText: 'Alternate Mobile Number',
@@ -648,33 +659,35 @@ class _RegisterState extends State<Register> {
                     SizedBox(
                       height: 5.0,
                     ),
-                    Container(
-                      height: 60,
-                      child: customSearchableDropDown(
-                        items: product,
-                        label: 'Select Product',
-                        decoration: BoxDecoration(
-                            border: Border.all(color: Colors.black54),
-                            borderRadius: BorderRadius.circular(5)),
-                        dropDownMenuItems: product?.map((items) {
-                              return items.productName;
-                            })?.toList() ??
-                            [],
-                        onChanged: (data) {
-                          if (data != null) {
-                            setState(() {
-                              productModel = data;
-                              _productId = productModel.productId;
+                    FormBuilder(
+                      child: Container(
+                        height: 60,
+                        child: customSearchableDropDown(
+                          items: product,
+                          label: 'Select Product',
+                          decoration: BoxDecoration(
+                              border: Border.all(color: Colors.black54),
+                              borderRadius: BorderRadius.circular(5)),
+                          dropDownMenuItems: product?.map((items) {
+                                return items.productName;
+                              })?.toList() ??
+                              [],
+                          onChanged: (data) {
+                            if (data != null) {
+                              setState(() {
+                                productModel = data;
+                                _productId = productModel.productId;
 
-                              subProduct.clear();
-                              subProductModel = null;
-                              //  insideAlertDialog(context);
-                              getSubProduct(_productId);
-                            });
-                          } else {
-                            productModel = null;
-                          }
-                        },
+                                subProduct.clear();
+                                subProductModel = null;
+                                //  insideAlertDialog(context);
+                                getSubProduct(_productId);
+                              });
+                            } else {
+                              productModel = null;
+                            }
+                          },
+                        ),
                       ),
                     ),
                     SizedBox(
@@ -720,6 +733,7 @@ class _RegisterState extends State<Register> {
                       validator: (value) =>
                           value.isEmpty ? 'Please model number' : null,
                       controller: _modelNumber,
+                      autovalidateMode: AutovalidateMode.onUserInteraction,
                       decoration: InputDecoration(
                         labelText: 'Model Number',
                         border: OutlineInputBorder(),
@@ -737,6 +751,7 @@ class _RegisterState extends State<Register> {
                       validator: (value) =>
                           value.isEmpty ? 'Please enter serial number' : null,
                       controller: _serialNumber,
+                      autovalidateMode: AutovalidateMode.onUserInteraction,
                       decoration: InputDecoration(
                         labelText: 'Serial Number',
                         border: OutlineInputBorder(),
@@ -754,6 +769,7 @@ class _RegisterState extends State<Register> {
                       validator: (value) =>
                           value.isEmpty ? 'Please enter invoice number' : null,
                       controller: _invoiceNumber,
+                      autovalidateMode: AutovalidateMode.onUserInteraction,
                       decoration: InputDecoration(
                         labelText: 'Enter Invoice Number',
                         border: OutlineInputBorder(),
@@ -762,9 +778,12 @@ class _RegisterState extends State<Register> {
                     SizedBox(
                       height: 20.0,
                     ),
-                    TextField(
+                    TextFormField(
                       controller: _date,
                       autofocus: false,
+                      autovalidateMode: AutovalidateMode.onUserInteraction,
+                      validator: (value) =>
+                          value.isEmpty ? 'Please select purchase date' : null,
                       onTap: () {
                         _selectDate(context);
                         FocusScope.of(context).requestFocus(new FocusNode());
@@ -833,6 +852,7 @@ class _RegisterState extends State<Register> {
                       validator: (value) =>
                           value.isEmpty ? 'Please enter plot number' : null,
                       controller: _plotNumber,
+                      autovalidateMode: AutovalidateMode.onUserInteraction,
                       decoration: InputDecoration(
                         labelText: 'Plot Number',
                         border: OutlineInputBorder(),
@@ -850,6 +870,7 @@ class _RegisterState extends State<Register> {
                       validator: (value) =>
                           value.isEmpty ? 'Please enter street' : null,
                       controller: _street,
+                      autovalidateMode: AutovalidateMode.onUserInteraction,
                       decoration: InputDecoration(
                         labelText: 'Street',
                         border: OutlineInputBorder(),
@@ -867,6 +888,7 @@ class _RegisterState extends State<Register> {
                       validator: (value) =>
                           value.isEmpty ? 'Please enter landmark' : null,
                       controller: _landMark,
+                      autovalidateMode: AutovalidateMode.onUserInteraction,
                       decoration: InputDecoration(
                         labelText: 'Landmark',
                         border: OutlineInputBorder(),
@@ -1022,6 +1044,7 @@ class _RegisterState extends State<Register> {
                       keyboardType: TextInputType.number,
                       validator: validatePostcode,
                       controller: _postCode,
+                      autovalidateMode: AutovalidateMode.onUserInteraction,
                       decoration: InputDecoration(
                         labelText: 'Postcode',
                         border: OutlineInputBorder(),

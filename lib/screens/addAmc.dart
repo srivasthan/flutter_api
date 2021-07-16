@@ -715,6 +715,7 @@ class _AddAmc extends State<AddAmc> {
                     validator: (value) =>
                         value.isEmpty ? 'Please enter plot number' : null,
                     controller: _plotNumber,
+                    autovalidateMode: AutovalidateMode.onUserInteraction,
                     decoration: InputDecoration(
                       labelText: 'Plot Number',
                       border: OutlineInputBorder(),
@@ -732,6 +733,7 @@ class _AddAmc extends State<AddAmc> {
                     validator: (value) =>
                         value.isEmpty ? 'Please enter street' : null,
                     controller: _street,
+                    autovalidateMode: AutovalidateMode.onUserInteraction,
                     decoration: InputDecoration(
                       labelText: 'Street',
                       border: OutlineInputBorder(),
@@ -743,6 +745,7 @@ class _AddAmc extends State<AddAmc> {
                   TextFormField(
                     autofocus: false,
                     controller: _landMark,
+                    autovalidateMode: AutovalidateMode.onUserInteraction,
                     keyboardType: TextInputType.text,
                     inputFormatters: [
                       FilteringTextInputFormatter.allow(RegExp("[0-9a-zA-Z]"))
@@ -912,6 +915,7 @@ class _AddAmc extends State<AddAmc> {
                     validator: validatePostcode,
                     keyboardType: TextInputType.number,
                     controller: _postCode,
+                    autovalidateMode: AutovalidateMode.onUserInteraction,
                     decoration: InputDecoration(
                       labelText: 'Postcode',
                       border: OutlineInputBorder(),
@@ -966,6 +970,7 @@ class _AddAmc extends State<AddAmc> {
                   ),
                   TextFormField(
                     controller: _duration,
+                    autovalidateMode: AutovalidateMode.onUserInteraction,
                     validator: (value) =>
                         value.isEmpty ? 'Please enter contract duration' : null,
                     autofocus: false,
@@ -983,6 +988,7 @@ class _AddAmc extends State<AddAmc> {
                   TextFormField(
                     controller: _contractDurationDate,
                     autofocus: false,
+                    autovalidateMode: AutovalidateMode.onUserInteraction,
                     validator: (value) => value.isEmpty
                         ? 'Please select contract start date'
                         : null,
@@ -1083,6 +1089,7 @@ class _AddAmc extends State<AddAmc> {
                     validator: (value) =>
                         value.isEmpty ? 'Please enter model number' : null,
                     controller: _modelNumber,
+                    autovalidateMode: AutovalidateMode.onUserInteraction,
                     decoration: InputDecoration(
                       labelText: 'Model Number',
                       border: OutlineInputBorder(),
@@ -1100,6 +1107,7 @@ class _AddAmc extends State<AddAmc> {
                     validator: (value) =>
                         value.isEmpty ? 'Please enter invoice number' : null,
                     controller: _invoiceNumber,
+                    autovalidateMode: AutovalidateMode.onUserInteraction,
                     decoration: InputDecoration(
                       labelText: 'Enter Invoice Number',
                       border: OutlineInputBorder(),
@@ -1110,6 +1118,7 @@ class _AddAmc extends State<AddAmc> {
                   ),
                   TextFormField(
                     controller: _date,
+                    autovalidateMode: AutovalidateMode.onUserInteraction,
                     autofocus: false,
                     validator: (value) =>
                         value.isEmpty ? 'Please select purchase date' : null,
@@ -1134,9 +1143,9 @@ class _AddAmc extends State<AddAmc> {
                           autofocus: false,
                           controller: _quantity,
                           enabled: false,
+                          autovalidateMode: AutovalidateMode.onUserInteraction,
                           validator: (value) =>
                               value.isEmpty ? 'Please enter quantity' : null,
-                          // controller: _invoiceNumber,
                           decoration: InputDecoration(
                             labelText: 'Quantity',
                             border: OutlineInputBorder(),
@@ -1174,6 +1183,11 @@ class _AddAmc extends State<AddAmc> {
                           child: new TextFormField(
                             autofocus: false,
                             controller: _serialNumber,
+                            validator: (value) => value.isEmpty
+                                ? 'Please enter serial number'
+                                : null,
+                            autovalidateMode:
+                                AutovalidateMode.onUserInteraction,
                             keyboardType: TextInputType.text,
                             inputFormatters: [
                               FilteringTextInputFormatter.allow(
@@ -1215,9 +1229,9 @@ class _AddAmc extends State<AddAmc> {
                   TextFormField(
                     autofocus: false,
                     controller: _amount,
+                    autovalidateMode: AutovalidateMode.onUserInteraction,
                     validator: (value) =>
                         value.isEmpty ? 'Please enter amount' : null,
-                    // controller: _invoiceNumber,
                     decoration: InputDecoration(
                       labelText: 'Amount',
                       border: OutlineInputBorder(),

@@ -677,6 +677,7 @@ class _AddProduct extends State<AddProduct> {
                   TextFormField(
                     autofocus: false,
                     keyboardType: TextInputType.text,
+                    autovalidateMode: AutovalidateMode.onUserInteraction,
                     validator: (value) =>
                         value.isEmpty ? 'Please enter plot number' : null,
                     controller: _plotNumber,
@@ -697,6 +698,7 @@ class _AddProduct extends State<AddProduct> {
                     validator: (value) =>
                         value.isEmpty ? 'Please enter street' : null,
                     controller: _street,
+                    autovalidateMode: AutovalidateMode.onUserInteraction,
                     decoration: InputDecoration(
                       labelText: 'Street',
                       border: OutlineInputBorder(),
@@ -712,6 +714,7 @@ class _AddProduct extends State<AddProduct> {
                     inputFormatters: [
                       FilteringTextInputFormatter.allow(RegExp("[0-9a-zA-Z]"))
                     ],
+                    autovalidateMode: AutovalidateMode.onUserInteraction,
                     validator: (value) =>
                         value.isEmpty ? 'Please enter landmark' : null,
                     decoration: InputDecoration(
@@ -876,6 +879,7 @@ class _AddProduct extends State<AddProduct> {
                     autofocus: false,
                     validator: validatePostcode,
                     keyboardType: TextInputType.number,
+                    autovalidateMode: AutovalidateMode.onUserInteraction,
                     controller: _postCode,
                     decoration: InputDecoration(
                       labelText: 'Postcode',
@@ -930,6 +934,7 @@ class _AddProduct extends State<AddProduct> {
                   ),
                   TextFormField(
                     controller: _duration,
+                    autovalidateMode: AutovalidateMode.onUserInteraction,
                     validator: (value) =>
                         value.isEmpty ? 'Please enter contract duration' : null,
                     autofocus: false,
@@ -946,6 +951,7 @@ class _AddProduct extends State<AddProduct> {
                   ),
                   TextFormField(
                     controller: _contractDurationDate,
+                    autovalidateMode: AutovalidateMode.onUserInteraction,
                     autofocus: false,
                     validator: (value) => value.isEmpty
                         ? 'Please select contract start date'
@@ -1047,6 +1053,7 @@ class _AddProduct extends State<AddProduct> {
                     validator: (value) =>
                         value.isEmpty ? 'Please model number' : null,
                     controller: _modelNumber,
+                    autovalidateMode: AutovalidateMode.onUserInteraction,
                     decoration: InputDecoration(
                       labelText: 'Model Number',
                       border: OutlineInputBorder(),
@@ -1081,6 +1088,7 @@ class _AddProduct extends State<AddProduct> {
                     validator: (value) =>
                         value.isEmpty ? 'Please enter invoice number' : null,
                     controller: _invoiceNumber,
+                    autovalidateMode: AutovalidateMode.onUserInteraction,
                     decoration: InputDecoration(
                       labelText: 'Enter Invoice Number',
                       border: OutlineInputBorder(),
@@ -1092,6 +1100,7 @@ class _AddProduct extends State<AddProduct> {
                   TextFormField(
                     controller: _date,
                     autofocus: false,
+                    autovalidateMode: AutovalidateMode.onUserInteraction,
                     validator: (value) =>
                         value.isEmpty ? 'Please select purchase date' : null,
                     onTap: () {

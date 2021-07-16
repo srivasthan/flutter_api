@@ -336,6 +336,7 @@ class _ProfileState extends State<Profile> {
                       validator: (value) =>
                           value.isEmpty ? "Please enter " : null,
                       controller: nameController,
+                      autovalidateMode: AutovalidateMode.onUserInteraction,
                       decoration: buildInputDecoration(
                           'Enter Name', Icons.account_circle_rounded),
                     ),
@@ -346,6 +347,7 @@ class _ProfileState extends State<Profile> {
                       autofocus: false,
                       keyboardType: TextInputType.emailAddress,
                       controller: emailController,
+                      autovalidateMode: AutovalidateMode.onUserInteraction,
                       decoration:
                           buildInputDecoration('Enter Email', Icons.email),
                     ),
@@ -356,6 +358,7 @@ class _ProfileState extends State<Profile> {
                       autofocus: false,
                       keyboardType: TextInputType.number,
                       controller: mobileController,
+                      autovalidateMode: AutovalidateMode.onUserInteraction,
                       validator: validateMobile,
                       decoration:
                           buildInputDecoration('Enter Mobile', Icons.phone),

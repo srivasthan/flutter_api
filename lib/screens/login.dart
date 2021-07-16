@@ -254,6 +254,7 @@ class _LoginState extends State<Login> {
                   TextFormField(
                     keyboardType: TextInputType.emailAddress,
                     controller: emailController,
+                    autovalidateMode: AutovalidateMode.onUserInteraction,
                     decoration: InputDecoration(
                       hintText: "Email",
                       hintStyle: TextStyle(
@@ -275,6 +276,7 @@ class _LoginState extends State<Login> {
                     height: 5.0,
                   ),
                   TextFormField(
+                    autovalidateMode: AutovalidateMode.onUserInteraction,
                     decoration: InputDecoration(
                       hintText: "Password",
                       hintStyle: TextStyle(
