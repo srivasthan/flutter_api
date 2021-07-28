@@ -187,6 +187,10 @@ class _ForgotPasswordState extends State<ForgotPassword> {
         child: SafeArea(
             child: Scaffold(
           appBar: AppBar(
+            leading: new IconButton(
+              icon: new Icon(Icons.arrow_back_ios),
+              onPressed: () => _onBackPressed(),
+            ),
             title: Text("Forgot Password"),
             elevation: 0.1,
           ),

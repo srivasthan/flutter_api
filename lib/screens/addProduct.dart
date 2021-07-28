@@ -29,7 +29,7 @@ class _AddProduct extends State<AddProduct> {
   Duration get loginTime => Duration(milliseconds: timeDilation.ceil() * 2250);
 
   final formKey = GlobalKey<FormState>();
-  bool isValidate = true;
+  bool isValidate = true, isVisible = false;
   String _cusCode, _dummy, token, newToken;
   TextEditingController _date = new TextEditingController();
   TextEditingController _duration = new TextEditingController();
@@ -332,6 +332,7 @@ class _AddProduct extends State<AddProduct> {
           }
         });
         Navigator.of(context, rootNavigator: true).pop();
+        isVisible = true;
       }
     } else {
       Fluttertoast.showToast(
@@ -651,473 +652,481 @@ class _AddProduct extends State<AddProduct> {
       onWillPop: _onBackPressed,
       child: Scaffold(
         appBar: AppBar(
-          automaticallyImplyLeading: false,
+          leading: new IconButton(
+            icon: new Icon(Icons.arrow_back_ios),
+            onPressed: () => _onBackPressed(),
+          ),
           title: Text('Add Product'),
         ),
-        body: SingleChildScrollView(
-          child: Container(
-            padding: EdgeInsets.all(40.0),
-            child: Form(
-              key: formKey,
-              child: Column(
-                crossAxisAlignment: CrossAxisAlignment.start,
-                children: [
-                  SizedBox(
-                    height: 15.0,
-                  ),
-                  Center(
-                    child: Text(
-                      "Customer Information",
-                      style: TextStyle(fontSize: 20),
+        body: Visibility(
+          visible: isVisible,
+          child: SingleChildScrollView(
+            child: Container(
+              padding: EdgeInsets.all(40.0),
+              child: Form(
+                key: formKey,
+                child: Column(
+                  crossAxisAlignment: CrossAxisAlignment.start,
+                  children: [
+                    SizedBox(
+                      height: 15.0,
                     ),
-                  ),
-                  SizedBox(
-                    height: 20.0,
-                  ),
-                  TextFormField(
-                    autofocus: false,
-                    keyboardType: TextInputType.text,
-                    autovalidateMode: AutovalidateMode.onUserInteraction,
-                    validator: (value) =>
-                        value.isEmpty ? 'Please enter plot number' : null,
-                    controller: _plotNumber,
-                    decoration: InputDecoration(
-                      labelText: 'Plot Number',
-                      border: OutlineInputBorder(),
+                    Center(
+                      child: Text(
+                        "Customer Information",
+                        style: TextStyle(fontSize: 20),
+                      ),
                     ),
-                  ),
-                  SizedBox(
-                    height: 20.0,
-                  ),
-                  TextFormField(
-                    autofocus: false,
-                    keyboardType: TextInputType.text,
-                    inputFormatters: [
-                      FilteringTextInputFormatter.allow(RegExp("[0-9a-zA-Z]"))
-                    ],
-                    validator: (value) =>
-                        value.isEmpty ? 'Please enter street' : null,
-                    controller: _street,
-                    autovalidateMode: AutovalidateMode.onUserInteraction,
-                    decoration: InputDecoration(
-                      labelText: 'Street',
-                      border: OutlineInputBorder(),
+                    SizedBox(
+                      height: 20.0,
                     ),
-                  ),
-                  SizedBox(
-                    height: 20.0,
-                  ),
-                  TextFormField(
-                    autofocus: false,
-                    controller: _landMark,
-                    keyboardType: TextInputType.text,
-                    inputFormatters: [
-                      FilteringTextInputFormatter.allow(RegExp("[0-9a-zA-Z]"))
-                    ],
-                    autovalidateMode: AutovalidateMode.onUserInteraction,
-                    validator: (value) =>
-                        value.isEmpty ? 'Please enter landmark' : null,
-                    decoration: InputDecoration(
-                      labelText: 'Landmark',
-                      border: OutlineInputBorder(),
+                    TextFormField(
+                      autofocus: false,
+                      keyboardType: TextInputType.text,
+                      autovalidateMode: AutovalidateMode.onUserInteraction,
+                      validator: (value) =>
+                          value.isEmpty ? 'Please enter plot number' : null,
+                      controller: _plotNumber,
+                      decoration: InputDecoration(
+                        labelText: 'Plot Number',
+                        border: OutlineInputBorder(),
+                      ),
                     ),
-                  ),
-                  SizedBox(
-                    height: 20.0,
-                  ),
-                  Text('Country'),
-                  SizedBox(
-                    height: 5.0,
-                  ),
-                  Container(
-                    height: 60,
-                    child: customSearchableDropDown(
-                      items: country,
-                      initialIndex: _initialCountryId,
-                      label: 'Select Country',
-                      decoration: BoxDecoration(
-                          border: Border.all(color: Colors.black54),
-                          borderRadius: BorderRadius.circular(5)),
-                      dropDownMenuItems: country?.map((items) {
-                            return items.countryName;
-                          })?.toList() ??
-                          [],
-                      onChanged: (data) {
-                        if (data != null) {
-                          setState(() {
-                            countryModel = data;
-                            _countryId = countryModel.countryId;
-                            _initialCountryId = country.indexOf(data);
+                    SizedBox(
+                      height: 20.0,
+                    ),
+                    TextFormField(
+                      autofocus: false,
+                      keyboardType: TextInputType.text,
+                      inputFormatters: [
+                        FilteringTextInputFormatter.allow(RegExp("[0-9a-zA-Z]"))
+                      ],
+                      validator: (value) =>
+                          value.isEmpty ? 'Please enter street' : null,
+                      controller: _street,
+                      autovalidateMode: AutovalidateMode.onUserInteraction,
+                      decoration: InputDecoration(
+                        labelText: 'Street',
+                        border: OutlineInputBorder(),
+                      ),
+                    ),
+                    SizedBox(
+                      height: 20.0,
+                    ),
+                    TextFormField(
+                      autofocus: false,
+                      controller: _landMark,
+                      keyboardType: TextInputType.text,
+                      inputFormatters: [
+                        FilteringTextInputFormatter.allow(RegExp("[0-9a-zA-Z]"))
+                      ],
+                      autovalidateMode: AutovalidateMode.onUserInteraction,
+                      validator: (value) =>
+                          value.isEmpty ? 'Please enter landmark' : null,
+                      decoration: InputDecoration(
+                        labelText: 'Landmark',
+                        border: OutlineInputBorder(),
+                      ),
+                    ),
+                    SizedBox(
+                      height: 20.0,
+                    ),
+                    Text('Country'),
+                    SizedBox(
+                      height: 5.0,
+                    ),
+                    Container(
+                      height: 60,
+                      child: customSearchableDropDown(
+                        items: country,
+                        initialIndex: _initialCountryId,
+                        label: 'Select Country',
+                        decoration: BoxDecoration(
+                            border: Border.all(color: Colors.black54),
+                            borderRadius: BorderRadius.circular(5)),
+                        dropDownMenuItems: country?.map((items) {
+                              return items.countryName;
+                            })?.toList() ??
+                            [],
+                        onChanged: (data) {
+                          if (data != null) {
+                            setState(() {
+                              countryModel = data;
+                              _countryId = countryModel.countryId;
+                              _initialCountryId = country.indexOf(data);
 
-                            state.clear();
-                            stateModel = null;
-                            city.clear();
-                            location.clear();
-                            cityModel = null;
-                            locationModel = null;
-                            getState(_countryId);
-                          });
-                        } else {
-                          _initialCountryId = null;
-                        }
-                      },
+                              state.clear();
+                              stateModel = null;
+                              city.clear();
+                              location.clear();
+                              cityModel = null;
+                              locationModel = null;
+                              getState(_countryId);
+                            });
+                          } else {
+                            _initialCountryId = null;
+                          }
+                        },
+                      ),
                     ),
-                  ),
-                  SizedBox(
-                    height: 20.0,
-                  ),
-                  Text('State'),
-                  SizedBox(
-                    height: 5.0,
-                  ),
-                  Container(
-                    height: 60,
-                    child: customSearchableDropDown(
-                      items: state,
-                      initialIndex: _initialStateId,
-                      label: 'Select State',
-                      decoration: BoxDecoration(
-                          border: Border.all(color: Colors.black54),
-                          borderRadius: BorderRadius.circular(5)),
-                      dropDownMenuItems: state?.map((items) {
-                            return items.stateName;
-                          })?.toList() ??
-                          [],
-                      onChanged: (data) {
-                        if (data != null) {
-                          setState(() {
-                            stateModel = data;
-                            _stateId = stateModel.stateId;
-                            _initialStateId = state.indexOf(data);
+                    SizedBox(
+                      height: 20.0,
+                    ),
+                    Text('State'),
+                    SizedBox(
+                      height: 5.0,
+                    ),
+                    Container(
+                      height: 60,
+                      child: customSearchableDropDown(
+                        items: state,
+                        initialIndex: _initialStateId,
+                        label: 'Select State',
+                        decoration: BoxDecoration(
+                            border: Border.all(color: Colors.black54),
+                            borderRadius: BorderRadius.circular(5)),
+                        dropDownMenuItems: state?.map((items) {
+                              return items.stateName;
+                            })?.toList() ??
+                            [],
+                        onChanged: (data) {
+                          if (data != null) {
+                            setState(() {
+                              stateModel = data;
+                              _stateId = stateModel.stateId;
+                              _initialStateId = state.indexOf(data);
 
-                            city.clear();
-                            location.clear();
-                            cityModel = null;
-                            locationModel = null;
-                            getCity(_stateId);
-                          });
-                        } else {
-                          _initialStateId = null;
-                        }
-                      },
+                              city.clear();
+                              location.clear();
+                              cityModel = null;
+                              locationModel = null;
+                              getCity(_stateId);
+                            });
+                          } else {
+                            _initialStateId = null;
+                          }
+                        },
+                      ),
                     ),
-                  ),
-                  SizedBox(
-                    height: 20.0,
-                  ),
-                  Text('City'),
-                  SizedBox(
-                    height: 5.0,
-                  ),
-                  Container(
-                    height: 60,
-                    child: customSearchableDropDown(
-                      items: city,
-                      label: 'Select City',
-                      initialIndex: _initialCityId,
-                      decoration: BoxDecoration(
-                          border: Border.all(color: Colors.black54),
-                          borderRadius: BorderRadius.circular(5)),
-                      dropDownMenuItems: city?.map((items) {
-                            return items.cityName;
-                          })?.toList() ??
-                          [],
-                      onChanged: (data) {
-                        if (data != null) {
-                          setState(() {
-                            cityModel = data;
-                            _cityId = cityModel.cityId;
-                            _initialCityId = city.indexOf(data);
+                    SizedBox(
+                      height: 20.0,
+                    ),
+                    Text('City'),
+                    SizedBox(
+                      height: 5.0,
+                    ),
+                    Container(
+                      height: 60,
+                      child: customSearchableDropDown(
+                        items: city,
+                        label: 'Select City',
+                        initialIndex: _initialCityId,
+                        decoration: BoxDecoration(
+                            border: Border.all(color: Colors.black54),
+                            borderRadius: BorderRadius.circular(5)),
+                        dropDownMenuItems: city?.map((items) {
+                              return items.cityName;
+                            })?.toList() ??
+                            [],
+                        onChanged: (data) {
+                          if (data != null) {
+                            setState(() {
+                              cityModel = data;
+                              _cityId = cityModel.cityId;
+                              _initialCityId = city.indexOf(data);
 
-                            location.clear();
-                            locationModel = null;
-                            getLocation(_cityId);
-                          });
-                        } else {
-                          _initialCityId = null;
-                        }
+                              location.clear();
+                              locationModel = null;
+                              getLocation(_cityId);
+                            });
+                          } else {
+                            _initialCityId = null;
+                          }
+                        },
+                      ),
+                    ),
+                    SizedBox(
+                      height: 20.0,
+                    ),
+                    Text('Location'),
+                    SizedBox(
+                      height: 5.0,
+                    ),
+                    Container(
+                      height: 60,
+                      child: customSearchableDropDown(
+                        items: location,
+                        initialIndex: _initialLocationId,
+                        label: 'Select Location',
+                        decoration: BoxDecoration(
+                            border: Border.all(color: Colors.black54),
+                            borderRadius: BorderRadius.circular(5)),
+                        dropDownMenuItems: location?.map((items) {
+                              return items.locationName;
+                            })?.toList() ??
+                            [],
+                        onChanged: (data) {
+                          if (data != null) {
+                            setState(() {
+                              locationModel = data;
+                              _locationId = locationModel.locationId;
+                              _initialLocationId = location.indexOf(data);
+                            });
+                          } else {
+                            _initialLocationId = null;
+                          }
+                        },
+                      ),
+                    ),
+                    SizedBox(
+                      height: 20.0,
+                    ),
+                    TextFormField(
+                      autofocus: false,
+                      validator: validatePostcode,
+                      keyboardType: TextInputType.number,
+                      autovalidateMode: AutovalidateMode.onUserInteraction,
+                      controller: _postCode,
+                      decoration: InputDecoration(
+                        labelText: 'Postcode',
+                        border: OutlineInputBorder(),
+                      ),
+                    ),
+                    SizedBox(
+                      height: 20.0,
+                    ),
+                    Center(
+                      child: Text(
+                        "Contract Information",
+                        style: TextStyle(fontSize: 20),
+                      ),
+                    ),
+                    SizedBox(
+                      height: 20.0,
+                    ),
+                    Text('Amc Type'),
+                    SizedBox(
+                      height: 5.0,
+                    ),
+                    Container(
+                      height: 60,
+                      child: customSearchableDropDown(
+                        items: amc,
+                        label: 'Select AMC Type',
+                        decoration: BoxDecoration(
+                            border: Border.all(color: Colors.black54),
+                            borderRadius: BorderRadius.circular(5)),
+                        dropDownMenuItems: amc?.map((items) {
+                              return items.amcName;
+                            })?.toList() ??
+                            [],
+                        onChanged: (data) {
+                          if (data != null) {
+                            setState(() {
+                              amcModel = data;
+                              _amcId = amcModel.amcId;
+                              _contractDuration = amcModel.duration;
+                              _dummy =
+                                  _contractDuration.toString() + "  months";
+                              _duration.value = TextEditingValue(text: _dummy);
+                            });
+                          } else {
+                            amcModel = null;
+                          }
+                        },
+                      ),
+                    ),
+                    SizedBox(
+                      height: 20.0,
+                    ),
+                    TextFormField(
+                      controller: _duration,
+                      autovalidateMode: AutovalidateMode.onUserInteraction,
+                      validator: (value) => value.isEmpty
+                          ? 'Please enter contract duration'
+                          : null,
+                      autofocus: false,
+                      onTap: () {
+                        FocusScope.of(context).requestFocus(new FocusNode());
                       },
+                      decoration: InputDecoration(
+                        labelText: 'Contract Duration',
+                        border: OutlineInputBorder(),
+                      ),
                     ),
-                  ),
-                  SizedBox(
-                    height: 20.0,
-                  ),
-                  Text('Location'),
-                  SizedBox(
-                    height: 5.0,
-                  ),
-                  Container(
-                    height: 60,
-                    child: customSearchableDropDown(
-                      items: location,
-                      initialIndex: _initialLocationId,
-                      label: 'Select Location',
-                      decoration: BoxDecoration(
-                          border: Border.all(color: Colors.black54),
-                          borderRadius: BorderRadius.circular(5)),
-                      dropDownMenuItems: location?.map((items) {
-                            return items.locationName;
-                          })?.toList() ??
-                          [],
-                      onChanged: (data) {
-                        if (data != null) {
-                          setState(() {
-                            locationModel = data;
-                            _locationId = locationModel.locationId;
-                            _initialLocationId = location.indexOf(data);
-                          });
-                        } else {
-                          _initialLocationId = null;
-                        }
+                    SizedBox(
+                      height: 20.0,
+                    ),
+                    TextFormField(
+                      controller: _contractDurationDate,
+                      autovalidateMode: AutovalidateMode.onUserInteraction,
+                      autofocus: false,
+                      validator: (value) => value.isEmpty
+                          ? 'Please select contract start date'
+                          : null,
+                      onTap: () {
+                        _selectContractDurationDate(context);
+                        FocusScope.of(context).requestFocus(new FocusNode());
                       },
+                      decoration: InputDecoration(
+                        labelText: 'Select Contract Start Date',
+                        border: OutlineInputBorder(),
+                        suffixIcon: Icon(Icons.calendar_today),
+                      ),
                     ),
-                  ),
-                  SizedBox(
-                    height: 20.0,
-                  ),
-                  TextFormField(
-                    autofocus: false,
-                    validator: validatePostcode,
-                    keyboardType: TextInputType.number,
-                    autovalidateMode: AutovalidateMode.onUserInteraction,
-                    controller: _postCode,
-                    decoration: InputDecoration(
-                      labelText: 'Postcode',
-                      border: OutlineInputBorder(),
+                    SizedBox(
+                      height: 20.0,
                     ),
-                  ),
-                  SizedBox(
-                    height: 20.0,
-                  ),
-                  Center(
-                    child: Text(
-                      "Contract Information",
-                      style: TextStyle(fontSize: 20),
+                    Center(
+                      child: Text(
+                        "Product Information",
+                        style: TextStyle(fontSize: 20),
+                      ),
                     ),
-                  ),
-                  SizedBox(
-                    height: 20.0,
-                  ),
-                  Text('Amc Type'),
-                  SizedBox(
-                    height: 5.0,
-                  ),
-                  Container(
-                    height: 60,
-                    child: customSearchableDropDown(
-                      items: amc,
-                      label: 'Select AMC Type',
-                      decoration: BoxDecoration(
-                          border: Border.all(color: Colors.black54),
-                          borderRadius: BorderRadius.circular(5)),
-                      dropDownMenuItems: amc?.map((items) {
-                            return items.amcName;
-                          })?.toList() ??
-                          [],
-                      onChanged: (data) {
-                        if (data != null) {
-                          setState(() {
-                            amcModel = data;
-                            _amcId = amcModel.amcId;
-                            _contractDuration = amcModel.duration;
-                            _dummy = _contractDuration.toString() + "  months";
-                            _duration.value = TextEditingValue(text: _dummy);
-                          });
-                        } else {
-                          amcModel = null;
-                        }
-                      },
+                    SizedBox(
+                      height: 20.0,
                     ),
-                  ),
-                  SizedBox(
-                    height: 20.0,
-                  ),
-                  TextFormField(
-                    controller: _duration,
-                    autovalidateMode: AutovalidateMode.onUserInteraction,
-                    validator: (value) =>
-                        value.isEmpty ? 'Please enter contract duration' : null,
-                    autofocus: false,
-                    onTap: () {
-                      FocusScope.of(context).requestFocus(new FocusNode());
-                    },
-                    decoration: InputDecoration(
-                      labelText: 'Contract Duration',
-                      border: OutlineInputBorder(),
+                    Text('Product'),
+                    SizedBox(
+                      height: 5.0,
                     ),
-                  ),
-                  SizedBox(
-                    height: 20.0,
-                  ),
-                  TextFormField(
-                    controller: _contractDurationDate,
-                    autovalidateMode: AutovalidateMode.onUserInteraction,
-                    autofocus: false,
-                    validator: (value) => value.isEmpty
-                        ? 'Please select contract start date'
-                        : null,
-                    onTap: () {
-                      _selectContractDurationDate(context);
-                      FocusScope.of(context).requestFocus(new FocusNode());
-                    },
-                    decoration: InputDecoration(
-                      labelText: 'Select Contract Start Date',
-                      border: OutlineInputBorder(),
-                      suffixIcon: Icon(Icons.calendar_today),
-                    ),
-                  ),
-                  SizedBox(
-                    height: 20.0,
-                  ),
-                  Center(
-                    child: Text(
-                      "Product Information",
-                      style: TextStyle(fontSize: 20),
-                    ),
-                  ),
-                  SizedBox(
-                    height: 20.0,
-                  ),
-                  Text('Product'),
-                  SizedBox(
-                    height: 5.0,
-                  ),
-                  Container(
-                    height: 60,
-                    child: customSearchableDropDown(
-                      items: product,
-                      label: 'Select Product',
-                      decoration: BoxDecoration(
-                          border: Border.all(color: Colors.black54),
-                          borderRadius: BorderRadius.circular(5)),
-                      dropDownMenuItems: product?.map((items) {
-                            return items.productName;
-                          })?.toList() ??
-                          [],
-                      onChanged: (data) {
-                        if (data != null) {
-                          setState(() {
-                            productModel = data;
-                            _productId = productModel.productId;
+                    Container(
+                      height: 60,
+                      child: customSearchableDropDown(
+                        items: product,
+                        label: 'Select Product',
+                        decoration: BoxDecoration(
+                            border: Border.all(color: Colors.black54),
+                            borderRadius: BorderRadius.circular(5)),
+                        dropDownMenuItems: product?.map((items) {
+                              return items.productName;
+                            })?.toList() ??
+                            [],
+                        onChanged: (data) {
+                          if (data != null) {
+                            setState(() {
+                              productModel = data;
+                              _productId = productModel.productId;
 
-                            subProduct.clear();
+                              subProduct.clear();
+                              subProductModel = null;
+                              getSubProduct(_productId);
+                            });
+                          } else {
+                            productModel = null;
+                          }
+                        },
+                      ),
+                    ),
+                    SizedBox(
+                      height: 20.0,
+                    ),
+                    Text('Sub Product'),
+                    SizedBox(
+                      height: 5.0,
+                    ),
+                    Container(
+                      height: 60,
+                      child: customSearchableDropDown(
+                        items: subProduct,
+                        label: 'Select Sub Product',
+                        decoration: BoxDecoration(
+                            border: Border.all(color: Colors.black54),
+                            borderRadius: BorderRadius.circular(5)),
+                        dropDownMenuItems: subProduct?.map((items) {
+                              return items.productSubName;
+                            })?.toList() ??
+                            [],
+                        onChanged: (data) {
+                          if (data != null) {
+                            setState(() {
+                              subProductModel = data;
+                              _subProductId = subProductModel.productSubId;
+                            });
+                          } else {
                             subProductModel = null;
-                            getSubProduct(_productId);
-                          });
-                        } else {
-                          productModel = null;
-                        }
+                          }
+                        },
+                      ),
+                    ),
+                    SizedBox(
+                      height: 20.0,
+                    ),
+                    TextFormField(
+                      autofocus: false,
+                      keyboardType: TextInputType.text,
+                      inputFormatters: [
+                        FilteringTextInputFormatter.allow(RegExp("[0-9a-zA-Z]"))
+                      ],
+                      validator: (value) =>
+                          value.isEmpty ? 'Please model number' : null,
+                      controller: _modelNumber,
+                      autovalidateMode: AutovalidateMode.onUserInteraction,
+                      decoration: InputDecoration(
+                        labelText: 'Model Number',
+                        border: OutlineInputBorder(),
+                      ),
+                    ),
+                    SizedBox(
+                      height: 20.0,
+                    ),
+                    TextFormField(
+                      autofocus: false,
+                      keyboardType: TextInputType.text,
+                      inputFormatters: [
+                        FilteringTextInputFormatter.allow(RegExp("[0-9a-zA-Z]"))
+                      ],
+                      validator: (value) =>
+                          value.isEmpty ? 'Please enter serial number' : null,
+                      controller: _serialNumber,
+                      decoration: InputDecoration(
+                        labelText: 'Serial Number',
+                        border: OutlineInputBorder(),
+                      ),
+                    ),
+                    SizedBox(
+                      height: 20.0,
+                    ),
+                    TextFormField(
+                      autofocus: false,
+                      keyboardType: TextInputType.text,
+                      inputFormatters: [
+                        FilteringTextInputFormatter.allow(RegExp("[0-9a-zA-Z]"))
+                      ],
+                      validator: (value) =>
+                          value.isEmpty ? 'Please enter invoice number' : null,
+                      controller: _invoiceNumber,
+                      autovalidateMode: AutovalidateMode.onUserInteraction,
+                      decoration: InputDecoration(
+                        labelText: 'Enter Invoice Number',
+                        border: OutlineInputBorder(),
+                      ),
+                    ),
+                    SizedBox(
+                      height: 20.0,
+                    ),
+                    TextFormField(
+                      controller: _date,
+                      autofocus: false,
+                      autovalidateMode: AutovalidateMode.onUserInteraction,
+                      validator: (value) =>
+                          value.isEmpty ? 'Please select purchase date' : null,
+                      onTap: () {
+                        _selectDate(context);
+                        FocusScope.of(context).requestFocus(new FocusNode());
                       },
+                      decoration: InputDecoration(
+                        labelText: 'Select Purchase Date',
+                        border: OutlineInputBorder(),
+                        suffixIcon: Icon(Icons.calendar_today),
+                      ),
                     ),
-                  ),
-                  SizedBox(
-                    height: 20.0,
-                  ),
-                  Text('Sub Product'),
-                  SizedBox(
-                    height: 5.0,
-                  ),
-                  Container(
-                    height: 60,
-                    child: customSearchableDropDown(
-                      items: subProduct,
-                      label: 'Select Sub Product',
-                      decoration: BoxDecoration(
-                          border: Border.all(color: Colors.black54),
-                          borderRadius: BorderRadius.circular(5)),
-                      dropDownMenuItems: subProduct?.map((items) {
-                            return items.productSubName;
-                          })?.toList() ??
-                          [],
-                      onChanged: (data) {
-                        if (data != null) {
-                          setState(() {
-                            subProductModel = data;
-                            _subProductId = subProductModel.productSubId;
-                          });
-                        } else {
-                          subProductModel = null;
-                        }
-                      },
+                    SizedBox(
+                      height: 20.0,
                     ),
-                  ),
-                  SizedBox(
-                    height: 20.0,
-                  ),
-                  TextFormField(
-                    autofocus: false,
-                    keyboardType: TextInputType.text,
-                    inputFormatters: [
-                      FilteringTextInputFormatter.allow(RegExp("[0-9a-zA-Z]"))
-                    ],
-                    validator: (value) =>
-                        value.isEmpty ? 'Please model number' : null,
-                    controller: _modelNumber,
-                    autovalidateMode: AutovalidateMode.onUserInteraction,
-                    decoration: InputDecoration(
-                      labelText: 'Model Number',
-                      border: OutlineInputBorder(),
-                    ),
-                  ),
-                  SizedBox(
-                    height: 20.0,
-                  ),
-                  TextFormField(
-                    autofocus: false,
-                    keyboardType: TextInputType.text,
-                    inputFormatters: [
-                      FilteringTextInputFormatter.allow(RegExp("[0-9a-zA-Z]"))
-                    ],
-                    validator: (value) =>
-                        value.isEmpty ? 'Please enter serial number' : null,
-                    controller: _serialNumber,
-                    decoration: InputDecoration(
-                      labelText: 'Serial Number',
-                      border: OutlineInputBorder(),
-                    ),
-                  ),
-                  SizedBox(
-                    height: 20.0,
-                  ),
-                  TextFormField(
-                    autofocus: false,
-                    keyboardType: TextInputType.text,
-                    inputFormatters: [
-                      FilteringTextInputFormatter.allow(RegExp("[0-9a-zA-Z]"))
-                    ],
-                    validator: (value) =>
-                        value.isEmpty ? 'Please enter invoice number' : null,
-                    controller: _invoiceNumber,
-                    autovalidateMode: AutovalidateMode.onUserInteraction,
-                    decoration: InputDecoration(
-                      labelText: 'Enter Invoice Number',
-                      border: OutlineInputBorder(),
-                    ),
-                  ),
-                  SizedBox(
-                    height: 20.0,
-                  ),
-                  TextFormField(
-                    controller: _date,
-                    autofocus: false,
-                    autovalidateMode: AutovalidateMode.onUserInteraction,
-                    validator: (value) =>
-                        value.isEmpty ? 'Please select purchase date' : null,
-                    onTap: () {
-                      _selectDate(context);
-                      FocusScope.of(context).requestFocus(new FocusNode());
-                    },
-                    decoration: InputDecoration(
-                      labelText: 'Select Purchase Date',
-                      border: OutlineInputBorder(),
-                      suffixIcon: Icon(Icons.calendar_today),
-                    ),
-                  ),
-                  SizedBox(
-                    height: 20.0,
-                  ),
-                  longButtons('Add Product', addProduct)
-                ],
+                    longButtons('Add Product', addProduct)
+                  ],
+                ),
               ),
             ),
           ),

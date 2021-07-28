@@ -289,8 +289,11 @@ class _ProfileState extends State<Profile> {
         onWillPop: _onBackPressed,
         child: new Scaffold(
           appBar: AppBar(
-            automaticallyImplyLeading: false,
             title: Text("Profile"),
+            leading: new IconButton(
+              icon: new Icon(Icons.arrow_back_ios),
+              onPressed: () => _onBackPressed(),
+            ),
             actions: <Widget>[
               FlatButton(
                 onPressed: () {

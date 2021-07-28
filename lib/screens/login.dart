@@ -230,7 +230,7 @@ class _LoginState extends State<Login> {
                 padding: EdgeInsets.all(15.0),
                 child: Text(
                   "\u00a9 Kaspon Techworks Pvt Ltd. All rights reserved",
-                  style: TextStyle(fontSize: 15),
+                  style: TextStyle(fontSize: 13),
                 ),
               ),
             )

@@ -38,9 +38,7 @@ class MyApp extends StatelessWidget {
     Future<User> getUserData() => UserPreferences().getUser();
 
     return MultiProvider(
-      providers: [
-        ChangeNotifierProvider(create: (_) => UserProvider())
-      ],
+      providers: [ChangeNotifierProvider(create: (_) => UserProvider())],
       child: MaterialApp(
         title: 'Login Registration',
         theme: ThemeData(

@@ -178,130 +178,72 @@ class _Amc extends State<Amc> {
             itemCount: amcList.length,
             padding: const EdgeInsets.all(16.0),
             itemBuilder: (context, index) {
-              return new Container(
-                  padding: EdgeInsets.only(top: 5),
-                  child: new Card(
-                      child: Column(mainAxisSize: MainAxisSize.min, children: <
-                          Widget>[
-                    SizedBox(
-                      height: 10.0,
+              return Container(
+                decoration: BoxDecoration(
+                  borderRadius: BorderRadius.only(
+                      topLeft: Radius.circular(10),
+                      bottomRight: Radius.circular(10)),
+                  color: Colors.white,
+                ),
+                width: double.infinity,
+                margin: EdgeInsets.symmetric(vertical: 5, horizontal: 5),
+                padding: EdgeInsets.symmetric(vertical: 5, horizontal: 5),
+                child: Row(
+                  crossAxisAlignment: CrossAxisAlignment.start,
+                  children: <Widget>[
+                    Center(
+                      child: Container(
+                          width: 120,
+                          height: 120,
+                          margin: EdgeInsets.only(right: 25),
+                          child: Padding(
+                            padding: EdgeInsets.all(6.0),
+                            child: Image.asset(
+                              'assets/images/cardiology.png',
+                            ),
+                          )),
                     ),
-                    Row(
-                      children: [
-                        new Padding(padding: new EdgeInsets.all(5.0)),
-                        new Expanded(
-                          child: new Column(
-                            crossAxisAlignment: CrossAxisAlignment.start,
-                            children: <Widget>[
-                              Text("Product", style: TextStyle(fontSize: 15)),
-                            ],
+                    Expanded(
+                      child: Column(
+                        crossAxisAlignment: CrossAxisAlignment.start,
+                        children: <Widget>[
+                          SizedBox(
+                            height: 10,
                           ),
-                        ),
-                        new Expanded(
-                          child: new Column(
-                            crossAxisAlignment: CrossAxisAlignment.start,
-                            children: <Widget>[
-                              Text(amcList[index].product,
-                                  style: TextStyle(fontSize: 15)),
-                            ],
+                          Text(amcList[index].product,
+                              style: TextStyle(
+                                  fontSize: 15, fontWeight: FontWeight.bold)),
+                          SizedBox(
+                            height: 5,
                           ),
-                        )
-                      ],
-                    ),
-                    SizedBox(
-                      height: 10.0,
-                    ),
-                    Row(
-                      children: [
-                        new Padding(padding: new EdgeInsets.all(5.0)),
-                        new Expanded(
-                          child: new Column(
-                            crossAxisAlignment: CrossAxisAlignment.start,
-                            children: <Widget>[
-                              Text("Sub Category",
-                                  style: TextStyle(fontSize: 14)),
-                            ],
-                          ),
-                        ),
-                        new Expanded(
-                          child: new Column(
-                            crossAxisAlignment: CrossAxisAlignment.start,
+                          Row(
                             children: <Widget>[
                               Text(amcList[index].subProduct,
                                   style: TextStyle(fontSize: 15)),
                             ],
                           ),
-                        )
-                      ],
-                    ),
-                    SizedBox(
-                      height: 10.0,
-                    ),
-                    Row(
-                      children: [
-                        new Padding(padding: new EdgeInsets.all(5.0)),
-                        new Expanded(
-                          child: new Column(
-                            crossAxisAlignment: CrossAxisAlignment.start,
-                            children: <Widget>[
-                              Text("AMC Type", style: TextStyle(fontSize: 15)),
-                            ],
+                          SizedBox(
+                            height: 5,
                           ),
-                        ),
-                        new Expanded(
-                          child: new Column(
-                            crossAxisAlignment: CrossAxisAlignment.start,
+                          Row(
                             children: <Widget>[
                               Text(amcList[index].contractType,
                                   style: TextStyle(fontSize: 15)),
                             ],
                           ),
-                        )
-                      ],
-                    ),
-                    SizedBox(
-                      height: 10.0,
-                    ),
-                    Row(
-                      children: [
-                        new Padding(padding: new EdgeInsets.all(5.0)),
-                        new Expanded(
-                          child: new Column(
-                            crossAxisAlignment: CrossAxisAlignment.start,
-                            children: <Widget>[
-                              Text("Serial Number",
-                                  style: TextStyle(fontSize: 15)),
-                            ],
+                          SizedBox(
+                            height: 5,
                           ),
-                        ),
-                        new Expanded(
-                          child: new Column(
-                            crossAxisAlignment: CrossAxisAlignment.start,
+                          Row(
                             children: <Widget>[
                               Text(amcList[index].serialNo,
                                   style: TextStyle(fontSize: 15)),
                             ],
                           ),
-                        )
-                      ],
-                    ),
-                    SizedBox(
-                      height: 10.0,
-                    ),
-                    Row(
-                      children: [
-                        new Padding(padding: new EdgeInsets.all(5.0)),
-                        new Expanded(
-                          child: new Column(
-                            crossAxisAlignment: CrossAxisAlignment.start,
-                            children: <Widget>[
-                              Text("Status", style: TextStyle(fontSize: 15)),
-                            ],
+                          SizedBox(
+                            height: 5,
                           ),
-                        ),
-                        new Expanded(
-                          child: new Column(
-                            crossAxisAlignment: CrossAxisAlignment.start,
+                          Row(
                             children: <Widget>[
                               Text(
                                   'remaining ' +
@@ -312,13 +254,15 @@ class _Amc extends State<Amc> {
                                   style: TextStyle(fontSize: 15)),
                             ],
                           ),
-                        )
-                      ],
+                          SizedBox(
+                            height: 10,
+                          )
+                        ],
+                      ),
                     ),
-                    SizedBox(
-                      height: 10.0,
-                    ),
-                  ])));
+                  ],
+                ),
+              );
             })
         : Visibility(
             visible: isListEmpty,

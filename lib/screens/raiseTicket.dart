@@ -56,7 +56,7 @@ class _RaiseTicket extends State<RaiseTicket> {
   final String base64Format = "data:image/png;base64,";
   Map<String, dynamic> serialArray;
   var body, send;
-  bool imageVisible = false;
+  bool imageVisible = false, isVisible = false;
   TextEditingController _date = new TextEditingController();
   TextEditingController _modelNumber = new TextEditingController();
   TextEditingController _contractType = new TextEditingController();
@@ -150,6 +150,7 @@ class _RaiseTicket extends State<RaiseTicket> {
                 workType: response.workEntity.datum[i].workType));
           }
           Navigator.of(context, rootNavigator: true).pop();
+          isVisible = true;
         });
       }
     } else {
@@ -455,415 +456,419 @@ class _RaiseTicket extends State<RaiseTicket> {
       appBar: AppBar(
         title: Text('Raise Ticket'),
       ),
-      body: SingleChildScrollView(
-        child: Container(
-          padding: EdgeInsets.all(40.0),
-          child: Form(
-            key: formKey,
-            child: Column(
-              crossAxisAlignment: CrossAxisAlignment.start,
-              children: [
-                SizedBox(
-                  height: 20.0,
-                ),
-                Container(
-                  child: InputDecorator(
-                    decoration: InputDecoration(
-                      border: OutlineInputBorder(
-                          borderRadius: BorderRadius.circular(5.0)),
-                      contentPadding: EdgeInsets.all(5),
-                    ),
-                    child: DropdownButtonFormField<ProductModel>(
-                      isExpanded: true,
-                      value: productModel,
-                      hint: new Text("Select Product"),
+      body: Visibility(
+        visible: isVisible,
+        child: SingleChildScrollView(
+          child: Container(
+            padding: EdgeInsets.all(40.0),
+            child: Form(
+              key: formKey,
+              child: Column(
+                crossAxisAlignment: CrossAxisAlignment.start,
+                children: [
+                  SizedBox(
+                    height: 20.0,
+                  ),
+                  Container(
+                    child: InputDecorator(
                       decoration: InputDecoration(
-                        enabledBorder: UnderlineInputBorder(
-                            borderSide: BorderSide(color: Colors.white)),
+                        border: OutlineInputBorder(
+                            borderRadius: BorderRadius.circular(5.0)),
                         contentPadding: EdgeInsets.all(5),
                       ),
-                      onChanged: (ProductModel data) {
-                        setState(() {
-                          productModel = data;
-                          _productId = productModel.productId;
+                      child: DropdownButtonFormField<ProductModel>(
+                        isExpanded: true,
+                        value: productModel,
+                        hint: new Text("Select Product"),
+                        decoration: InputDecoration(
+                          enabledBorder: UnderlineInputBorder(
+                              borderSide: BorderSide(color: Colors.white)),
+                          contentPadding: EdgeInsets.all(5),
+                        ),
+                        onChanged: (ProductModel data) {
+                          setState(() {
+                            productModel = data;
+                            _productId = productModel.productId;
 
-                          subProduct.clear();
-                          subProductModel = null;
-                          getSubProduct();
-                          showAlertDialog(context);
-                        });
-                      },
-                      validator: (value) =>
-                          value == null ? 'Please select product' : null,
-                      items: product.map((ProductModel value) {
-                        return DropdownMenuItem<ProductModel>(
-                          value: value,
-                          child: new Text(
-                            value.productName,
-                            textAlign: TextAlign.center,
-                            style: new TextStyle(color: Colors.black),
-                          ),
-                        );
-                      }).toList(),
+                            subProduct.clear();
+                            subProductModel = null;
+                            getSubProduct();
+                            showAlertDialog(context);
+                          });
+                        },
+                        validator: (value) =>
+                            value == null ? 'Please select product' : null,
+                        items: product.map((ProductModel value) {
+                          return DropdownMenuItem<ProductModel>(
+                            value: value,
+                            child: new Text(
+                              value.productName,
+                              textAlign: TextAlign.center,
+                              style: new TextStyle(color: Colors.black),
+                            ),
+                          );
+                        }).toList(),
+                      ),
                     ),
                   ),
-                ),
-                SizedBox(
-                  height: 20.0,
-                ),
-                Container(
-                  child: InputDecorator(
-                    decoration: InputDecoration(
-                      border: OutlineInputBorder(
-                          borderRadius: BorderRadius.circular(5.0)),
-                      contentPadding: EdgeInsets.all(5),
-                    ),
-                    child: DropdownButtonFormField(
-                      hint: new Text("Select Sub Product"),
+                  SizedBox(
+                    height: 20.0,
+                  ),
+                  Container(
+                    child: InputDecorator(
                       decoration: InputDecoration(
-                        enabledBorder: UnderlineInputBorder(
-                            borderSide: BorderSide(color: Colors.white)),
+                        border: OutlineInputBorder(
+                            borderRadius: BorderRadius.circular(5.0)),
                         contentPadding: EdgeInsets.all(5),
                       ),
-                      items: subProduct.map((SubProductModel value) {
-                        return DropdownMenuItem<SubProductModel>(
-                          value: value,
-                          child: new Text(
-                            value.productSubName,
-                            textAlign: TextAlign.center,
-                            style: new TextStyle(color: Colors.black),
-                          ),
-                        );
-                      }).toList(),
-                      value: subProductModel,
-                      onChanged: (SubProductModel data) {
-                        setState(() {
-                          subProductModel = data;
-                          _subProductId = subProductModel.productSubId;
+                      child: DropdownButtonFormField(
+                        hint: new Text("Select Sub Product"),
+                        decoration: InputDecoration(
+                          enabledBorder: UnderlineInputBorder(
+                              borderSide: BorderSide(color: Colors.white)),
+                          contentPadding: EdgeInsets.all(5),
+                        ),
+                        items: subProduct.map((SubProductModel value) {
+                          return DropdownMenuItem<SubProductModel>(
+                            value: value,
+                            child: new Text(
+                              value.productSubName,
+                              textAlign: TextAlign.center,
+                              style: new TextStyle(color: Colors.black),
+                            ),
+                          );
+                        }).toList(),
+                        value: subProductModel,
+                        onChanged: (SubProductModel data) {
+                          setState(() {
+                            subProductModel = data;
+                            _subProductId = subProductModel.productSubId;
 
-                          serialList.clear();
-                          serialNumberModel = null;
-                          getSerial();
-                          showAlertDialog(context);
-                        });
-                      },
-                      validator: (value) =>
-                          value == null ? 'Please select subproduct' : null,
+                            serialList.clear();
+                            serialNumberModel = null;
+                            getSerial();
+                            showAlertDialog(context);
+                          });
+                        },
+                        validator: (value) =>
+                            value == null ? 'Please select subproduct' : null,
+                      ),
                     ),
                   ),
-                ),
-                SizedBox(
-                  height: 20.0,
-                ),
-                Container(
-                  child: InputDecorator(
-                    decoration: InputDecoration(
-                      border: OutlineInputBorder(
-                          borderRadius: BorderRadius.circular(5.0)),
-                      contentPadding: EdgeInsets.all(5),
-                    ),
-                    child: DropdownButtonFormField(
-                      isExpanded: true,
+                  SizedBox(
+                    height: 20.0,
+                  ),
+                  Container(
+                    child: InputDecorator(
                       decoration: InputDecoration(
-                        enabledBorder: UnderlineInputBorder(
-                            borderSide: BorderSide(color: Colors.white)),
+                        border: OutlineInputBorder(
+                            borderRadius: BorderRadius.circular(5.0)),
                         contentPadding: EdgeInsets.all(5),
                       ),
-                      hint: new Text("Select Serial Number"),
-                      value: serialNumberModel,
-                      validator: (value) =>
-                          value == null ? 'Please select serial number' : null,
-                      onChanged: (SerialNumberModel data) {
-                        setState(() {
-                          serialNumberModel = data;
-                          _serialNumber = serialNumberModel.serialNo;
-                          _customerContractId =
-                              serialNumberModel.customerContractId;
-                          _contractTypeId = serialNumberModel.contractTypeId;
+                      child: DropdownButtonFormField(
+                        isExpanded: true,
+                        decoration: InputDecoration(
+                          enabledBorder: UnderlineInputBorder(
+                              borderSide: BorderSide(color: Colors.white)),
+                          contentPadding: EdgeInsets.all(5),
+                        ),
+                        hint: new Text("Select Serial Number"),
+                        value: serialNumberModel,
+                        validator: (value) => value == null
+                            ? 'Please select serial number'
+                            : null,
+                        onChanged: (SerialNumberModel data) {
+                          setState(() {
+                            serialNumberModel = data;
+                            _serialNumber = serialNumberModel.serialNo;
+                            _customerContractId =
+                                serialNumberModel.customerContractId;
+                            _contractTypeId = serialNumberModel.contractTypeId;
 
-                          //setting contract type and model number
-                          _contractType.value = TextEditingValue(
-                              text: serialNumberModel.contractType);
-                          _modelNumber.value =
-                              TextEditingValue(text: serialNumberModel.modelNo);
-                        });
-                      },
-                      items: serialList.map((SerialNumberModel value) {
-                        return DropdownMenuItem<SerialNumberModel>(
-                          value: value,
-                          child: new Text(
-                            value.serialNo,
-                            textAlign: TextAlign.center,
-                            style: new TextStyle(color: Colors.black),
-                          ),
-                        );
-                      }).toList(),
-                    ),
-                  ),
-                ),
-                SizedBox(
-                  height: 20.0,
-                ),
-                TextFormField(
-                  autofocus: false,
-                  validator: (value) =>
-                      value.isEmpty ? 'Please enter contract type' : null,
-                  controller: _contractType,
-                  decoration: InputDecoration(
-                    labelText: 'Contract type',
-                    border: OutlineInputBorder(),
-                  ),
-                ),
-                SizedBox(
-                  height: 20.0,
-                ),
-                TextFormField(
-                  autofocus: false,
-                  validator: (value) =>
-                      value.isEmpty ? 'Please model number' : null,
-                  controller: _modelNumber,
-                  decoration: InputDecoration(
-                    labelText: 'Model Number',
-                    border: OutlineInputBorder(),
-                  ),
-                ),
-                SizedBox(
-                  height: 20.0,
-                ),
-                Container(
-                  child: InputDecorator(
-                    decoration: InputDecoration(
-                      border: OutlineInputBorder(
-                          borderRadius: BorderRadius.circular(5.0)),
-                      contentPadding: EdgeInsets.all(2),
-                    ),
-                    child: DropdownButtonFormField(
-                      isExpanded: true,
-                      decoration: InputDecoration(
-                        enabledBorder: UnderlineInputBorder(
-                            borderSide: BorderSide(color: Colors.white)),
-                        contentPadding: EdgeInsets.all(5),
+                            //setting contract type and model number
+                            _contractType.value = TextEditingValue(
+                                text: serialNumberModel.contractType);
+                            _modelNumber.value = TextEditingValue(
+                                text: serialNumberModel.modelNo);
+                          });
+                        },
+                        items: serialList.map((SerialNumberModel value) {
+                          return DropdownMenuItem<SerialNumberModel>(
+                            value: value,
+                            child: new Text(
+                              value.serialNo,
+                              textAlign: TextAlign.center,
+                              style: new TextStyle(color: Colors.black),
+                            ),
+                          );
+                        }).toList(),
                       ),
-                      hint: Text("Select Work Type"),
-                      validator: (value) =>
-                          value == null ? 'Please select work type' : null,
-                      value: workModel,
-                      onChanged: (WorkModel data) {
-                        setState(() {
-                          workModel = data;
-                          _workTypeId = workModel.workTypeId;
-                          showAlertDialog(context);
-                          getCall();
-                        });
-                      },
-                      items: workTypeList.map((WorkModel value) {
-                        return DropdownMenuItem<WorkModel>(
-                          value: value,
-                          child: new Text(
-                            value.workType,
-                            textAlign: TextAlign.center,
-                            style: new TextStyle(color: Colors.black),
-                          ),
-                        );
-                      }).toList(),
                     ),
                   ),
-                ),
-                SizedBox(
-                  height: 20.0,
-                ),
-                Container(
-                  child: InputDecorator(
+                  SizedBox(
+                    height: 20.0,
+                  ),
+                  TextFormField(
+                    autofocus: false,
+                    validator: (value) =>
+                        value.isEmpty ? 'Please enter contract type' : null,
+                    controller: _contractType,
                     decoration: InputDecoration(
-                      border: OutlineInputBorder(
-                          borderRadius: BorderRadius.circular(5.0)),
-                      contentPadding: EdgeInsets.all(2),
+                      labelText: 'Contract type',
+                      border: OutlineInputBorder(),
                     ),
-                    child: DropdownButtonFormField(
-                      isExpanded: true,
-                      hint: Text("Call Category"),
+                  ),
+                  SizedBox(
+                    height: 20.0,
+                  ),
+                  TextFormField(
+                    autofocus: false,
+                    validator: (value) =>
+                        value.isEmpty ? 'Please model number' : null,
+                    controller: _modelNumber,
+                    decoration: InputDecoration(
+                      labelText: 'Model Number',
+                      border: OutlineInputBorder(),
+                    ),
+                  ),
+                  SizedBox(
+                    height: 20.0,
+                  ),
+                  Container(
+                    child: InputDecorator(
                       decoration: InputDecoration(
-                        enabledBorder: UnderlineInputBorder(
-                            borderSide: BorderSide(color: Colors.white)),
-                        contentPadding: EdgeInsets.all(5),
+                        border: OutlineInputBorder(
+                            borderRadius: BorderRadius.circular(5.0)),
+                        contentPadding: EdgeInsets.all(2),
                       ),
-                      value: callCategoryModel,
-                      validator: (value) =>
-                          value == null ? 'Please select subproduct' : null,
-                      onChanged: (CallCategoryModel data) {
-                        setState(() {
-                          callCategoryModel = data;
-                          _callCategoryId = callCategoryModel.callCategoryId;
-                        });
-                      },
-                      items: callCategoryList.map((CallCategoryModel value) {
-                        return DropdownMenuItem<CallCategoryModel>(
-                          value: value,
-                          child: new Text(
-                            value.callCategory,
-                            textAlign: TextAlign.center,
-                            style: new TextStyle(color: Colors.black),
-                          ),
-                        );
-                      }).toList(),
+                      child: DropdownButtonFormField(
+                        isExpanded: true,
+                        decoration: InputDecoration(
+                          enabledBorder: UnderlineInputBorder(
+                              borderSide: BorderSide(color: Colors.white)),
+                          contentPadding: EdgeInsets.all(5),
+                        ),
+                        hint: Text("Select Work Type"),
+                        validator: (value) =>
+                            value == null ? 'Please select work type' : null,
+                        value: workModel,
+                        onChanged: (WorkModel data) {
+                          setState(() {
+                            workModel = data;
+                            _workTypeId = workModel.workTypeId;
+                            showAlertDialog(context);
+                            getCall();
+                          });
+                        },
+                        items: workTypeList.map((WorkModel value) {
+                          return DropdownMenuItem<WorkModel>(
+                            value: value,
+                            child: new Text(
+                              value.workType,
+                              textAlign: TextAlign.center,
+                              style: new TextStyle(color: Colors.black),
+                            ),
+                          );
+                        }).toList(),
+                      ),
                     ),
                   ),
-                ),
-                SizedBox(
-                  height: 20.0,
-                ),
-                TextFormField(
-                  controller: _description,
-                  keyboardType: TextInputType.multiline,
-                  maxLines: null,
-                  autofocus: false,
-                  textAlignVertical: TextAlignVertical.top,
-                  onChanged: (value) {
-                    setState(() {
-                      _charLength = value.length;
-                    });
-                  },
-                  validator: (value) =>
-                      value.isEmpty ? 'Please enter description' : null,
-                  decoration: InputDecoration(
-                    labelText: 'Description',
-                    border: OutlineInputBorder(),
+                  SizedBox(
+                    height: 20.0,
                   ),
-                ),
-                SizedBox(
-                  height: 10.0,
-                ),
-                Align(
-                  alignment: Alignment.bottomRight,
-                  child: Padding(
-                    padding: EdgeInsets.only(right: 10),
-                    child: Text(_charLength.toString() + "/250"),
+                  Container(
+                    child: InputDecorator(
+                      decoration: InputDecoration(
+                        border: OutlineInputBorder(
+                            borderRadius: BorderRadius.circular(5.0)),
+                        contentPadding: EdgeInsets.all(2),
+                      ),
+                      child: DropdownButtonFormField(
+                        isExpanded: true,
+                        hint: Text("Call Category"),
+                        decoration: InputDecoration(
+                          enabledBorder: UnderlineInputBorder(
+                              borderSide: BorderSide(color: Colors.white)),
+                          contentPadding: EdgeInsets.all(5),
+                        ),
+                        value: callCategoryModel,
+                        validator: (value) =>
+                            value == null ? 'Please select subproduct' : null,
+                        onChanged: (CallCategoryModel data) {
+                          setState(() {
+                            callCategoryModel = data;
+                            _callCategoryId = callCategoryModel.callCategoryId;
+                          });
+                        },
+                        items: callCategoryList.map((CallCategoryModel value) {
+                          return DropdownMenuItem<CallCategoryModel>(
+                            value: value,
+                            child: new Text(
+                              value.callCategory,
+                              textAlign: TextAlign.center,
+                              style: new TextStyle(color: Colors.black),
+                            ),
+                          );
+                        }).toList(),
+                      ),
+                    ),
                   ),
-                ),
-                SizedBox(
-                  height: 10.0,
-                ),
-                Row(
-                  children: [
-                    new Expanded(
-                      child: Visibility(
-                        visible: imageVisible,
-                        child: new Column(
-                          crossAxisAlignment: CrossAxisAlignment.end,
-                          children: <Widget>[
-                            Padding(
-                              padding: EdgeInsets.only(top: 10),
-                              child: Stack(
-                                children: <Widget>[
-                                  new Container(
-                                    height: 70,
-                                    width: 70,
-                                    child: new Center(
-                                      child: image == null
-                                          ? new Text('No Image to Show ')
-                                          : new Image.file(image),
+                  SizedBox(
+                    height: 20.0,
+                  ),
+                  TextFormField(
+                    controller: _description,
+                    keyboardType: TextInputType.multiline,
+                    maxLines: null,
+                    autofocus: false,
+                    textAlignVertical: TextAlignVertical.top,
+                    onChanged: (value) {
+                      setState(() {
+                        _charLength = value.length;
+                      });
+                    },
+                    validator: (value) =>
+                        value.isEmpty ? 'Please enter description' : null,
+                    decoration: InputDecoration(
+                      labelText: 'Description',
+                      border: OutlineInputBorder(),
+                    ),
+                  ),
+                  SizedBox(
+                    height: 10.0,
+                  ),
+                  Align(
+                    alignment: Alignment.bottomRight,
+                    child: Padding(
+                      padding: EdgeInsets.only(right: 10),
+                      child: Text(_charLength.toString() + "/250"),
+                    ),
+                  ),
+                  SizedBox(
+                    height: 10.0,
+                  ),
+                  Row(
+                    children: [
+                      new Expanded(
+                        child: Visibility(
+                          visible: imageVisible,
+                          child: new Column(
+                            crossAxisAlignment: CrossAxisAlignment.end,
+                            children: <Widget>[
+                              Padding(
+                                padding: EdgeInsets.only(top: 10),
+                                child: Stack(
+                                  children: <Widget>[
+                                    new Container(
+                                      height: 70,
+                                      width: 70,
+                                      child: new Center(
+                                        child: image == null
+                                            ? new Text('No Image to Show ')
+                                            : new Image.file(image),
+                                      ),
                                     ),
-                                  ),
-                                  Positioned(
-                                    top: -17,
-                                    right: 45,
-                                    child: GestureDetector(
-                                      onTap: () {
-                                        print('delete image from List');
-                                        setState(() {
-                                          print('set new state of images');
-                                        });
-                                      },
-                                      child: IconButton(
-                                        onPressed: () {
+                                    Positioned(
+                                      top: 5,
+                                      right: 5,
+                                      child: GestureDetector(
+                                        onTap: () {
+                                          print('delete image from List');
                                           setState(() {
-                                            imageVisible = false;
-                                            encImageBase64 = "";
+                                            print('set new state of images');
                                           });
                                         },
-                                        icon: Image.asset(
-                                          'assets/images/close_icon.png',
-                                          width: 20,
-                                          height: 20,
+                                        child: IconButton(
+                                          onPressed: () {
+                                            setState(() {
+                                              imageVisible = false;
+                                              encImageBase64 = "";
+                                            });
+                                          },
+                                          icon: Image.asset(
+                                            'assets/images/close_icon.png',
+                                            width: 20,
+                                            height: 20,
+                                          ),
                                         ),
                                       ),
                                     ),
-                                  ),
-                                ],
-                              ),
-                            )
-                          ],
-                        ),
-                      ),
-                    ),
-                    new Expanded(
-                      child: Align(
-                        alignment: Alignment.bottomRight,
-                        child: Padding(
-                          padding: EdgeInsets.only(right: 10),
-                          child: Material(
-                            //Wrap with Material
-                            shape: RoundedRectangleBorder(
-                                borderRadius: BorderRadius.circular(5.0)),
-                            // elevation: 18.0,
-                            color: Colors.lightBlue,
-                            clipBehavior: Clip.antiAlias,
-                            // Add This
-                            child: MaterialButton(
-                              child: new Text('Attach Image',
-                                  style: new TextStyle(
-                                      fontSize: 16.0, color: Colors.white)),
-                              onPressed: () {
-                                _showSelectionDialog(context);
-                              },
-                            ),
+                                  ],
+                                ),
+                              )
+                            ],
                           ),
                         ),
                       ),
-                    )
-                  ],
-                ),
-                SizedBox(
-                  height: 20.0,
-                ),
-                TextFormField(
-                  controller: _date,
-                  autofocus: false,
-                  validator: (value) =>
-                      value.isEmpty ? 'Please select date' : null,
-                  onTap: () {
-                    _selectDate(context);
-                    FocusScope.of(context).requestFocus(new FocusNode());
-                  },
-                  decoration: InputDecoration(
-                    labelText: 'Select Date',
-                    border: OutlineInputBorder(),
-                    suffixIcon: Icon(Icons.calendar_today),
+                      new Expanded(
+                        child: Align(
+                          alignment: Alignment.bottomRight,
+                          child: Padding(
+                            padding: EdgeInsets.only(right: 10),
+                            child: Material(
+                              //Wrap with Material
+                              shape: RoundedRectangleBorder(
+                                  borderRadius: BorderRadius.circular(5.0)),
+                              // elevation: 18.0,
+                              color: Colors.lightBlue,
+                              clipBehavior: Clip.antiAlias,
+                              // Add This
+                              child: MaterialButton(
+                                child: new Text('Attach Image',
+                                    style: new TextStyle(
+                                        fontSize: 16.0, color: Colors.white)),
+                                onPressed: () {
+                                  _showSelectionDialog(context);
+                                },
+                              ),
+                            ),
+                          ),
+                        ),
+                      )
+                    ],
                   ),
-                ),
-                SizedBox(
-                  height: 20.0,
-                ),
-                TextFormField(
-                  controller: _timeController,
-                  autofocus: false,
-                  validator: (value) =>
-                      value.isEmpty ? 'Please select time' : null,
-                  onTap: () {
-                    _selectTime(context);
-                    FocusScope.of(context).requestFocus(new FocusNode());
-                  },
-                  decoration: InputDecoration(
-                    labelText: 'Select Time',
-                    border: OutlineInputBorder(),
-                    suffixIcon: Icon(Icons.access_time_outlined),
+                  SizedBox(
+                    height: 20.0,
                   ),
-                ),
-                SizedBox(
-                  height: 20.0,
-                ),
-                longButtons('Raise Ticket', raiseTicket)
-              ],
+                  TextFormField(
+                    controller: _date,
+                    autofocus: false,
+                    validator: (value) =>
+                        value.isEmpty ? 'Please select date' : null,
+                    onTap: () {
+                      _selectDate(context);
+                      FocusScope.of(context).requestFocus(new FocusNode());
+                    },
+                    decoration: InputDecoration(
+                      labelText: 'Select Date',
+                      border: OutlineInputBorder(),
+                      suffixIcon: Icon(Icons.calendar_today),
+                    ),
+                  ),
+                  SizedBox(
+                    height: 20.0,
+                  ),
+                  TextFormField(
+                    controller: _timeController,
+                    autofocus: false,
+                    validator: (value) =>
+                        value.isEmpty ? 'Please select time' : null,
+                    onTap: () {
+                      _selectTime(context);
+                      FocusScope.of(context).requestFocus(new FocusNode());
+                    },
+                    decoration: InputDecoration(
+                      labelText: 'Select Time',
+                      border: OutlineInputBorder(),
+                      suffixIcon: Icon(Icons.access_time_outlined),
+                    ),
+                  ),
+                  SizedBox(
+                    height: 20.0,
+                  ),
+                  longButtons('Raise Ticket', raiseTicket)
+                ],
+              ),
             ),
           ),
         ),

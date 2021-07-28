@@ -36,13 +36,6 @@ packages:
       url: "https://pub.dartlang.org"
     source: hosted
     version: "2.6.1"
-  async_textformfield:
-    dependency: "direct main"
-    description:
-      name: async_textformfield
-      url: "https://pub.dartlang.org"
-    source: hosted
-    version: "1.0.0+3"
   basic_utils:
     dependency: transitive
     description:
@@ -57,13 +50,6 @@ packages:
       url: "https://pub.dartlang.org"
     source: hosted
     version: "2.1.0"
-  bottom_navy_bar:
-    dependency: "direct main"
-    description:
-      name: bottom_navy_bar
-      url: "https://pub.dartlang.org"
-    source: hosted
-    version: "6.0.0"
   build:
     dependency: transitive
     description:
@@ -155,13 +141,6 @@ packages:
       url: "https://pub.dartlang.org"
     source: hosted
     version: "1.1.0"
-  cloud_firestore:
-    dependency: "direct main"
-    description:
-      name: cloud_firestore
-      url: "https://pub.dartlang.org"
-    source: hosted
-    version: "0.12.11"
   code_builder:
     dependency: transitive
     description:
@@ -176,13 +155,6 @@ packages:
       url: "https://pub.dartlang.org"
     source: hosted
     version: "1.15.0"
-  connection_status_bar:
-    dependency: "direct main"
-    description:
-      name: connection_status_bar
-      url: "https://pub.dartlang.org"
-    source: hosted
-    version: "1.1.4"
   connectivity:
     dependency: "direct main"
     description:
@@ -274,27 +246,6 @@ packages:
       url: "https://pub.dartlang.org"
     source: hosted
     version: "3.0.10"
-  dropdown_plus:
-    dependency: "direct main"
-    description:
-      name: dropdown_plus
-      url: "https://pub.dartlang.org"
-    source: hosted
-    version: "0.0.9"
-  dropdown_search:
-    dependency: "direct main"
-    description:
-      name: dropdown_search
-      url: "https://pub.dartlang.org"
-    source: hosted
-    version: "0.6.3"
-  dropdownfield:
-    dependency: "direct main"
-    description:
-      name: dropdownfield
-      url: "https://pub.dartlang.org"
-    source: hosted
-    version: "0.0.2"
   fake_async:
     dependency: transitive
     description:
@@ -316,13 +267,6 @@ packages:
       url: "https://pub.dartlang.org"
     source: hosted
     version: "5.2.1"
-  find_dropdown:
-    dependency: "direct main"
-    description:
-      name: find_dropdown
-      url: "https://pub.dartlang.org"
-    source: hosted
-    version: "1.0.0"
   firebase:
     dependency: transitive
     description:
@@ -835,20 +779,6 @@ packages:
       url: "https://pub.dartlang.org"
     source: hosted
     version: "1.4.1+3"
-  searchable_dropdown:
-    dependency: "direct main"
-    description:
-      name: searchable_dropdown
-      url: "https://pub.dartlang.org"
-    source: hosted
-    version: "1.1.3"
-  select_dialog:
-    dependency: "direct main"
-    description:
-      name: select_dialog
-      url: "https://pub.dartlang.org"
-    source: hosted
-    version: "2.0.0"
   shared_preferences:
     dependency: "direct main"
     description:
