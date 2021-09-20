@@ -34,7 +34,7 @@ class _LoginState extends State<Login> {
 
     if (status != null && status.isNotEmpty) {
       Navigator.pushNamedAndRemoveUntil(
-          context, '/dashboard', (route) => false);
+          context, '/dummylogin', (route) => false);
     }
   }
 
@@ -210,7 +210,7 @@ class _LoginState extends State<Login> {
           padding: EdgeInsets.only(left: 0.0),
           child: Text("Sign up", style: TextStyle(fontWeight: FontWeight.w300)),
           onPressed: () {
-            Navigator.pushReplacementNamed(context, '/register');
+            Navigator.pushReplacementNamed(context, '/dummyForgotPassword');
           },
         ),
       ],
@@ -251,22 +251,24 @@ class _LoginState extends State<Login> {
                   SizedBox(
                     height: 5.0,
                   ),
-                  TextFormField(
-                    keyboardType: TextInputType.emailAddress,
-                    controller: emailController,
-                    autovalidateMode: AutovalidateMode.onUserInteraction,
-                    decoration: InputDecoration(
-                      hintText: "Email",
-                      hintStyle: TextStyle(
-                        color: Colors.grey,
-                        fontSize: 16.0,
+                  Padding(
+                    padding:
+                        EdgeInsets.only(top: 20.0, right: 20.0, left: 20.0),
+                    child: TextFormField(
+                      keyboardType: TextInputType.emailAddress,
+                      controller: emailController,
+                      autovalidateMode: AutovalidateMode.onUserInteraction,
+                      decoration: InputDecoration(
+                        hintText: "Email",
+                        hintStyle: TextStyle(
+                          color: Colors.grey,
+                          fontSize: 16.0,
+                        ),
+                        border: OutlineInputBorder(),
+                        prefixIcon: Icon(Icons.supervisor_account_sharp),
                       ),
-                      border: OutlineInputBorder(
-                        borderRadius: BorderRadius.circular(10.0),
-                      ),
-                      prefixIcon: Icon(Icons.email),
+                      validator: validateEmail,
                     ),
-                    validator: validateEmail,
                   ),
                   SizedBox(
                     height: 20.0,

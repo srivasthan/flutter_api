@@ -6,10 +6,13 @@ import 'package:flutter_api_json_parse/screens/addAmc.dart';
 import 'package:flutter_api_json_parse/screens/addProduct.dart';
 import 'package:flutter_api_json_parse/screens/amc.dart';
 import 'package:flutter_api_json_parse/screens/dashboard.dart';
+import 'package:flutter_api_json_parse/screens/dummy1.dart';
+import 'package:flutter_api_json_parse/screens/dummy2.dart';
 import 'package:flutter_api_json_parse/screens/forgotPassword.dart';
 import 'package:flutter_api_json_parse/screens/myProduct.dart';
 import 'package:flutter_api_json_parse/screens/passwordChange.dart';
 import 'package:flutter_api_json_parse/screens/profile.dart';
+import 'package:flutter_api_json_parse/screens/profile_technician.dart';
 import 'package:flutter_api_json_parse/screens/register.dart';
 import 'package:flutter_api_json_parse/utility/userPreferences.dart';
 import 'package:provider/provider.dart';
@@ -40,6 +43,7 @@ class MyApp extends StatelessWidget {
     return MultiProvider(
       providers: [ChangeNotifierProvider(create: (_) => UserProvider())],
       child: MaterialApp(
+        debugShowCheckedModeBanner: false,
         title: 'Login Registration',
         theme: ThemeData(
           primarySwatch: Colors.blue,
@@ -71,7 +75,10 @@ class MyApp extends StatelessWidget {
           '/addproduct': (context) => AddProduct(),
           '/myproduct': (context) => MyProductStateless(),
           '/amc': (context) => AmcStateless(),
-          '/addamc': (context) => AddAmc()
+          '/addamc': (context) => AddAmc(),
+          '/dummylogin': (context) => Dummy(),
+          '/dummyForgotPassword': (context) => Dummy1(),
+          '/technicianProfile': (context) => ProfileTechnician()
         },
       ),
     );
