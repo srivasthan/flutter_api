@@ -244,18 +244,15 @@ class _LoginState extends State<Login> {
               child: Column(
                 crossAxisAlignment: CrossAxisAlignment.start,
                 children: [
-                  SizedBox(
-                    height: 10.0,
-                  ),
                   Text("Email"),
-                  Padding(
-                    padding: EdgeInsets.only(top: 20.0),
-                    child: TextFormField(
+                SizedBox(height: 5.0,),
+                TextFormField(
                       keyboardType: TextInputType.emailAddress,
                       controller: emailController,
                       autovalidateMode: AutovalidateMode.onUserInteraction,
                       decoration: InputDecoration(
                         hintText: "Email",
+                        contentPadding: EdgeInsets.fromLTRB(10, 10, 10, 0),
                         hintStyle: TextStyle(
                           color: Colors.grey,
                           fontSize: 16.0,
@@ -265,7 +262,6 @@ class _LoginState extends State<Login> {
                       ),
                       validator: validateEmail,
                     ),
-                  ),
                   SizedBox(
                     height: 20.0,
                   ),
@@ -277,12 +273,12 @@ class _LoginState extends State<Login> {
                     autovalidateMode: AutovalidateMode.onUserInteraction,
                     decoration: InputDecoration(
                       hintText: "Password",
+                      contentPadding: EdgeInsets.fromLTRB(10, 10, 10, 0),
                       hintStyle: TextStyle(
                         color: Colors.grey,
                         fontSize: 16.0,
                       ),
                       border: OutlineInputBorder(
-                        borderRadius: BorderRadius.circular(10.0),
                       ),
                       prefixIcon: Icon(Icons.lock),
                       suffixIcon: IconButton(

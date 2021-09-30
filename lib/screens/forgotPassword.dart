@@ -242,7 +242,9 @@ class _ForgotPasswordState extends State<ForgotPassword> {
                       autovalidateMode: AutovalidateMode.onUserInteraction,
                       controller: lastNameController,
                       decoration: InputDecoration(
-                          labelText: 'Email', border: OutlineInputBorder()),
+                          labelText: 'Email',
+                          contentPadding: EdgeInsets.fromLTRB(10, 10, 10, 0),
+                          border: OutlineInputBorder()),
                     ),
                     SizedBox(
                       height: 30,
@@ -257,8 +259,8 @@ class _ForgotPasswordState extends State<ForgotPassword> {
                         clipBehavior: Clip.antiAlias,
                         // Add This
                         child: MaterialButton(
-                          minWidth: 200.0,
-                          height: 35,
+                          minWidth: 170.0,
+                          height: 15,
                           child: new Text('Forgot Password',
                               style: new TextStyle(
                                   fontSize: 16.0, color: Colors.white)),

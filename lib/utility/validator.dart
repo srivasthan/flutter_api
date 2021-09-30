@@ -25,8 +25,6 @@ String validatePassword(String value) {
     _msg = "Password must contain atleast one upper character";
   } else if (!regexnumber.hasMatch(value)) {
     _msg = "Password must contain atleast one number";
-  } else if (!regex.hasMatch(value)) {
-    _msg = "Password should have one special character";
   }
 
   return _msg;

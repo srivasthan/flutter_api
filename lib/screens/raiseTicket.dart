@@ -460,20 +460,20 @@ class _RaiseTicket extends State<RaiseTicket> {
                     height: 20.0,
                   ),
                   Container(
+                    height: 48,
                     child: InputDecorator(
                       decoration: InputDecoration(
                         border: OutlineInputBorder(
                             borderRadius: BorderRadius.circular(5.0)),
-                        contentPadding: EdgeInsets.all(5),
+                        contentPadding: EdgeInsets.only(left: 10.0, right: 10.0),
                       ),
                       child: DropdownButtonFormField<ProductModel>(
                         isExpanded: true,
+                        isDense: true,
                         value: productModel,
-                        hint: new Text("Select Product"),
+                        hint: Text("Select Product"),
                         decoration: InputDecoration(
-                          enabledBorder: UnderlineInputBorder(
-                              borderSide: BorderSide(color: Colors.white)),
-                          contentPadding: EdgeInsets.all(5),
+                          enabledBorder: InputBorder.none,
                         ),
                         onChanged: (ProductModel data) {
                           setState(() {
@@ -491,11 +491,10 @@ class _RaiseTicket extends State<RaiseTicket> {
                         items: product.map((ProductModel value) {
                           return DropdownMenuItem<ProductModel>(
                             value: value,
-                            child: new Text(
-                              value.productName,
-                              textAlign: TextAlign.center,
-                              style: new TextStyle(color: Colors.black),
-                            ),
+                            child: Text(
+                                value.productName,
+                                style: new TextStyle(color: Colors.black),
+                              ),
                           );
                         }).toList(),
                       ),
@@ -505,18 +504,17 @@ class _RaiseTicket extends State<RaiseTicket> {
                     height: 20.0,
                   ),
                   Container(
+                    height: 48,
                     child: InputDecorator(
                       decoration: InputDecoration(
                         border: OutlineInputBorder(
                             borderRadius: BorderRadius.circular(5.0)),
-                        contentPadding: EdgeInsets.all(5),
+                        contentPadding: EdgeInsets.only(left: 10.0, right: 10.0),
                       ),
                       child: DropdownButtonFormField(
                         hint: new Text("Select Sub Product"),
                         decoration: InputDecoration(
-                          enabledBorder: UnderlineInputBorder(
-                              borderSide: BorderSide(color: Colors.white)),
-                          contentPadding: EdgeInsets.all(5),
+                          enabledBorder: InputBorder.none,
                         ),
                         items: subProduct.map((SubProductModel value) {
                           return DropdownMenuItem<SubProductModel>(
@@ -549,18 +547,17 @@ class _RaiseTicket extends State<RaiseTicket> {
                     height: 20.0,
                   ),
                   Container(
+                    height: 48,
                     child: InputDecorator(
                       decoration: InputDecoration(
                         border: OutlineInputBorder(
                             borderRadius: BorderRadius.circular(5.0)),
-                        contentPadding: EdgeInsets.all(5),
+                        contentPadding: EdgeInsets.only(left: 10.0, right: 10.0),
                       ),
                       child: DropdownButtonFormField(
                         isExpanded: true,
                         decoration: InputDecoration(
-                          enabledBorder: UnderlineInputBorder(
-                              borderSide: BorderSide(color: Colors.white)),
-                          contentPadding: EdgeInsets.all(5),
+                          enabledBorder: InputBorder.none,
                         ),
                         hint: new Text("Select Serial Number"),
                         value: serialNumberModel,
@@ -605,6 +602,7 @@ class _RaiseTicket extends State<RaiseTicket> {
                     controller: _contractType,
                     decoration: InputDecoration(
                       labelText: 'Contract type',
+                      contentPadding: EdgeInsets.fromLTRB(10, 10, 10, 0),
                       border: OutlineInputBorder(),
                     ),
                   ),
@@ -618,6 +616,7 @@ class _RaiseTicket extends State<RaiseTicket> {
                     controller: _modelNumber,
                     decoration: InputDecoration(
                       labelText: 'Model Number',
+                      contentPadding: EdgeInsets.fromLTRB(10, 10, 10, 0),
                       border: OutlineInputBorder(),
                     ),
                   ),
@@ -625,18 +624,17 @@ class _RaiseTicket extends State<RaiseTicket> {
                     height: 20.0,
                   ),
                   Container(
+                    height: 48,
                     child: InputDecorator(
                       decoration: InputDecoration(
                         border: OutlineInputBorder(
                             borderRadius: BorderRadius.circular(5.0)),
-                        contentPadding: EdgeInsets.all(2),
+                        contentPadding: EdgeInsets.only(left: 10.0, right: 10.0),
                       ),
                       child: DropdownButtonFormField(
                         isExpanded: true,
                         decoration: InputDecoration(
-                          enabledBorder: UnderlineInputBorder(
-                              borderSide: BorderSide(color: Colors.white)),
-                          contentPadding: EdgeInsets.all(5),
+                          enabledBorder: InputBorder.none,
                         ),
                         hint: Text("Select Work Type"),
                         validator: (value) =>
@@ -667,6 +665,7 @@ class _RaiseTicket extends State<RaiseTicket> {
                     height: 20.0,
                   ),
                   Container(
+                    height: 48,
                     child: InputDecorator(
                       decoration: InputDecoration(
                         border: OutlineInputBorder(
@@ -721,6 +720,7 @@ class _RaiseTicket extends State<RaiseTicket> {
                         value.isEmpty ? 'Please enter description' : null,
                     decoration: InputDecoration(
                       labelText: 'Description',
+                      contentPadding: EdgeInsets.fromLTRB(10, 10, 10, 0),
                       border: OutlineInputBorder(),
                     ),
                   ),
@@ -831,6 +831,7 @@ class _RaiseTicket extends State<RaiseTicket> {
                     },
                     decoration: InputDecoration(
                       labelText: 'Select Date',
+                      contentPadding: EdgeInsets.fromLTRB(10, 10, 10, 0),
                       border: OutlineInputBorder(),
                       suffixIcon: Icon(Icons.calendar_today),
                     ),
@@ -849,6 +850,7 @@ class _RaiseTicket extends State<RaiseTicket> {
                     },
                     decoration: InputDecoration(
                       labelText: 'Select Time',
+                      contentPadding: EdgeInsets.fromLTRB(10, 10, 10, 0),
                       border: OutlineInputBorder(),
                       suffixIcon: Icon(Icons.access_time_outlined),
                     ),

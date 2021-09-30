@@ -171,6 +171,7 @@ class _PasswordChange extends State<PasswordChange> {
                       keyboardType: TextInputType.visiblePassword,
                       decoration: InputDecoration(
                         hintText: "Old Password",
+                        contentPadding: EdgeInsets.fromLTRB(10, 10, 10, 0),
                         hintStyle: TextStyle(
                           color: Colors.grey,
                           fontSize: 16.0,
@@ -211,6 +212,7 @@ class _PasswordChange extends State<PasswordChange> {
                     validator: validatePassword,
                     decoration: InputDecoration(
                       hintText: "New Password",
+                      contentPadding: EdgeInsets.fromLTRB(10, 10, 10, 0),
                       hintStyle: TextStyle(
                         color: Colors.grey,
                         fontSize: 16.0,
@@ -231,7 +233,6 @@ class _PasswordChange extends State<PasswordChange> {
                     minLength: 6,
                     uppercaseCharCount: 1,
                     numericCharCount: 1,
-                    specialCharCount: 1,
                     width: 400,
                     height: 110,
                     onSuccess: () {
@@ -252,6 +253,7 @@ class _PasswordChange extends State<PasswordChange> {
                       keyboardType: TextInputType.visiblePassword,
                       decoration: InputDecoration(
                         hintText: "Confirm Password",
+                        contentPadding: EdgeInsets.fromLTRB(10, 10, 10, 0),
                         hintStyle: TextStyle(
                           color: Colors.grey,
                           fontSize: 16.0,
@@ -289,8 +291,6 @@ class _PasswordChange extends State<PasswordChange> {
                       Text("Your password must be atleast 6 characters",
                           style: TextStyle(fontSize: 15)),
                       Text("Atleast one number (0-9)",
-                          style: TextStyle(fontSize: 15)),
-                      Text("Atleast one special character",
                           style: TextStyle(fontSize: 15)),
                       Text("Atleast one upper case letter(A-Z)",
                           style: TextStyle(fontSize: 15)),

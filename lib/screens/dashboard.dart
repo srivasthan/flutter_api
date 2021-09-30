@@ -16,8 +16,9 @@ class DashBoard extends StatelessWidget {
       initialIndex: selectedPage,
       length: _pageCount,
       child: Scaffold(
-        bottomNavigationBar: menu(),
+        bottomNavigationBar: menu(context),
         body: TabBarView(
+          physics: const NeverScrollableScrollPhysics(),
           children: [
             HomeStateless(),
             RaiseTicketStateless(),
@@ -29,31 +30,80 @@ class DashBoard extends StatelessWidget {
     );
   }
 
-  Widget menu() {
+  Widget menu(BuildContext context) {
     return Container(
       color: Colors.blue,
-      height: 70,
+      height: 60,
       child: TabBar(
         labelColor: Colors.white,
         unselectedLabelColor: Colors.white70,
         indicatorSize: TabBarIndicatorSize.tab,
-        indicatorPadding: EdgeInsets.all(5.0),
+        physics: const NeverScrollableScrollPhysics(),
+        indicatorPadding: EdgeInsets.zero,
         tabs: [
-          Tab(
-            text: "Home",
-            icon: Icon(Icons.home),
+          Column(
+            children: [
+              SizedBox(
+                height: 10.0,
+              ),
+              Icon(Icons.home),
+              SizedBox(
+                height: 5.0,
+              ),
+              Text(
+                "Home",
+                textAlign: TextAlign.center,
+                style: TextStyle(fontSize: 10.0),
+              )
+            ],
           ),
-          Tab(
-            text: "Raise Ticket",
-            icon: Icon(Icons.event_note_outlined),
+          Column(
+            children: [
+              SizedBox(
+                height: 10.0,
+              ),
+              Icon(Icons.event_note_outlined),
+              SizedBox(
+                height: 5.0,
+              ),
+              Text(
+                "Raise Ticket",
+                textAlign: TextAlign.center,
+                style: TextStyle(fontSize: 10.0),
+              )
+            ],
           ),
-          Tab(
-            text: "My Product",
-            icon: Icon(Icons.folder),
+          Column(
+            children: [
+              SizedBox(
+                height: 10.0,
+              ),
+              Icon(Icons.folder),
+              SizedBox(
+                height: 5.0,
+              ),
+              Text(
+                "My Product",
+                textAlign: TextAlign.center,
+                style: TextStyle(fontSize: 10.0),
+              )
+            ],
           ),
-          Tab(
-            text: "AMC",
-            icon: Icon(Icons.sticky_note_2_sharp),
+          Column(
+            children: [
+              SizedBox(
+                height: 10.0,
+              ),
+              Icon(Icons.sticky_note_2_sharp),
+              SizedBox(
+                height: 5.0,
+              ),
+              Text(
+                "AMC",
+                textAlign: TextAlign.center,
+                style: TextStyle(fontSize: 10.0),
+              )
+            ],
           ),
         ],
       ),

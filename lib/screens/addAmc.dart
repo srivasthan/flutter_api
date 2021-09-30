@@ -60,6 +60,7 @@ class _AddAmc extends State<AddAmc> {
   DateTime selectedPurchaseDate = DateTime.now();
   List<ProductModel> product = new List<ProductModel>();
   List<AmcModel> amc = new List<AmcModel>();
+  List<CallCategoryModel> callCategory = new List<CallCategoryModel>();
   List<CountryModel> country = new List<CountryModel>();
   List<StateModel> state = new List<StateModel>();
   List<CityModel> city = new List<CityModel>();
@@ -89,6 +90,7 @@ class _AddAmc extends State<AddAmc> {
       _locationId,
       _contractDuration,
       _getAmount,
+      _callCategory = -1,
       _subProductId = -1;
 
   Future<bool> _onBackPressed() {
@@ -413,6 +415,34 @@ class _AddAmc extends State<AddAmc> {
     }
   }
 
+  getCallCategory() async {
+    var result = await Connectivity().checkConnectivity();
+    if (result == ConnectivityResult.mobile ||
+        result == ConnectivityResult.wifi) {
+      RestClient apiService = RestClient(dio.Dio());
+
+      final response = await apiService.getCallCategory();
+
+      if (response.callCategoryEntity.responseCode == "200") {
+        setState(() {
+          for (var i = 0; i < response.callCategoryEntity.datum.length; i++) {
+            callCategory.add(new CallCategoryModel(
+                callCategoryId:
+                    response.callCategoryEntity.datum[i].callCategoryId,
+                callCategory:
+                    response.callCategoryEntity.datum[i].callCategory));
+          }
+        });
+      }
+    } else {
+      Navigator.of(context, rootNavigator: true).pop();
+      Fluttertoast.showToast(
+          msg: "Connect to internet",
+          timeInSecForIosWeb: 1,
+          toastLength: Toast.LENGTH_SHORT);
+    }
+  }
+
   Future<void> _selectDate(BuildContext context) async {
     var result = await Connectivity().checkConnectivity();
     if (result == ConnectivityResult.mobile ||
@@ -495,6 +525,7 @@ class _AddAmc extends State<AddAmc> {
       showAlertDialog(context);
     });
     setDetails();
+    getCallCategory();
     getCountry();
     getProduct();
     getAmc();
@@ -628,6 +659,7 @@ class _AddAmc extends State<AddAmc> {
             "post_code": int.parse(_postCode.text),
             "priority": "P1",
             "product_id": _productId,
+            "call_category": _callCategory,
             "product_sub_id": _subProductId,
             "serial_array": combinedData,
             "state_id": _stateId,
@@ -711,6 +743,7 @@ class _AddAmc extends State<AddAmc> {
                       autovalidateMode: AutovalidateMode.onUserInteraction,
                       decoration: InputDecoration(
                         labelText: 'Plot Number',
+                        contentPadding: EdgeInsets.fromLTRB(10, 10, 10, 0),
                         border: OutlineInputBorder(),
                       ),
                     ),
@@ -729,6 +762,7 @@ class _AddAmc extends State<AddAmc> {
                       autovalidateMode: AutovalidateMode.onUserInteraction,
                       decoration: InputDecoration(
                         labelText: 'Street',
+                        contentPadding: EdgeInsets.fromLTRB(10, 10, 10, 0),
                         border: OutlineInputBorder(),
                       ),
                     ),
@@ -747,6 +781,7 @@ class _AddAmc extends State<AddAmc> {
                           value.isEmpty ? 'Please enter landmark' : null,
                       decoration: InputDecoration(
                         labelText: 'Landmark',
+                        contentPadding: EdgeInsets.fromLTRB(10, 10, 10, 0),
                         border: OutlineInputBorder(),
                       ),
                     ),
@@ -758,7 +793,7 @@ class _AddAmc extends State<AddAmc> {
                       height: 5.0,
                     ),
                     Container(
-                      height: 60,
+                      height: 48,
                       child: customSearchableDropDown(
                         items: country,
                         initialIndex: _initialCountryId,
@@ -799,7 +834,7 @@ class _AddAmc extends State<AddAmc> {
                       height: 5.0,
                     ),
                     Container(
-                      height: 60,
+                      height: 48,
                       child: customSearchableDropDown(
                         items: state,
                         initialIndex: _initialStateId,
@@ -838,7 +873,7 @@ class _AddAmc extends State<AddAmc> {
                       height: 5.0,
                     ),
                     Container(
-                      height: 60,
+                      height: 48,
                       child: customSearchableDropDown(
                         items: city,
                         label: 'Select City',
@@ -875,7 +910,7 @@ class _AddAmc extends State<AddAmc> {
                       height: 5.0,
                     ),
                     Container(
-                      height: 60,
+                      height: 48,
                       child: customSearchableDropDown(
                         items: location,
                         initialIndex: _initialLocationId,
@@ -911,6 +946,7 @@ class _AddAmc extends State<AddAmc> {
                       autovalidateMode: AutovalidateMode.onUserInteraction,
                       decoration: InputDecoration(
                         labelText: 'Postcode',
+                        contentPadding: EdgeInsets.fromLTRB(10, 10, 10, 0),
                         border: OutlineInputBorder(),
                       ),
                     ),
@@ -931,7 +967,7 @@ class _AddAmc extends State<AddAmc> {
                       height: 5.0,
                     ),
                     Container(
-                      height: 60,
+                      height: 48,
                       child: customSearchableDropDown(
                         items: amc,
                         label: 'Select AMC Type',
@@ -974,6 +1010,7 @@ class _AddAmc extends State<AddAmc> {
                       },
                       decoration: InputDecoration(
                         labelText: 'Contract Duration',
+                        contentPadding: EdgeInsets.fromLTRB(10, 10, 10, 0),
                         border: OutlineInputBorder(),
                       ),
                     ),
@@ -993,6 +1030,7 @@ class _AddAmc extends State<AddAmc> {
                       },
                       decoration: InputDecoration(
                         labelText: 'Select Contract Start Date',
+                        contentPadding: EdgeInsets.fromLTRB(10, 10, 10, 0),
                         border: OutlineInputBorder(),
                         suffixIcon: Icon(Icons.calendar_today),
                       ),
@@ -1014,7 +1052,7 @@ class _AddAmc extends State<AddAmc> {
                       height: 5.0,
                     ),
                     Container(
-                      height: 60,
+                      height: 48,
                       child: customSearchableDropDown(
                         items: product,
                         label: 'Select Product',
@@ -1049,7 +1087,7 @@ class _AddAmc extends State<AddAmc> {
                       height: 5.0,
                     ),
                     Container(
-                      height: 60,
+                      height: 48,
                       child: customSearchableDropDown(
                         items: subProduct,
                         label: 'Select Product',
@@ -1073,6 +1111,37 @@ class _AddAmc extends State<AddAmc> {
                       ),
                     ),
                     SizedBox(
+                      height: 10.0,
+                    ),
+                    Text('Call category'),
+                    SizedBox(
+                      height: 5.0,
+                    ),
+                    Container(
+                      height: 48,
+                      child: customSearchableDropDown(
+                        items: callCategory,
+                        label: 'Select call category',
+                        decoration: BoxDecoration(
+                            border: Border.all(color: Colors.black54),
+                            borderRadius: BorderRadius.circular(5)),
+                        dropDownMenuItems: callCategory?.map((items) {
+                              return items.callCategory;
+                            })?.toList() ??
+                            [],
+                        onChanged: (data) {
+                          if (data != null) {
+                            setState(() {
+                              callCategoryModel = data;
+                              _callCategory = callCategoryModel.callCategoryId;
+                            });
+                          } else {
+                            callCategoryModel = null;
+                          }
+                        },
+                      ),
+                    ),
+                    SizedBox(
                       height: 20.0,
                     ),
                     TextFormField(
@@ -1087,6 +1156,7 @@ class _AddAmc extends State<AddAmc> {
                       autovalidateMode: AutovalidateMode.onUserInteraction,
                       decoration: InputDecoration(
                         labelText: 'Model Number',
+                        contentPadding: EdgeInsets.fromLTRB(10, 10, 10, 0),
                         border: OutlineInputBorder(),
                       ),
                     ),
@@ -1105,6 +1175,7 @@ class _AddAmc extends State<AddAmc> {
                       autovalidateMode: AutovalidateMode.onUserInteraction,
                       decoration: InputDecoration(
                         labelText: 'Enter Invoice Number',
+                        contentPadding: EdgeInsets.fromLTRB(10, 10, 10, 0),
                         border: OutlineInputBorder(),
                       ),
                     ),
@@ -1123,6 +1194,7 @@ class _AddAmc extends State<AddAmc> {
                       },
                       decoration: InputDecoration(
                         labelText: 'Select Purchase Date',
+                        contentPadding: EdgeInsets.fromLTRB(10, 10, 10, 0),
                         border: OutlineInputBorder(),
                         suffixIcon: Icon(Icons.calendar_today),
                       ),
@@ -1144,6 +1216,8 @@ class _AddAmc extends State<AddAmc> {
                                 value.isEmpty ? 'Please enter quantity' : null,
                             decoration: InputDecoration(
                               labelText: 'Quantity',
+                              contentPadding:
+                                  EdgeInsets.fromLTRB(10, 10, 10, 0),
                               border: OutlineInputBorder(),
                             ),
                           ),
@@ -1186,6 +1260,8 @@ class _AddAmc extends State<AddAmc> {
                               ],
                               decoration: InputDecoration(
                                 labelText: 'Serial Number',
+                                contentPadding:
+                                    EdgeInsets.fromLTRB(10, 10, 10, 0),
                                 border: OutlineInputBorder(),
                               ),
                             ),
@@ -1225,6 +1301,7 @@ class _AddAmc extends State<AddAmc> {
                           value.isEmpty ? 'Please enter amount' : null,
                       decoration: InputDecoration(
                         labelText: 'Amount',
+                        contentPadding: EdgeInsets.fromLTRB(10, 10, 10, 0),
                         border: OutlineInputBorder(),
                       ),
                     ),

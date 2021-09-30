@@ -555,6 +555,7 @@ class _RegisterState extends State<Register> {
                             value.isEmpty ? 'Please enter name' : null,
                         decoration: InputDecoration(
                           labelText: 'Name',
+                          contentPadding: EdgeInsets.fromLTRB(10, 10, 10, 0),
                           border: OutlineInputBorder(),
                         ),
                       ),
@@ -587,6 +588,7 @@ class _RegisterState extends State<Register> {
                         controller: _email,
                         decoration: InputDecoration(
                           labelText: 'Email',
+                          contentPadding: EdgeInsets.fromLTRB(10, 10, 10, 0),
                           border: OutlineInputBorder(),
                         ),
                       ),
@@ -620,6 +622,7 @@ class _RegisterState extends State<Register> {
                         },
                         decoration: InputDecoration(
                           labelText: 'Mobile Number',
+                          contentPadding: EdgeInsets.fromLTRB(10, 10, 10, 0),
                           border: OutlineInputBorder(),
                         ),
                       ),
@@ -657,6 +660,7 @@ class _RegisterState extends State<Register> {
                         },
                         decoration: InputDecoration(
                           labelText: 'Alternate Mobile Number',
+                          contentPadding: EdgeInsets.fromLTRB(10, 10, 10, 0),
                           border: OutlineInputBorder(),
                         ),
                       ),
@@ -669,7 +673,7 @@ class _RegisterState extends State<Register> {
                       ),
                       FormBuilder(
                         child: Container(
-                          height: 60,
+                          height: 48,
                           child: customSearchableDropDown(
                             items: product,
                             label: 'Select Product',
@@ -706,7 +710,7 @@ class _RegisterState extends State<Register> {
                         height: 5.0,
                       ),
                       Container(
-                        height: 60,
+                        height: 48,
                         child: customSearchableDropDown(
                           items: subProduct,
                           label: 'Select Sub Product',
@@ -745,6 +749,7 @@ class _RegisterState extends State<Register> {
                         autovalidateMode: AutovalidateMode.onUserInteraction,
                         decoration: InputDecoration(
                           labelText: 'Model Number',
+                          contentPadding: EdgeInsets.fromLTRB(10, 10, 10, 0),
                           border: OutlineInputBorder(),
                         ),
                       ),
@@ -764,6 +769,7 @@ class _RegisterState extends State<Register> {
                         autovalidateMode: AutovalidateMode.onUserInteraction,
                         decoration: InputDecoration(
                           labelText: 'Serial Number',
+                          contentPadding: EdgeInsets.fromLTRB(10, 10, 10, 0),
                           border: OutlineInputBorder(),
                         ),
                       ),
@@ -784,6 +790,7 @@ class _RegisterState extends State<Register> {
                         autovalidateMode: AutovalidateMode.onUserInteraction,
                         decoration: InputDecoration(
                           labelText: 'Enter Invoice Number',
+                          contentPadding: EdgeInsets.fromLTRB(10, 10, 10, 0),
                           border: OutlineInputBorder(),
                         ),
                       ),
@@ -803,6 +810,7 @@ class _RegisterState extends State<Register> {
                         },
                         decoration: InputDecoration(
                           labelText: 'Select Purchase Date',
+                          contentPadding: EdgeInsets.fromLTRB(10, 10, 10, 0),
                           border: OutlineInputBorder(),
                           suffixIcon: Icon(Icons.calendar_today),
                         ),
@@ -815,7 +823,7 @@ class _RegisterState extends State<Register> {
                         height: 5.0,
                       ),
                       Container(
-                        height: 60,
+                        height: 48,
                         child: customSearchableDropDown(
                           items: amc,
                           label: 'Select AMC Type',
@@ -854,6 +862,7 @@ class _RegisterState extends State<Register> {
                         },
                         decoration: InputDecoration(
                           labelText: 'Contract Duration',
+                          contentPadding: EdgeInsets.fromLTRB(10, 10, 10, 0),
                           border: OutlineInputBorder(),
                         ),
                       ),
@@ -869,6 +878,7 @@ class _RegisterState extends State<Register> {
                         autovalidateMode: AutovalidateMode.onUserInteraction,
                         decoration: InputDecoration(
                           labelText: 'Plot Number',
+                          contentPadding: EdgeInsets.fromLTRB(10, 10, 10, 0),
                           border: OutlineInputBorder(),
                         ),
                       ),
@@ -888,6 +898,7 @@ class _RegisterState extends State<Register> {
                         autovalidateMode: AutovalidateMode.onUserInteraction,
                         decoration: InputDecoration(
                           labelText: 'Street',
+                          contentPadding: EdgeInsets.fromLTRB(10, 10, 10, 0),
                           border: OutlineInputBorder(),
                         ),
                       ),
@@ -907,6 +918,7 @@ class _RegisterState extends State<Register> {
                         autovalidateMode: AutovalidateMode.onUserInteraction,
                         decoration: InputDecoration(
                           labelText: 'Landmark',
+                          contentPadding: EdgeInsets.fromLTRB(10, 10, 10, 0),
                           border: OutlineInputBorder(),
                         ),
                       ),
@@ -918,7 +930,7 @@ class _RegisterState extends State<Register> {
                         height: 5.0,
                       ),
                       Container(
-                        height: 60,
+                        height: 48,
                         child: customSearchableDropDown(
                           items: country,
                           label: 'Select Country',
@@ -957,7 +969,7 @@ class _RegisterState extends State<Register> {
                         height: 5.0,
                       ),
                       Container(
-                        height: 60,
+                        height: 48,
                         child: customSearchableDropDown(
                           items: state,
                           label: 'Select State',
@@ -994,7 +1006,7 @@ class _RegisterState extends State<Register> {
                         height: 5.0,
                       ),
                       Container(
-                        height: 60,
+                        height: 48,
                         child: customSearchableDropDown(
                           items: city,
                           label: 'Select City',
@@ -1029,7 +1041,7 @@ class _RegisterState extends State<Register> {
                         height: 5.0,
                       ),
                       Container(
-                        height: 60,
+                        height: 48,
                         child: customSearchableDropDown(
                           items: location,
                           label: 'Select Location',
@@ -1063,6 +1075,7 @@ class _RegisterState extends State<Register> {
                         autovalidateMode: AutovalidateMode.onUserInteraction,
                         decoration: InputDecoration(
                           labelText: 'Postcode',
+                          contentPadding: EdgeInsets.fromLTRB(10, 10, 10, 0),
                           border: OutlineInputBorder(),
                         ),
                       ),

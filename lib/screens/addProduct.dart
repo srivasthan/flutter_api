@@ -673,6 +673,7 @@ class _AddProduct extends State<AddProduct> {
                       controller: _plotNumber,
                       decoration: InputDecoration(
                         labelText: 'Plot Number',
+                        contentPadding: EdgeInsets.fromLTRB(10, 10, 10, 0),
                         border: OutlineInputBorder(),
                       ),
                     ),
@@ -691,6 +692,7 @@ class _AddProduct extends State<AddProduct> {
                       autovalidateMode: AutovalidateMode.onUserInteraction,
                       decoration: InputDecoration(
                         labelText: 'Street',
+                        contentPadding: EdgeInsets.fromLTRB(10, 10, 10, 0),
                         border: OutlineInputBorder(),
                       ),
                     ),
@@ -709,6 +711,7 @@ class _AddProduct extends State<AddProduct> {
                           value.isEmpty ? 'Please enter landmark' : null,
                       decoration: InputDecoration(
                         labelText: 'Landmark',
+                        contentPadding: EdgeInsets.fromLTRB(10, 10, 10, 0),
                         border: OutlineInputBorder(),
                       ),
                     ),
@@ -720,7 +723,7 @@ class _AddProduct extends State<AddProduct> {
                       height: 5.0,
                     ),
                     Container(
-                      height: 60,
+                      height: 48,
                       child: customSearchableDropDown(
                         items: country,
                         initialIndex: _initialCountryId,
@@ -761,7 +764,7 @@ class _AddProduct extends State<AddProduct> {
                       height: 5.0,
                     ),
                     Container(
-                      height: 60,
+                      height: 48,
                       child: customSearchableDropDown(
                         items: state,
                         initialIndex: _initialStateId,
@@ -800,7 +803,7 @@ class _AddProduct extends State<AddProduct> {
                       height: 5.0,
                     ),
                     Container(
-                      height: 60,
+                      height: 48,
                       child: customSearchableDropDown(
                         items: city,
                         label: 'Select City',
@@ -837,7 +840,7 @@ class _AddProduct extends State<AddProduct> {
                       height: 5.0,
                     ),
                     Container(
-                      height: 60,
+                      height: 48,
                       child: customSearchableDropDown(
                         items: location,
                         initialIndex: _initialLocationId,
@@ -873,6 +876,7 @@ class _AddProduct extends State<AddProduct> {
                       controller: _postCode,
                       decoration: InputDecoration(
                         labelText: 'Postcode',
+                        contentPadding: EdgeInsets.fromLTRB(10, 10, 10, 0),
                         border: OutlineInputBorder(),
                       ),
                     ),
@@ -893,7 +897,7 @@ class _AddProduct extends State<AddProduct> {
                       height: 5.0,
                     ),
                     Container(
-                      height: 60,
+                      height: 48,
                       child: customSearchableDropDown(
                         items: amc,
                         label: 'Select AMC Type',
@@ -935,6 +939,7 @@ class _AddProduct extends State<AddProduct> {
                       },
                       decoration: InputDecoration(
                         labelText: 'Contract Duration',
+                        contentPadding: EdgeInsets.fromLTRB(10, 10, 10, 0),
                         border: OutlineInputBorder(),
                       ),
                     ),
@@ -954,6 +959,7 @@ class _AddProduct extends State<AddProduct> {
                       },
                       decoration: InputDecoration(
                         labelText: 'Select Contract Start Date',
+                        contentPadding: EdgeInsets.fromLTRB(10, 10, 10, 0),
                         border: OutlineInputBorder(),
                         suffixIcon: Icon(Icons.calendar_today),
                       ),
@@ -975,7 +981,7 @@ class _AddProduct extends State<AddProduct> {
                       height: 5.0,
                     ),
                     Container(
-                      height: 60,
+                      height: 48,
                       child: customSearchableDropDown(
                         items: product,
                         label: 'Select Product',
@@ -1010,7 +1016,7 @@ class _AddProduct extends State<AddProduct> {
                       height: 5.0,
                     ),
                     Container(
-                      height: 60,
+                      height: 48,
                       child: customSearchableDropDown(
                         items: subProduct,
                         label: 'Select Sub Product',
@@ -1048,6 +1054,7 @@ class _AddProduct extends State<AddProduct> {
                       autovalidateMode: AutovalidateMode.onUserInteraction,
                       decoration: InputDecoration(
                         labelText: 'Model Number',
+                        contentPadding: EdgeInsets.fromLTRB(10, 10, 10, 0),
                         border: OutlineInputBorder(),
                       ),
                     ),
@@ -1065,6 +1072,7 @@ class _AddProduct extends State<AddProduct> {
                       controller: _serialNumber,
                       decoration: InputDecoration(
                         labelText: 'Serial Number',
+                        contentPadding: EdgeInsets.fromLTRB(10, 10, 10, 0),
                         border: OutlineInputBorder(),
                       ),
                     ),
@@ -1083,6 +1091,7 @@ class _AddProduct extends State<AddProduct> {
                       autovalidateMode: AutovalidateMode.onUserInteraction,
                       decoration: InputDecoration(
                         labelText: 'Enter Invoice Number',
+                        contentPadding: EdgeInsets.fromLTRB(10, 10, 10, 0),
                         border: OutlineInputBorder(),
                       ),
                     ),
@@ -1101,6 +1110,7 @@ class _AddProduct extends State<AddProduct> {
                       },
                       decoration: InputDecoration(
                         labelText: 'Select Purchase Date',
+                        contentPadding: EdgeInsets.fromLTRB(10, 10, 10, 0),
                         border: OutlineInputBorder(),
                         suffixIcon: Icon(Icons.calendar_today),
                       ),
