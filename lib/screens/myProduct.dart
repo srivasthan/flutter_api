@@ -181,7 +181,7 @@ class _MyProduct extends State<MyProduct> {
     return myProductList.isNotEmpty
         ? ListView.builder(
             itemCount: myProductList.length,
-            padding: const EdgeInsets.all(16.0),
+            padding: const EdgeInsets.all(10.0),
             itemBuilder: (context, index) {
               return Container(
                 decoration: BoxDecoration(

@@ -164,7 +164,6 @@ class _ProfileState extends State<Profile> {
         Fluttertoast.showToast(
             msg: response.emailEntity.message,
             toastLength: Toast.LENGTH_SHORT,
-            gravity: ToastGravity.CENTER,
             timeInSecForIosWeb: 1);
         Navigator.pushNamedAndRemoveUntil(context, '/login', (route) => false);
       }
@@ -262,6 +261,10 @@ class _ProfileState extends State<Profile> {
       if (response.responseEntity.responseCode == "200") {
         setState(() {
           showAlertDialog(context);
+          Fluttertoast.showToast(
+              msg: response.responseEntity.message,
+              timeInSecForIosWeb: 1,
+              toastLength: Toast.LENGTH_SHORT);
           getProfileDetails();
         });
       }

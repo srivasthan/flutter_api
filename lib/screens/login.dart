@@ -34,7 +34,7 @@ class _LoginState extends State<Login> {
 
     if (status != null && status.isNotEmpty) {
       Navigator.pushNamedAndRemoveUntil(
-          context, '/dummylogin', (route) => false);
+          context, '/dashboard', (route) => false);
     }
   }
 
@@ -210,7 +210,7 @@ class _LoginState extends State<Login> {
           padding: EdgeInsets.only(left: 0.0),
           child: Text("Sign up", style: TextStyle(fontWeight: FontWeight.w300)),
           onPressed: () {
-            Navigator.pushReplacementNamed(context, '/dummyForgotPassword');
+            Navigator.pushReplacementNamed(context, '/register');
           },
         ),
       ],
@@ -245,15 +245,11 @@ class _LoginState extends State<Login> {
                 crossAxisAlignment: CrossAxisAlignment.start,
                 children: [
                   SizedBox(
-                    height: 15.0,
+                    height: 10.0,
                   ),
                   Text("Email"),
-                  SizedBox(
-                    height: 5.0,
-                  ),
                   Padding(
-                    padding:
-                        EdgeInsets.only(top: 20.0, right: 20.0, left: 20.0),
+                    padding: EdgeInsets.only(top: 20.0),
                     child: TextFormField(
                       keyboardType: TextInputType.emailAddress,
                       controller: emailController,
@@ -315,31 +311,6 @@ class _LoginState extends State<Login> {
           ),
         ),
       ),
-    );
-  }
-
-  Widget buildTextField(String hintText) {
-    return TextField(
-      decoration: InputDecoration(
-        hintText: hintText,
-        hintStyle: TextStyle(
-          color: Colors.grey,
-          fontSize: 16.0,
-        ),
-        border: OutlineInputBorder(
-          borderRadius: BorderRadius.circular(10.0),
-        ),
-        prefixIcon: hintText == "Email" ? Icon(Icons.email) : Icon(Icons.lock),
-        suffixIcon: hintText == "Password"
-            ? IconButton(
-                onPressed: _toggleVisibility,
-                icon: _isHidden
-                    ? Icon(Icons.visibility_off)
-                    : Icon(Icons.visibility),
-              )
-            : null,
-      ),
-      obscureText: hintText == "Password" ? _isHidden : false,
     );
   }
 }

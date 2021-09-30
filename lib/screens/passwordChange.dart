@@ -111,9 +111,11 @@ class _PasswordChange extends State<PasswordChange> {
                 Navigator.of(context, rootNavigator: true).pop();
                 Fluttertoast.showToast(
                     msg: response.resetPasswordEntity.message,
-                    gravity: ToastGravity.CENTER,
                     toastLength: Toast.LENGTH_SHORT,
                     timeInSecForIosWeb: 1);
+                prefs.setString(
+                    'password', confirmPasswordController.text.toString());
+                Navigator.pushReplacementNamed(context, '/profile');
                 break;
               }
             case "400":

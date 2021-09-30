@@ -211,8 +211,9 @@ class _RegisterState extends State<Register> {
                 duration: response.amcEntity.datum[i].duration,
                 amcName: response.amcEntity.datum[i].amcType));
           }
+          Navigator.of(context, rootNavigator: true).pop();
+          isVisible = true;
         });
-        Navigator.of(context, rootNavigator: true).pop();
       }
     } else {
       Navigator.of(context, rootNavigator: true).pop();
@@ -365,9 +366,8 @@ class _RegisterState extends State<Register> {
                   locationId: response.locationEntity.datum[i].locationId,
                   locationName: response.locationEntity.datum[i].locationName));
             }
+            Navigator.of(context, rootNavigator: true).pop();
           });
-          Navigator.of(context, rootNavigator: true).pop();
-          isVisible = true;
         }
       } else {
         Navigator.of(context, rootNavigator: true).pop();
@@ -534,7 +534,7 @@ class _RegisterState extends State<Register> {
             visible: isVisible,
             child: SingleChildScrollView(
               child: Container(
-                padding: EdgeInsets.all(40.0),
+                padding: EdgeInsets.all(20.0),
                 child: Form(
                   key: formKey,
                   child: Column(

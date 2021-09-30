@@ -176,7 +176,7 @@ class _Amc extends State<Amc> {
     return amcList.isNotEmpty
         ? ListView.builder(
             itemCount: amcList.length,
-            padding: const EdgeInsets.all(16.0),
+            padding: const EdgeInsets.all(10.0),
             itemBuilder: (context, index) {
               return Container(
                 decoration: BoxDecoration(

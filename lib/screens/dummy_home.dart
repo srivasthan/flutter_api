@@ -1,12 +1,5 @@
 import 'package:flutter/material.dart';
-import 'package:flutter/services.dart';
-import 'package:flutter_api_json_parse/screens/dashboard_menu.dart';
-import 'package:flutter_api_json_parse/screens/dashboard_menu_page1.dart';
-import 'package:flutter_api_json_parse/screens/dummy1.dart';
 import 'package:flutter_api_json_parse/screens/profile_technician.dart';
-import 'package:flutter_api_json_parse/utility/validator.dart';
-
-import 'getting_started_screen.dart';
 
 class DummyHome extends StatefulWidget {
   @override

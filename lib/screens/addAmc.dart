@@ -57,6 +57,7 @@ class _AddAmc extends State<AddAmc> {
   TextEditingController _amount = new TextEditingController();
   TextEditingController _quantity = new TextEditingController();
   DateTime selectedDate = DateTime.now();
+  DateTime selectedPurchaseDate = DateTime.now();
   List<ProductModel> product = new List<ProductModel>();
   List<AmcModel> amc = new List<AmcModel>();
   List<CountryModel> country = new List<CountryModel>();
@@ -185,7 +186,6 @@ class _AddAmc extends State<AddAmc> {
       Navigator.of(context, rootNavigator: true).pop();
       Fluttertoast.showToast(
           msg: "Connect to internet",
-          gravity: ToastGravity.CENTER,
           timeInSecForIosWeb: 1,
           toastLength: Toast.LENGTH_SHORT);
     }
@@ -213,7 +213,6 @@ class _AddAmc extends State<AddAmc> {
     } else {
       Fluttertoast.showToast(
           msg: "Connect to internet",
-          gravity: ToastGravity.CENTER,
           timeInSecForIosWeb: 1,
           toastLength: Toast.LENGTH_SHORT);
     }
@@ -242,7 +241,6 @@ class _AddAmc extends State<AddAmc> {
     } else {
       Fluttertoast.showToast(
           msg: "Connect to internet",
-          gravity: ToastGravity.CENTER,
           timeInSecForIosWeb: 1,
           toastLength: Toast.LENGTH_SHORT);
     }
@@ -270,7 +268,6 @@ class _AddAmc extends State<AddAmc> {
     } else {
       Fluttertoast.showToast(
           msg: "Connect to internet",
-          gravity: ToastGravity.CENTER,
           timeInSecForIosWeb: 1,
           toastLength: Toast.LENGTH_SHORT);
     }
@@ -299,7 +296,6 @@ class _AddAmc extends State<AddAmc> {
     } else {
       Fluttertoast.showToast(
           msg: "Connect to internet",
-          gravity: ToastGravity.CENTER,
           timeInSecForIosWeb: 1,
           toastLength: Toast.LENGTH_SHORT);
     }
@@ -328,7 +324,6 @@ class _AddAmc extends State<AddAmc> {
     } else {
       Fluttertoast.showToast(
           msg: "Connect to internet",
-          gravity: ToastGravity.CENTER,
           timeInSecForIosWeb: 1,
           toastLength: Toast.LENGTH_SHORT);
     }
@@ -359,7 +354,6 @@ class _AddAmc extends State<AddAmc> {
     } else {
       Fluttertoast.showToast(
           msg: "Connect to internet",
-          gravity: ToastGravity.CENTER,
           timeInSecForIosWeb: 1,
           toastLength: Toast.LENGTH_SHORT);
     }
@@ -386,7 +380,6 @@ class _AddAmc extends State<AddAmc> {
       Navigator.of(context, rootNavigator: true).pop();
       Fluttertoast.showToast(
           msg: "Connect to internet",
-          gravity: ToastGravity.CENTER,
           timeInSecForIosWeb: 1,
           toastLength: Toast.LENGTH_SHORT);
     }
@@ -415,7 +408,6 @@ class _AddAmc extends State<AddAmc> {
       Navigator.of(context, rootNavigator: true).pop();
       Fluttertoast.showToast(
           msg: "Connect to internet",
-          gravity: ToastGravity.CENTER,
           timeInSecForIosWeb: 1,
           toastLength: Toast.LENGTH_SHORT);
     }
@@ -440,7 +432,6 @@ class _AddAmc extends State<AddAmc> {
     } else {
       Fluttertoast.showToast(
           msg: "Connect to internet",
-          gravity: ToastGravity.CENTER,
           timeInSecForIosWeb: 1,
           toastLength: Toast.LENGTH_SHORT);
     }
@@ -452,21 +443,20 @@ class _AddAmc extends State<AddAmc> {
         result == ConnectivityResult.wifi) {
       final DateTime picked = await showDatePicker(
           context: context,
-          initialDate: selectedDate,
+          initialDate: selectedPurchaseDate,
           firstDate: DateTime.now(),
           lastDate: DateTime.now().add(Duration(days: 14)));
-      if (picked != null && picked != selectedDate)
+      if (picked != null && picked != selectedPurchaseDate)
         setState(() {
-          selectedDate = picked;
+          selectedPurchaseDate = picked;
           final DateFormat formatter = DateFormat('yyyy-MM-dd');
-          contractStartDate = formatter.format(selectedDate);
+          contractStartDate = formatter.format(selectedPurchaseDate);
           _contractDurationDate.value =
               TextEditingValue(text: contractStartDate.toString());
         });
     } else {
       Fluttertoast.showToast(
           msg: "Connect to internet",
-          gravity: ToastGravity.CENTER,
           timeInSecForIosWeb: 1,
           toastLength: Toast.LENGTH_SHORT);
     }
@@ -538,7 +528,6 @@ class _AddAmc extends State<AddAmc> {
       } else {
         Fluttertoast.showToast(
             msg: "Connect to internet",
-            gravity: ToastGravity.CENTER,
             timeInSecForIosWeb: 1,
             toastLength: Toast.LENGTH_SHORT);
       }
@@ -555,7 +544,6 @@ class _AddAmc extends State<AddAmc> {
             _serialNumber.text.isEmpty) {
           Fluttertoast.showToast(
               msg: "Details not valid",
-              gravity: ToastGravity.CENTER,
               timeInSecForIosWeb: 1,
               toastLength: Toast.LENGTH_SHORT);
         } else {
@@ -589,7 +577,6 @@ class _AddAmc extends State<AddAmc> {
             Navigator.of(context, rootNavigator: true).pop();
             Fluttertoast.showToast(
                 msg: response.emailEntity.message,
-                gravity: ToastGravity.CENTER,
                 timeInSecForIosWeb: 1,
                 toastLength: Toast.LENGTH_SHORT);
           }
@@ -597,7 +584,6 @@ class _AddAmc extends State<AddAmc> {
       } else {
         Fluttertoast.showToast(
             msg: "Connect to internet",
-            gravity: ToastGravity.CENTER,
             timeInSecForIosWeb: 1,
             toastLength: Toast.LENGTH_SHORT);
       }
@@ -661,7 +647,6 @@ class _AddAmc extends State<AddAmc> {
 
               Fluttertoast.showToast(
                   msg: response.responseEntity.message,
-                  gravity: ToastGravity.CENTER,
                   timeInSecForIosWeb: 1,
                   toastLength: Toast.LENGTH_SHORT);
 
@@ -673,7 +658,6 @@ class _AddAmc extends State<AddAmc> {
         } else {
           Fluttertoast.showToast(
               msg: "Connect to internet",
-              gravity: ToastGravity.CENTER,
               timeInSecForIosWeb: 1,
               toastLength: Toast.LENGTH_SHORT);
         }
@@ -700,7 +684,7 @@ class _AddAmc extends State<AddAmc> {
           visible: isVisible,
           child: SingleChildScrollView(
             child: Container(
-              padding: EdgeInsets.all(40.0),
+              padding: EdgeInsets.all(20.0),
               child: Form(
                 key: formKey,
                 child: Column(
@@ -1195,11 +1179,6 @@ class _AddAmc extends State<AddAmc> {
                             child: new TextFormField(
                               autofocus: false,
                               controller: _serialNumber,
-                              validator: (value) => value.isEmpty
-                                  ? 'Please enter serial number'
-                                  : null,
-                              autovalidateMode:
-                                  AutovalidateMode.onUserInteraction,
                               keyboardType: TextInputType.text,
                               inputFormatters: [
                                 FilteringTextInputFormatter.allow(

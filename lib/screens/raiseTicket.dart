@@ -1,4 +1,8 @@
 import 'dart:convert';
+import 'dart:io';
+
+import 'package:connectivity/connectivity.dart';
+import 'package:dio/dio.dart' as dio;
 import 'package:flushbar/flushbar.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/rendering.dart';
@@ -10,14 +14,11 @@ import 'package:flutter_api_json_parse/domain/subProduct.dart';
 import 'package:flutter_api_json_parse/domain/workTYpe.dart';
 import 'package:flutter_api_json_parse/network/api_service.dart';
 import 'package:flutter_api_json_parse/utility/widgets.dart';
+import 'package:flutter_native_image/flutter_native_image.dart';
 import 'package:fluttertoast/fluttertoast.dart';
 import 'package:image_picker/image_picker.dart';
-import 'package:dio/dio.dart' as dio;
 import 'package:intl/intl.dart';
-import 'dart:io';
 import 'package:shared_preferences/shared_preferences.dart';
-import 'package:connectivity/connectivity.dart';
-import 'package:flutter_native_image/flutter_native_image.dart';
 
 class RaiseTicketStateless extends StatelessWidget {
   @override
@@ -128,7 +129,6 @@ class _RaiseTicket extends State<RaiseTicket> {
       Navigator.of(context, rootNavigator: true).pop();
       Fluttertoast.showToast(
           msg: "Connect to internet",
-          gravity: ToastGravity.CENTER,
           timeInSecForIosWeb: 1,
           toastLength: Toast.LENGTH_SHORT);
     }
@@ -157,7 +157,6 @@ class _RaiseTicket extends State<RaiseTicket> {
       Navigator.of(context, rootNavigator: true).pop();
       Fluttertoast.showToast(
           msg: "Connect to internet",
-          gravity: ToastGravity.CENTER,
           timeInSecForIosWeb: 1,
           toastLength: Toast.LENGTH_SHORT);
     }
@@ -182,7 +181,6 @@ class _RaiseTicket extends State<RaiseTicket> {
     } else {
       Fluttertoast.showToast(
           msg: "Connect to internet",
-          gravity: ToastGravity.CENTER,
           timeInSecForIosWeb: 1,
           toastLength: Toast.LENGTH_SHORT);
     }
@@ -207,7 +205,6 @@ class _RaiseTicket extends State<RaiseTicket> {
     } else {
       Fluttertoast.showToast(
           msg: "Connect to internet",
-          gravity: ToastGravity.CENTER,
           timeInSecForIosWeb: 1,
           toastLength: Toast.LENGTH_SHORT);
     }
@@ -221,12 +218,12 @@ class _RaiseTicket extends State<RaiseTicket> {
         quality: 100, targetWidth: 120, targetHeight: 120);
 
     if (photo != null) {
-      Navigator.of(context, rootNavigator: true).pop();
       setState(() {
         image = photo;
 
         List<int> imageBytes = imageResized.readAsBytesSync();
         encImageBase64 = base64Encode(imageBytes);
+        Navigator.of(context, rootNavigator: true).pop();
       });
     } else {
       Navigator.of(context, rootNavigator: true).pop();
@@ -237,11 +234,11 @@ class _RaiseTicket extends State<RaiseTicket> {
     var photo = await ImagePicker.pickImage(
         source: ImageSource.gallery, imageQuality: 50);
     if (photo != null) {
-      Navigator.of(context, rootNavigator: true).pop();
       image = photo;
       setState(() {
         final bytes = File(image.path).readAsBytesSync();
         encImageBase64 = base64Encode(bytes);
+        Navigator.of(context, rootNavigator: true).pop();
       });
     } else {
       Navigator.of(context, rootNavigator: true).pop();
@@ -295,7 +292,6 @@ class _RaiseTicket extends State<RaiseTicket> {
         Navigator.of(context, rootNavigator: true).pop();
         Fluttertoast.showToast(
             msg: "Connect to internet",
-            gravity: ToastGravity.CENTER,
             timeInSecForIosWeb: 1,
             toastLength: Toast.LENGTH_SHORT);
       }
@@ -330,7 +326,6 @@ class _RaiseTicket extends State<RaiseTicket> {
       } else {
         Fluttertoast.showToast(
             msg: "Connect to internet",
-            gravity: ToastGravity.CENTER,
             timeInSecForIosWeb: 1,
             toastLength: Toast.LENGTH_SHORT);
       }
@@ -368,7 +363,6 @@ class _RaiseTicket extends State<RaiseTicket> {
       } else {
         Fluttertoast.showToast(
             msg: "Connect to internet",
-            gravity: ToastGravity.CENTER,
             timeInSecForIosWeb: 1,
             toastLength: Toast.LENGTH_SHORT);
       }
@@ -412,7 +406,6 @@ class _RaiseTicket extends State<RaiseTicket> {
             setState(() {
               Fluttertoast.showToast(
                   msg: response.raiseTicketEntity.message,
-                  gravity: ToastGravity.CENTER,
                   timeInSecForIosWeb: 1,
                   toastLength: Toast.LENGTH_SHORT);
               Navigator.of(context, rootNavigator: true).pop();
@@ -421,7 +414,6 @@ class _RaiseTicket extends State<RaiseTicket> {
             setState(() {
               Fluttertoast.showToast(
                   msg: response.raiseTicketEntity.message,
-                  gravity: ToastGravity.CENTER,
                   timeInSecForIosWeb: 1,
                   toastLength: Toast.LENGTH_SHORT);
               Navigator.of(context, rootNavigator: true).pop();
@@ -430,7 +422,6 @@ class _RaiseTicket extends State<RaiseTicket> {
             setState(() {
               Fluttertoast.showToast(
                   msg: response.raiseTicketEntity.message,
-                  gravity: ToastGravity.CENTER,
                   timeInSecForIosWeb: 1,
                   toastLength: Toast.LENGTH_SHORT);
               Navigator.of(context, rootNavigator: true).pop();
@@ -439,7 +430,6 @@ class _RaiseTicket extends State<RaiseTicket> {
         } else {
           Fluttertoast.showToast(
               msg: "Connect to internet",
-              gravity: ToastGravity.CENTER,
               timeInSecForIosWeb: 1,
               toastLength: Toast.LENGTH_SHORT);
         }
@@ -460,7 +450,7 @@ class _RaiseTicket extends State<RaiseTicket> {
         visible: isVisible,
         child: SingleChildScrollView(
           child: Container(
-            padding: EdgeInsets.all(40.0),
+            padding: EdgeInsets.all(20.0),
             child: Form(
               key: formKey,
               child: Column(
@@ -769,8 +759,8 @@ class _RaiseTicket extends State<RaiseTicket> {
                                       ),
                                     ),
                                     Positioned(
-                                      top: 5,
-                                      right: 5,
+                                      top: 0,
+                                      right: 0,
                                       child: GestureDetector(
                                         onTap: () {
                                           print('delete image from List');
@@ -890,6 +880,8 @@ class _RaiseTicket extends State<RaiseTicket> {
                       onTap: () {
                         setState(() {
                           imageVisible = true;
+                          Navigator.of(context, rootNavigator: true).pop();
+                          showAlertDialog(context);
                           galleryPicker();
                         });
                       },
@@ -900,6 +892,8 @@ class _RaiseTicket extends State<RaiseTicket> {
                       onTap: () {
                         setState(() {
                           imageVisible = true;
+                          Navigator.of(context, rootNavigator: true).pop();
+                          showAlertDialog(context);
                           picker();
                         });
                       },

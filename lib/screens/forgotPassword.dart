@@ -97,31 +97,37 @@ class _ForgotPasswordState extends State<ForgotPassword> {
 
         final response = await apiService.resetPassword(data);
 
-        switch (response.resetPasswordEntity.responseCode) {
-          case "200":
-            {
-              Fluttertoast.showToast(
-                  msg: response.resetPasswordEntity.message,
-                  gravity: ToastGravity.CENTER,
-                  timeInSecForIosWeb: 1,
-                  toastLength: Toast.LENGTH_SHORT);
-              Navigator.of(context, rootNavigator: true).pop();
-              Navigator.pushNamedAndRemoveUntil(
-                  context, '/login', (route) => false);
-              break;
-            }
-          case "400":
+        if (response != null) {
+          switch (response.resetPasswordEntity.responseCode) {
+            case "200":
+              {
+                Fluttertoast.showToast(
+                    msg: response.resetPasswordEntity.message,
+                    timeInSecForIosWeb: 1,
+                    toastLength: Toast.LENGTH_SHORT);
+                Navigator.of(context, rootNavigator: true).pop();
+                Navigator.pushNamedAndRemoveUntil(
+                    context, '/login', (route) => false);
+                break;
+              }
+            case "400":
 
-          case "500":
-            {
-              Navigator.of(context, rootNavigator: true).pop();
-              Flushbar(
-                title: "Error",
-                message: response.resetPasswordEntity.message,
-                duration: Duration(seconds: 3),
-              ).show(context);
-              break;
-            }
+            case "500":
+              {
+                Navigator.of(context, rootNavigator: true).pop();
+                Flushbar(
+                  title: "Error",
+                  message: response.resetPasswordEntity.message,
+                  duration: Duration(seconds: 3),
+                ).show(context);
+                break;
+              }
+          }
+        } else {
+          Fluttertoast.showToast(
+              msg: "Something went wrong",
+              timeInSecForIosWeb: 1,
+              toastLength: Toast.LENGTH_SHORT);
         }
       } else {
         Navigator.of(context, rootNavigator: true).pop();
@@ -150,23 +156,30 @@ class _ForgotPasswordState extends State<ForgotPassword> {
 
           final response = await apiService.emailVerify(data);
 
-          switch (response.emailEntity.responseCode) {
-            case "200":
-              Navigator.of(context, rootNavigator: true).pop();
-              Fluttertoast.showToast(
-                  msg: "Please Enter Registered Email",
-                  gravity: ToastGravity.CENTER,
-                  timeInSecForIosWeb: 1,
-                  toastLength: Toast.LENGTH_SHORT);
-              break;
+          if (response != null) {
+            switch (response.emailEntity.responseCode) {
+              case "200":
+                Navigator.of(context, rootNavigator: true).pop();
+                Fluttertoast.showToast(
+                    msg: "Please Enter Registered Email",
+                    timeInSecForIosWeb: 1,
+                    toastLength: Toast.LENGTH_SHORT);
+                break;
 
-            case "400":
+              case "400":
 
-            case "500":
-              resetPassword();
-              break;
+              case "500":
+                resetPassword();
+                break;
+            }
+          } else {
+            Fluttertoast.showToast(
+                msg: "Something went wrong",
+                timeInSecForIosWeb: 1,
+                toastLength: Toast.LENGTH_SHORT);
           }
         } else {
+          Navigator.of(context, rootNavigator: true).pop();
           Flushbar(
             title: 'Invalid form',
             message: 'Please complete the form properly',
@@ -176,7 +189,6 @@ class _ForgotPasswordState extends State<ForgotPassword> {
       } else {
         Fluttertoast.showToast(
             msg: "Connect to internet",
-            gravity: ToastGravity.CENTER,
             timeInSecForIosWeb: 1,
             toastLength: Toast.LENGTH_SHORT);
       }
