@@ -17,6 +17,7 @@ import 'package:flutter_api_json_parse/network/response/stateResponse.dart';
 import 'package:flutter_api_json_parse/network/response/countryResponse.dart';
 import 'package:flutter_api_json_parse/network/response/global_response.dart';
 import 'package:flutter_api_json_parse/network/response/subProductResponse.dart';
+import 'package:flutter_api_json_parse/network/response/ticket_list.dart';
 import 'package:flutter_api_json_parse/network/response/tokenResponse.dart';
 import 'package:flutter_api_json_parse/network/response/uProductResponse.dart';
 import 'package:flutter_api_json_parse/network/response/uSubProductResponse.dart';
@@ -127,6 +128,9 @@ abstract class RestClient {
   @GET("load_customer_subproduct/")
   Future<USubProductResponse> getUSubProduct(
       String token, String customer_code_id, int productId);
+
+  @GET("load_tickets/")
+  Future<TicketList> getTicket(String token, String customer_code_id);
 
   @GET("customer_details/")
   Future<SerialNumberResponse> getSerialNumber(

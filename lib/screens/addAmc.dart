@@ -98,7 +98,7 @@ class _AddAmc extends State<AddAmc> {
             context: context,
             builder: (context) => new AlertDialog(
                   title: const Text(
-                    "Field Pro",
+                    "FieldPro",
                     style: TextStyle(fontSize: 20),
                   ),
                   content: SingleChildScrollView(
@@ -116,6 +116,14 @@ class _AddAmc extends State<AddAmc> {
                       mainAxisAlignment: MainAxisAlignment.spaceBetween,
                       children: <Widget>[
                         FlatButton(
+                            onPressed: () => {Navigator.pop(context)},
+                            padding: EdgeInsets.only(left: 0.0),
+                            child: const Text(
+                              "No",
+                              style: TextStyle(
+                                  fontSize: 15, color: Colors.lightBlue),
+                            )),
+                        FlatButton(
                             onPressed: () {
                               // Navigator.of(context, rootNavigator: true).pop();
                               Navigator.pop(context,
@@ -123,19 +131,11 @@ class _AddAmc extends State<AddAmc> {
                               Navigator.pushReplacement(
                                   context,
                                   MaterialPageRoute(
-                                      builder: (context) => DashBoard(3)));
+                                      builder: (context) => DashBoard(4)));
                             },
                             padding: EdgeInsets.all(0.0),
                             child: const Text(
                               'Yes',
-                              style: TextStyle(
-                                  fontSize: 15, color: Colors.lightBlue),
-                            )),
-                        FlatButton(
-                            onPressed: () => {Navigator.pop(context)},
-                            padding: EdgeInsets.only(left: 0.0),
-                            child: const Text(
-                              "No",
                               style: TextStyle(
                                   fontSize: 15, color: Colors.lightBlue),
                             ))
@@ -684,7 +684,7 @@ class _AddAmc extends State<AddAmc> {
 
               Navigator.pop(context, true);
               Navigator.pushReplacement(context,
-                  MaterialPageRoute(builder: (context) => DashBoard(3)));
+                  MaterialPageRoute(builder: (context) => DashBoard(4)));
             });
           }
         } else {

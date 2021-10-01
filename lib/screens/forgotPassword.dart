@@ -22,7 +22,7 @@ class _ForgotPasswordState extends State<ForgotPassword> {
             context: context,
             builder: (context) => new AlertDialog(
                   title: const Text(
-                    "Field Pro",
+                    "FieldPro",
                     style: TextStyle(fontSize: 20),
                   ),
                   content: SingleChildScrollView(
@@ -40,6 +40,14 @@ class _ForgotPasswordState extends State<ForgotPassword> {
                       mainAxisAlignment: MainAxisAlignment.spaceBetween,
                       children: <Widget>[
                         FlatButton(
+                            onPressed: () => {Navigator.pop(context)},
+                            padding: EdgeInsets.only(left: 0.0),
+                            child: const Text(
+                              "No",
+                              style: TextStyle(
+                                  fontSize: 15, color: Colors.lightBlue),
+                            )),
+                        FlatButton(
                             onPressed: () {
                               Navigator.of(context, rootNavigator: true).pop();
                               Navigator.pushNamedAndRemoveUntil(
@@ -48,14 +56,6 @@ class _ForgotPasswordState extends State<ForgotPassword> {
                             padding: EdgeInsets.all(0.0),
                             child: const Text(
                               'Yes',
-                              style: TextStyle(
-                                  fontSize: 15, color: Colors.lightBlue),
-                            )),
-                        FlatButton(
-                            onPressed: () => {Navigator.pop(context)},
-                            padding: EdgeInsets.only(left: 0.0),
-                            child: const Text(
-                              "No",
                               style: TextStyle(
                                   fontSize: 15, color: Colors.lightBlue),
                             ))

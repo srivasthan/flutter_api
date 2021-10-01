@@ -556,4 +556,25 @@ class _RestClient implements RestClient {
     final value = StateResponse.fromJson(_result.data);
     return Future.value(value);
   }
+
+  @override
+  getTicket(token, customer_code_id) async {
+    const _extra = <String, dynamic>{};
+    final queryParameters = <String, dynamic>{};
+    Map<String, String> queryParams = {
+      'customer_code': customer_code_id.toString()
+    };
+    String queryString = Uri(queryParameters: queryParams).query;
+    final Response<Map<String, dynamic>> _result = await _dio.get(
+        'load_tickets/' + '?' + queryString,
+        queryParameters: queryParameters,
+        options: RequestOptions(
+            method: 'GET',
+            headers: <String, dynamic>{'Token': token.toString()},
+            extra: _extra,
+            baseUrl: baseUrl));
+    final value = TicketList.fromJson(_result.data);
+    return Future.value(value);
+  }
+
 }

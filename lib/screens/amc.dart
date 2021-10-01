@@ -21,7 +21,7 @@ class AmcStateless extends StatelessWidget {
   }
 
   Future _getThingsOnStartup() async {
-    await Future.delayed(Duration(seconds: 2));
+    await Future.delayed(Duration(seconds: 0));
   }
 }
 
@@ -118,7 +118,7 @@ class _Amc extends State<Amc> {
 
   Future<Null> refreshList() async {
     refreshKey.currentState?.show(atTop: false);
-    await Future.delayed(Duration(seconds: 2));
+    await Future.delayed(Duration(seconds: 0));
     setState(() {
       showAlert(context);
       amcList.clear();

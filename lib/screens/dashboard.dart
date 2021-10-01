@@ -1,12 +1,13 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_api_json_parse/screens/raiseTicket.dart';
+import 'package:flutter_api_json_parse/screens/ticket_list.dart';
 import 'home.dart';
 import 'myProduct.dart';
 import 'amc.dart';
 
 class DashBoard extends StatelessWidget {
   int selectedPage;
-  int _pageCount = 4;
+  int _pageCount = 5;
 
   DashBoard(this.selectedPage);
 
@@ -22,6 +23,7 @@ class DashBoard extends StatelessWidget {
           children: [
             HomeStateless(),
             RaiseTicketStateless(),
+            TicketListStateless(),
             MyProductStateless(),
             AmcStateless(),
           ],
@@ -33,7 +35,7 @@ class DashBoard extends StatelessWidget {
   Widget menu(BuildContext context) {
     return Container(
       color: Colors.blue,
-      height: 60,
+      height: 70,
       child: TabBar(
         labelColor: Colors.white,
         unselectedLabelColor: Colors.white70,
@@ -68,6 +70,22 @@ class DashBoard extends StatelessWidget {
               ),
               Text(
                 "Raise Ticket",
+                textAlign: TextAlign.center,
+                style: TextStyle(fontSize: 10.0),
+              )
+            ],
+          ),
+          Column(
+            children: [
+              SizedBox(
+                height: 10.0,
+              ),
+              Icon(Icons.event_note_outlined),
+              SizedBox(
+                height: 5.0,
+              ),
+              Text(
+                "Ticket List",
                 textAlign: TextAlign.center,
                 style: TextStyle(fontSize: 10.0),
               )

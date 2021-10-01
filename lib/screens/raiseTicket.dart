@@ -20,6 +20,8 @@ import 'package:image_picker/image_picker.dart';
 import 'package:intl/intl.dart';
 import 'package:shared_preferences/shared_preferences.dart';
 
+import 'dashboard.dart';
+
 class RaiseTicketStateless extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
@@ -409,6 +411,8 @@ class _RaiseTicket extends State<RaiseTicket> {
                   timeInSecForIosWeb: 1,
                   toastLength: Toast.LENGTH_SHORT);
               Navigator.of(context, rootNavigator: true).pop();
+              Navigator.pushReplacement(context,
+                  MaterialPageRoute(builder: (context) => DashBoard(2)));
             });
           } else if (response.raiseTicketEntity.responseCode == "500") {
             setState(() {

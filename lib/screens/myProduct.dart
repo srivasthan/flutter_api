@@ -21,7 +21,7 @@ class MyProductStateless extends StatelessWidget {
   }
 
   Future _getThingsOnStartup() async {
-    await Future.delayed(Duration(seconds: 2));
+    await Future.delayed(Duration(seconds: 0));
   }
 }
 
@@ -122,7 +122,7 @@ class _MyProduct extends State<MyProduct> {
 
   Future<Null> refreshList() async {
     refreshKey.currentState?.show(atTop: false);
-    await Future.delayed(Duration(seconds: 2));
+    await Future.delayed(Duration(seconds: 0));
     setState(() {
       showAlert(context);
       myProductList.clear();

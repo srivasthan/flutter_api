@@ -76,7 +76,7 @@ class _AddProduct extends State<AddProduct> {
             context: context,
             builder: (context) => new AlertDialog(
                   title: const Text(
-                    "Field Pro",
+                    "FieldPro",
                     style: TextStyle(fontSize: 20),
                   ),
                   content: SingleChildScrollView(
@@ -94,25 +94,25 @@ class _AddProduct extends State<AddProduct> {
                       mainAxisAlignment: MainAxisAlignment.spaceBetween,
                       children: <Widget>[
                         FlatButton(
+                            onPressed: () => {Navigator.pop(context)},
+                            padding: EdgeInsets.only(left: 0.0),
+                            child: const Text(
+                              "No",
+                              style: TextStyle(
+                                  fontSize: 15, color: Colors.lightBlue),
+                            )),
+                        FlatButton(
                             onPressed: () {
                               Navigator.pop(context,
                                   true); // It worked for me instead of above line
                               Navigator.pushReplacement(
                                   context,
                                   MaterialPageRoute(
-                                      builder: (context) => DashBoard(2)));
+                                      builder: (context) => DashBoard(3)));
                             },
                             padding: EdgeInsets.all(0.0),
                             child: const Text(
                               'Yes',
-                              style: TextStyle(
-                                  fontSize: 15, color: Colors.lightBlue),
-                            )),
-                        FlatButton(
-                            onPressed: () => {Navigator.pop(context)},
-                            padding: EdgeInsets.only(left: 0.0),
-                            child: const Text(
-                              "No",
                               style: TextStyle(
                                   fontSize: 15, color: Colors.lightBlue),
                             ))
@@ -613,7 +613,7 @@ class _AddProduct extends State<AddProduct> {
 
                 Navigator.pop(context, true);
                 Navigator.pushReplacement(context,
-                    MaterialPageRoute(builder: (context) => DashBoard(2)));
+                    MaterialPageRoute(builder: (context) => DashBoard(3)));
               });
             }
           }
