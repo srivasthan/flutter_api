@@ -44,10 +44,9 @@ class _Home extends State<Home> {
 
   getToken() async {
     SharedPreferences prefs = await SharedPreferences.getInstance();
-    setState(() {
-      cusCode = (prefs.getString('cuscode') ?? '');
-      name = (prefs.getString('name') ?? '');
-    });
+    cusCode = (prefs.getString('cuscode') ?? '');
+    name = (prefs.getString('name') ?? '');
+    email = (prefs.getString("email") ?? '');
 
     var result = await Connectivity().checkConnectivity();
     if (result == ConnectivityResult.mobile ||
@@ -59,15 +58,16 @@ class _Home extends State<Home> {
       final response = await apiService.postTokenActivity(loginData);
 
       if (response.tokenEntity.responseCode == "200") {
-        setState(() {
-          token = response.tokenEntity.data;
-          getMyProductList();
-        });
+       if(mounted){
+         setState(() {
+           token = response.tokenEntity.data;
+           getMyProductList();
+         });
+       }
       }
 
       prefs.setString('token', token.toString());
     } else {
-      Navigator.of(context, rootNavigator: true).pop();
       Fluttertoast.showToast(
           msg: "Connect to internet",
           timeInSecForIosWeb: 1,
@@ -77,9 +77,6 @@ class _Home extends State<Home> {
 
   getMyProductList() async {
     SharedPreferences prefs = await SharedPreferences.getInstance();
-    setState(() {
-      email = (prefs.getString("email") ?? '');
-    });
 
     var result = await Connectivity().checkConnectivity();
     if (result == ConnectivityResult.mobile ||
@@ -89,20 +86,21 @@ class _Home extends State<Home> {
       final response = await apiService.getMyProductList(token, email);
 
       if (response.myProductListEntity.responseCode == "200") {
+      if(mounted){
         setState(() {
           newToken = response.myProductListEntity.token;
           for (int i = 0;
-              i < response.myProductListEntity.myProductList.length;
-              i++) {
+          i < response.myProductListEntity.myProductList.length;
+          i++) {
             myProductList.add(new MyProductListModel(
                 product: response.myProductListEntity.myProductList[i].product,
                 subProduct:
-                    response.myProductListEntity.myProductList[i].subProduct,
+                response.myProductListEntity.myProductList[i].subProduct,
                 serialNo:
-                    response.myProductListEntity.myProductList[i].serialNo,
+                response.myProductListEntity.myProductList[i].serialNo,
                 modelNo: response.myProductListEntity.myProductList[i].modelNo,
                 contractType:
-                    response.myProductListEntity.myProductList[i].contractType,
+                response.myProductListEntity.myProductList[i].contractType,
                 contractStatusName: response
                     .myProductListEntity.myProductList[i].contractStatusName));
           }
@@ -111,8 +109,8 @@ class _Home extends State<Home> {
           _showList = true;
         });
       }
+      }
     } else {
-      Navigator.of(context, rootNavigator: true).pop();
       Fluttertoast.showToast(
           msg: "Connect to internet",
           timeInSecForIosWeb: 1,
@@ -213,7 +211,7 @@ class _Home extends State<Home> {
                                       children: [
                                         Expanded(
                                             child: Text(
-                                          "Total Products",
+                                          "Total Products Present",
                                           textAlign: TextAlign.center,
                                         ))
                                       ],
@@ -408,7 +406,7 @@ class _Home extends State<Home> {
                                         children: [
                                           Expanded(
                                               child: Text(
-                                            "Total Products",
+                                            "Total Products Present",
                                             textAlign: TextAlign.center,
                                           ))
                                         ],

@@ -469,7 +469,8 @@ class _RaiseTicket extends State<RaiseTicket> {
                       decoration: InputDecoration(
                         border: OutlineInputBorder(
                             borderRadius: BorderRadius.circular(5.0)),
-                        contentPadding: EdgeInsets.only(left: 10.0, right: 10.0),
+                        contentPadding:
+                            EdgeInsets.only(left: 10.0, right: 10.0),
                       ),
                       child: DropdownButtonFormField<ProductModel>(
                         isExpanded: true,
@@ -496,9 +497,9 @@ class _RaiseTicket extends State<RaiseTicket> {
                           return DropdownMenuItem<ProductModel>(
                             value: value,
                             child: Text(
-                                value.productName,
-                                style: new TextStyle(color: Colors.black),
-                              ),
+                              value.productName,
+                              style: new TextStyle(color: Colors.black),
+                            ),
                           );
                         }).toList(),
                       ),
@@ -513,7 +514,8 @@ class _RaiseTicket extends State<RaiseTicket> {
                       decoration: InputDecoration(
                         border: OutlineInputBorder(
                             borderRadius: BorderRadius.circular(5.0)),
-                        contentPadding: EdgeInsets.only(left: 10.0, right: 10.0),
+                        contentPadding:
+                            EdgeInsets.only(left: 10.0, right: 10.0),
                       ),
                       child: DropdownButtonFormField(
                         hint: new Text("Select Sub Product"),
@@ -556,7 +558,8 @@ class _RaiseTicket extends State<RaiseTicket> {
                       decoration: InputDecoration(
                         border: OutlineInputBorder(
                             borderRadius: BorderRadius.circular(5.0)),
-                        contentPadding: EdgeInsets.only(left: 10.0, right: 10.0),
+                        contentPadding:
+                            EdgeInsets.only(left: 10.0, right: 10.0),
                       ),
                       child: DropdownButtonFormField(
                         isExpanded: true,
@@ -633,7 +636,8 @@ class _RaiseTicket extends State<RaiseTicket> {
                       decoration: InputDecoration(
                         border: OutlineInputBorder(
                             borderRadius: BorderRadius.circular(5.0)),
-                        contentPadding: EdgeInsets.only(left: 10.0, right: 10.0),
+                        contentPadding:
+                            EdgeInsets.only(left: 10.0, right: 10.0),
                       ),
                       child: DropdownButtonFormField(
                         isExpanded: true,
@@ -742,59 +746,66 @@ class _RaiseTicket extends State<RaiseTicket> {
                     height: 10.0,
                   ),
                   Row(
+                    crossAxisAlignment: CrossAxisAlignment.center,
+                    mainAxisAlignment: MainAxisAlignment.end,
                     children: [
                       new Expanded(
-                        child: Visibility(
-                          visible: imageVisible,
-                          child: new Column(
-                            crossAxisAlignment: CrossAxisAlignment.end,
-                            children: <Widget>[
-                              Padding(
-                                padding: EdgeInsets.only(top: 10),
-                                child: Stack(
-                                  children: <Widget>[
-                                    new Container(
-                                      height: 70,
-                                      width: 70,
-                                      child: new Center(
-                                        child: image == null
-                                            ? new Text('No Image to Show ')
-                                            : new Image.file(image),
+                        flex: 0,
+                        child: Padding(
+                          padding: EdgeInsets.only(right: 20.0),
+                          child: Visibility(
+                            visible: imageVisible,
+                            child: new Column(
+                              crossAxisAlignment: CrossAxisAlignment.end,
+                              children: <Widget>[
+                                Padding(
+                                  padding: EdgeInsets.only(top: 0.0),
+                                  child: Stack(
+                                    children: <Widget>[
+                                      new Container(
+                                        height: 100,
+                                        width: 100,
+                                        child: new Center(
+                                          child: image == null
+                                              ? new Text('No Image to Show ')
+                                              : new Image.file(image),
+                                        ),
                                       ),
-                                    ),
-                                    Positioned(
-                                      top: 0,
-                                      right: 0,
-                                      child: GestureDetector(
-                                        onTap: () {
-                                          print('delete image from List');
-                                          setState(() {
-                                            print('set new state of images');
-                                          });
-                                        },
-                                        child: IconButton(
-                                          onPressed: () {
+                                      new Positioned(
+                                        top: -14,
+                                        right: 2.5,
+                                        child: GestureDetector(
+                                          onTap: () {
+                                            print('delete image from List');
                                             setState(() {
-                                              imageVisible = false;
-                                              encImageBase64 = "";
+                                              print('set new state of images');
                                             });
                                           },
-                                          icon: Image.asset(
-                                            'assets/images/close_icon.png',
-                                            width: 20,
-                                            height: 20,
+                                          child: IconButton(
+                                            onPressed: () {
+                                              setState(() {
+                                                imageVisible = false;
+                                                encImageBase64 = "";
+                                              });
+                                            },
+                                            icon: Image.asset(
+                                              'assets/images/close_icon.png',
+                                              width: 20,
+                                              height: 20,
+                                            ),
                                           ),
                                         ),
                                       ),
-                                    ),
-                                  ],
-                                ),
-                              )
-                            ],
+                                    ],
+                                  ),
+                                )
+                              ],
+                            ),
                           ),
                         ),
                       ),
                       new Expanded(
+                        flex: 0,
                         child: Align(
                           alignment: Alignment.bottomRight,
                           child: Padding(
